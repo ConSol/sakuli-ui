@@ -1,33 +1,38 @@
 package org.sweetest.platform.server.service.sakuli;
 
-import io.fabric8.docker.api.model.ContainerCreateResponse;
-import io.fabric8.docker.api.model.HostConfig;
-import io.fabric8.docker.api.model.PortBinding;
-import io.fabric8.docker.api.model.VolumeBuilder;
-import io.fabric8.docker.client.DockerClient;
-import io.fabric8.docker.client.DockerClientException;
-import io.fabric8.docker.dsl.EventListener;
-import io.fabric8.docker.dsl.OutputHandle;
-import org.apache.commons.lang.StringUtils;
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.model.*;
+import com.github.dockerjava.core.command.AttachContainerResultCallback;
+import com.github.dockerjava.core.command.EventsResultCallback;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.jooq.lambda.Unchecked;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.SocketUtils;
 import org.sweetest.platform.server.api.file.FileSystemService;
 import org.sweetest.platform.server.api.project.ProjectModel;
 import org.sweetest.platform.server.api.project.ProjectService;
-import org.sweetest.platform.server.api.test.TestCase;
+import org.sweetest.platform.server.api.test.TestRunInfo;
 import org.sweetest.platform.server.api.test.TestService;
 import org.sweetest.platform.server.api.test.TestSuite;
+import org.sweetest.platform.server.api.test.result.TestSuiteResult;
+import org.sweetest.platform.server.common.SakuliTestResultLogReader;
+import org.sweetest.platform.server.service.SocketEvent;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.github.dockerjava.api.model.Ports.Binding.bindPort;
 
 /**
  * Created by timkeiner on 19.07.17.
@@ -35,7 +40,11 @@ import java.util.stream.Collectors;
 @Service
 public class SakuliTestService implements TestService {
 
-    private TestSuite testSuite;
+    private static final Logger log = LoggerFactory.getLogger(SakuliTestService.class);
+
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
     private FileSystemService fileSystemService;
@@ -45,6 +54,13 @@ public class SakuliTestService implements TestService {
 
     @Autowired
     private DockerClient dockerClient;
+
+    private String rootDirectory;
+
+    @Autowired
+    public SakuliTestService(@Qualifier("rootDirectory") String rootDirectory) {
+        this.rootDirectory = rootDirectory;
+    }
 
     @Override
     public TestSuite getTestSuite() {
@@ -62,13 +78,12 @@ public class SakuliTestService implements TestService {
         testsuiteProperties.setTestSuiteFile(Paths.get(project.getPath(), SakuliProjectService.TESTSUITE_FILENAME).toString());
         testsuiteProperties.setPropertiesFile(Paths.get(project.getPath(), SakuliProjectService.TESTPROPERTIES_FILENAME).toString());
         testSuite.setConfiguration(testsuiteProperties);
-        applyPropertieFileConfiguration(testSuite);
+        applyPropertiesFileConfiguration(testSuite);
 
         testSuite.setConfigurationFiles(Arrays.asList(
                 testsuiteProperties.getPropertiesFile(),
                 testsuiteProperties.getTestSuiteFile()
         ));
-
 
         List<SakuliTestCase> testCases = getTestCases(testSuite);
         testSuite.setTestCases(testCases);
@@ -76,89 +91,87 @@ public class SakuliTestService implements TestService {
         return testSuite;
     }
 
+    private class ContainerCallBack extends AttachContainerResultCallback {
 
-    public String run(TestSuite testSuite) {
-        System.out.println(dockerClient);
-        System.out.println(dockerClient.info().getName());
+        private String containerID;
 
-        Map<String, ArrayList<PortBinding>> portBinding = new HashMap<>();
-        portBinding.put("5901/tcp", new ArrayList<>(Arrays.asList(new PortBinding("localhost", "5901"))));
-        portBinding.put("6901/tcp", new ArrayList<>(Arrays.asList(new PortBinding("localhost", "6901"))));
-        HostConfig hostConfig = new HostConfig();
-        hostConfig.setPortBindings(portBinding);
-
-        Map<String, Object> volumeMap = new HashMap<>();
-        volumeMap.put(
-                Paths.get("/Users/timkeiner/Projects/consol/TA/sakuli-examples/docker-xfce/part_01/example_xfce").toString(),
-                new VolumeBuilder().withName("/opt/test").build());
-
-        Map<String, String> envVariable = new HashMap<String, String>();
-        envVariable.put("SAKULI_TEST_SUITE", "/opt/test");
-
-        final CountDownLatch latch = new CountDownLatch(1);
-        try {
-            try (OutputHandle pullHandle = dockerClient
-                    .image()
-                    .withName("consol/sakuli-centos-xfce:dev")
-                    .pull()
-                    .usingListener(new EventListener() {
-                        @Override
-                        public void onSuccess(String s) {
-                            System.out.println("---SUCC: " + s);
-                            latch.countDown();
-                        }
-
-                        @Override
-                        public void onError(String s) {
-                            System.out.println("---ERR: " + s);
-                            latch.countDown();
-                        }
-
-                        @Override
-                        public void onEvent(String s) {
-                            System.out.println("---EV: " + s);
-                        }
-                    }).fromRegistry()) {
-                if (!latch.await(5, TimeUnit.MINUTES)) {
-                    throw new DockerClientException("Failed to pull image [consol/sakuli-testsuites]");
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        public ContainerCallBack(String containerID) {
+            this.containerID = containerID;
         }
 
-        ContainerCreateResponse container = dockerClient
-                .container()
-                .createNew()
-                .withVolumes(volumeMap)
-                .withUser("0")
-                .withHostConfig(hostConfig)
-                .withCmd("java -classpath /headless/sakuli/sakuli-v1.1.0-SNAPSHOT/libs/java/sakuli.jar:/headless/sakuli/sakuli-v1.1.0-SNAPSHOT/libs/java/* org.sakuli.starter.SakuliStarter --sakuli_home /headless/sakuli/sakuli-v1.1.0-SNAPSHOT --run /opt/test\n")
-                .withImage("consol/sakuli-centos-xfce:dev")
-                .withAttachStdout(true)
-                .withAttachStderr(true)
-                .done();
-
-        System.out.println(container);
-
-        if (dockerClient.container().withName(container.getId()).start()) {
-            System.out.println("Started");
-            dockerClient.container().withName(container.getId())
-                    .logs()
-                    .writingOutput(System.out)
-                    .writingError(System.err)
-                    .follow()
-            ;
-        } else {
-            System.out.println("Error");
+        @Override
+        public void onNext(Frame item) {
+            String destination = "/topic/test-run-info/" + this.containerID;
+            SocketEvent socketEvent = new SocketEvent(this.containerID, new String(item.getPayload()));
+            simpMessagingTemplate.convertAndSend(
+                    destination,
+                    socketEvent);
+            log.info(String.format("%s: %s", destination, socketEvent));
+            super.onNext(item);
         }
-
-        return "";
     }
 
-    // docker cp sakuli 1f0127260c76:/headless/sakuli/sakuli-v1.1.0-beta/bin/sakuli
+
+    public TestRunInfo run(TestSuite testSuite) {
+        Info info = dockerClient.infoCmd().exec();
+        log.info(ReflectionToStringBuilder.toString(info, ToStringStyle.MULTI_LINE_STYLE));
+        final String pathInImage = ("/" + testSuite.getRoot()).replace("//", "/");
+        final Volume volume = new Volume(pathInImage);
+        final ExposedPort vncPort = ExposedPort.tcp(5901);
+        final ExposedPort vncWebPort = ExposedPort.tcp(6901);
+        final Ports ports = new Ports();
+        final int availableVncPort = SocketUtils.findAvailableTcpPort(5901, 6900);
+        final int availableVncWebPort = SocketUtils.findAvailableTcpPort(6901);
+        ports.bind(vncPort, bindPort(availableVncPort));
+        ports.bind(vncWebPort, bindPort(availableVncWebPort));
+
+        EventsResultCallback eventsResultCallback = new EventsResultCallback() {
+            @Override
+            public void onNext(Event item) {
+                log.info("Event: " + item);
+                if (item.getAction().equals("disconnect")) {
+                    super.onComplete();
+                } else {
+                    super.onNext(item);
+                }
+            }
+        };
+
+        try {
+            dockerClient.eventsCmd().exec(eventsResultCallback);
+            CreateContainerResponse container = dockerClient
+                    .createContainerCmd("consol/sakuli-ubuntu-xfce:dev")
+                    .withCmd("run", pathInImage)
+                    .withExposedPorts(vncPort, vncWebPort)
+                    .withPortBindings(ports)
+                    .withPublishAllPorts(true)
+                    .withVolumes(volume)
+                    .withBinds(new Bind(Paths.get(rootDirectory, testSuite.getRoot()).toString(), volume))
+                    .exec();
+            dockerClient.startContainerCmd(container.getId()).exec();
+            Optional.ofNullable(container.getWarnings()).map(s -> ReflectionToStringBuilder.toString(s))
+                    .ifPresent(w -> log.warn(w));
+
+            ContainerCallBack logCb = new ContainerCallBack(container.getId());
+            dockerClient
+                    .logContainerCmd(container.getId())
+                    .withStdOut(true)
+                    .withStdErr(true)
+                    .withTailAll()
+                    .withFollowStream(true)
+                    .exec(logCb);
+
+            dockerClient.infoCmd().exec().getNoProxy();
+            return new TestRunInfo(
+                    availableVncPort,
+                    availableVncWebPort,
+                    container.getId()
+            );
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return new TestRunInfo(0,0,"");
+    }
 
     private List<SakuliTestCase> getTestCases(SakuliTestSuite testSuite) {
         return Optional.of(testSuite)
@@ -192,7 +205,7 @@ public class SakuliTestService implements TestService {
                 .orElse(Arrays.asList());
     }
 
-    private void applyPropertieFileConfiguration(SakuliTestSuite testSuite) {
+    private void applyPropertiesFileConfiguration(SakuliTestSuite testSuite) {
         Function<String, Long> parse = s -> null == s ? null : Long.parseLong(s);
         SakuliTestSuiteConfiguration testProperties = Optional
                 .of(testSuite.getConfiguration())
@@ -213,6 +226,17 @@ public class SakuliTestService implements TestService {
                     testSuite.setConfiguration(testProperties);
                 }));
 
+    }
+
+    public List<TestSuiteResult> getTestSuiteResults(String testSuitePath) {
+        return fileSystemService
+                .getFileFromPath(
+                        Paths.get(testSuitePath, "_logs").toString(),
+                        "_sakuli.log"
+                )
+                .map(f -> new SakuliTestResultLogReader(f))
+                .map(r -> r.read().getResultList())
+                .orElse(new ArrayList<>());
     }
 
 }

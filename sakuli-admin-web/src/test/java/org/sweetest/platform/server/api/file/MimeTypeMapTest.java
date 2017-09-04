@@ -26,4 +26,9 @@ public class MimeTypeMapTest {
 
     }
 
+    @Test
+    public void testRegEx() throws Exception {
+
+    }
+
 }

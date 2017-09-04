@@ -10,7 +10,7 @@
 
   <!-- Default namespace mappings used in XPath expression evaluations -->
   <citrus:namespace-context>
-    <citrus:namespace prefix="xh" uri="http://www.w3.org/1999/xhtml"/>
+    <citrus:namespace containerID="xh" uri="http://www.w3.org/1999/xhtml"/>
   </citrus:namespace-context>
 
   <citrus-http:client id="sakuliAdminClient"

@@ -1,5 +1,6 @@
 package org.sweetest.platform.server.api.file;
 
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 
 import java.io.File;
@@ -32,6 +33,7 @@ public interface FileSystemService {
 
     Optional<Stream<String>> getFileLines(String path);
 
-    boolean writeFile(String path, String content);
-    Optional<String> readFile(String path);
+    boolean deleteFile(String path);
+    boolean writeFile(String path, byte[] content);
+    Optional<Resource> readFile(String path);
 }

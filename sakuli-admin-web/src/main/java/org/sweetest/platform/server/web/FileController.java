@@ -1,18 +1,20 @@
 package org.sweetest.platform.server.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.HandlerMapping;
 import org.sweetest.platform.server.api.file.FileModel;
 import org.sweetest.platform.server.api.file.FileSystemService;
+import org.sweetest.platform.server.api.project.ProjectService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,12 +27,19 @@ public class FileController {
     @Autowired
     private FileSystemService fileSystemService;
 
+    @Autowired
+    private ProjectService projectService;
+
     private String cleanRequestPathFor(HttpServletRequest request, String _for) {
         return ((String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE))
                 .replace(RequestBasePath + _for, "");
     }
 
-    @RequestMapping(value = "ls/**", method = RequestMethod.GET)
+    private String cleanRequestPath(HttpServletRequest request) {
+        return cleanRequestPathFor(request, "/");
+    }
+
+    @GetMapping(value = "ls/**")
     @ResponseBody
     public List<FileModel> getFiles(HttpServletRequest request) {
         String requestPath = cleanRequestPathFor(request, "/ls/");
@@ -40,21 +49,31 @@ public class FileController {
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping(value="read/**", method = RequestMethod.GET)
+    @GetMapping(value = "/**")
     @ResponseBody
-    public ResponseEntity readFile(HttpServletRequest request) {
-        String requestPath = cleanRequestPathFor(request, "/read/");
-        System.out.println("------> " + requestPath);
+    public ResponseEntity<Resource> readFile(HttpServletRequest request) {
+        String requestPath = cleanRequestPath(request);
         return fileSystemService.readFile(requestPath)
                 .map(cnt -> ResponseEntity.ok().body(cnt))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @RequestMapping(value="write/**", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
+    @PostMapping(value = "/**")
     @ResponseBody
-    public ResponseEntity writeFile(HttpServletRequest request, HttpEntity<String> httpEntity) {
-        String requestPath = cleanRequestPathFor(request, "/write/");
-        boolean success = fileSystemService.writeFile(requestPath, httpEntity.getBody());
+    public ResponseEntity writeFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws IOException {
+        String requestPath = cleanRequestPath(request);
+        boolean success = fileSystemService.writeFile(requestPath, file.getBytes());
+        projectService.readProject(projectService.getActiveProject().getPath())
+                .ifPresent(pm -> projectService.setActiveProject(pm));
+        return success ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
+    }
+
+    @DeleteMapping(value = "/**")
+    public ResponseEntity deleteFile(HttpServletRequest request) {
+        String requestPath = cleanRequestPath(request);
+        boolean success = fileSystemService.deleteFile(requestPath);
+        projectService.readProject(projectService.getActiveProject().getPath())
+                .ifPresent(pm -> projectService.setActiveProject(pm));
         return success ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
 }

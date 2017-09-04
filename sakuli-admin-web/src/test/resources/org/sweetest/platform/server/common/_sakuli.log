@@ -1,0 +1,174 @@
+INFO  [2017-08-14 20:44:41.587] - set logback configuration file '/headless/sakuli/sakuli-v1.1.0-SNAPSHOT/config/sakuli-log-config.xml'
+INFO  [2017-08-14 20:44:41.622] - set 'sakuli.log.folder' to '/opt/test/_logs'
+INFO  [2017-08-14 20:44:41.623] - set 'sakuli.log.pattern' to '%-5level [%d{YYYY-MM-dd HH:mm:ss.SSS}] - %msg%n'
+INFO  [2017-08-14 20:44:41.624] - set 'log.level.sakuli' to 'INFO'
+INFO  [2017-08-14 20:44:41.625] - set 'log.level.sahi' to 'WARN'
+INFO  [2017-08-14 20:44:41.625] - set 'log.level.sikuli' to 'WARN'
+INFO  [2017-08-14 20:44:41.626] - set 'log.level.spring' to 'WARN'
+INFO  [2017-08-14 20:44:41.626] - set 'log.level.root' to 'INFO'
+INFO  [2017-08-14 20:44:41.636] - set logback configuration file '/headless/sakuli/sakuli-v1.1.0-SNAPSHOT/config/sakuli-log-config.xml'
+INFO  [2017-08-14 20:44:41.647] - sucessfully init sikuli-X screen!
+INFO  [2017-08-14 20:44:41.670] - initialize test suite with id 'example_xfce'
+INFO  [2017-08-14 20:44:41.782] -
+--- TestSuite initialization: read test suite information of file "/opt/test/testsuite.suite" ----
+// use "//" to disable single testcases
+//
+// ... define your tescase like:
+// folder-of-testcase http://www.startURL.de
+//
+case1/sakuli_demo.js http://sahi.example.com/_s_/dyn/Driver_initialized
+
+ --- End of File "/opt/test/testsuite.suite" ---
+INFO  [2017-08-14 20:44:41.804] - test suite with guid 'example_xfce__2017_08_14_20_44_41_671' has been initialized!
+INFO  [2017-08-14 20:44:41.810] - Initialize Sahi Proxy!
+INFO  [2017-08-14 20:44:41.812] - START Sahi-PROXY: Sahi-Home folder '/headless/sakuli/sahi', Sahi-Configuration folder '/headless/sakuli/sahi/userdata'
+INFO  [2017-08-14 20:44:41.828] - added '<script src='/_s_/spr/sakuli/inject.js'></script>' to Sahi inject config file '/headless/sakuli/sahi/config/inject_top.txt'
+INFO  [2017-08-14 20:44:41.845] - copied file '/headless/sakuli/sakuli-v1.1.0-SNAPSHOT/libs/js/internal/inject.js' to target '/headless/sakuli/sahi/htdocs/spr/sakuli/inject.js'
+INFO  [2017-08-14 20:44:42.086] - Start Sakuli-Test-Suite from folder "/opt/test"
+INFO  [2017-08-14 20:44:42.091] - connect Sahi-TestRunner:http://localhost:9999
+INFO  [2017-08-14 20:44:42.095] - Sahi-Script-Runner starts!
+
+INFO  [2017-08-14 20:44:42.477] - Add RhinoScriptRunner to the JavaBackEnd
+WARN  [2017-08-14 20:44:44.863] -
+----
+Certificate not found: /headless/sakuli/sahi/userdata/certs/translate_googleapis_com
+----
+WARN  [2017-08-14 20:44:45.328] -
+----
+Certificate not found: /headless/sakuli/sahi/userdata/certs/clients2_google_com
+----
+INFO  [2017-08-14 20:44:45.355] - set default path for images to the test case folder "/opt/test/case1"
+INFO  [2017-08-14 20:44:45.389] - "test case not initialized" TestCaseAction.getIdFromPath() - convert the path of the test case file to a valid test case ID with arg(s) [/opt/test/case1/undefined]
+INFO  [2017-08-14 20:44:45.391] - Return a test-case-id for "/opt/test/case1/undefined"
+INFO  [2017-08-14 20:44:45.392] - test-case-id = case1
+INFO  [2017-08-14 20:44:45.398] - "test case not initialized" TestCaseAction.init() - init a new test case with arg(s) [case1, 20, 30, [/opt/test/case1]]
+INFO  [2017-08-14 20:44:45.402] - load all pics from "/opt/test/case1" in picLib
+INFO  [2017-08-14 20:44:45.427] - internal image library: '/opt/test/case1/.DS_Store' is no .png picture
+INFO  [2017-08-14 20:44:45.516] - loaded image [id=625, path=/opt/test/case1/625.png ]
+INFO  [2017-08-14 20:44:45.730] - loaded image [id=Bildschirmfoto 2017-04-20 um 16.13.11, path=/opt/test/case1/Bildschirmfoto 2017-04-20 um 16.13.11.png ]
+INFO  [2017-08-14 20:44:45.746] - loaded image [id=calculator, path=/opt/test/case1/calculator.png ]
+INFO  [2017-08-14 20:44:45.759] - loaded image [id=close-without-saving, path=/opt/test/case1/close-without-saving.png ]
+INFO  [2017-08-14 20:44:45.769] - loaded image [id=gedit, path=/opt/test/case1/gedit.png ]
+INFO  [2017-08-14 20:44:45.777] - loaded image [id=plus, path=/opt/test/case1/plus.png ]
+INFO  [2017-08-14 20:44:45.780] - internal image library: '/opt/test/case1/README.md' is no .png picture
+INFO  [2017-08-14 20:44:45.788] - loaded image [id=result, path=/opt/test/case1/result.png ]
+INFO  [2017-08-14 20:44:45.790] - set isRequestDelayActive=false
+INFO  [2017-08-14 20:44:45.875] - Now start to execute the test case 'case1' !
+ ....
+ ...
+....
+INFO  [2017-08-14 20:44:46.147] - _highlight(_link(/SSL M.*/));
+INFO  [2017-08-14 20:44:46.322] - _highlight(_link("Logs"));
+INFO  [2017-08-14 20:44:46.490] - _highlight(_link("Online Documentation"));
+INFO  [2017-08-14 20:44:46.651] - _highlight(_link("Test Pages"));
+INFO  [2017-08-14 20:44:46.820] - _highlight(_link("Sample Application"));
+INFO  [2017-08-14 20:44:46.842] - "test case [id=case1, name=case1]" TestCaseAction.addTestCaseStep() - add a step to the current test case with arg(s) [Test Sahi landing page, 1502743485397, 1502743486842, 5]
+INFO  [2017-08-14 20:44:46.845] - "/usr/bin/gnome-calculator" Application.open() - open application
+INFO  [2017-08-14 20:44:47.852] - "/usr/bin/gnome-calculator" - PID: 566
+INFO  [2017-08-14 20:44:47.858] - "R[0,0 1280x1024]@S(0)" Region.waitForImage() - wait for image for x seconds with arg(s) [calculator.png, 5]
+INFO  [2017-08-14 20:44:53.534] - create screen shot for error "Can't find "[id=calculator, path=/opt/test/case1/calculator.png ]" inR[0,0 1280x1024]@S(0)waitFor function in 5 sec."
+INFO  [2017-08-14 20:44:53.684] - screen shot saved to file "/opt/test/_logs/_screenshots/2017_08_14_20_44_53_536_Can_t_find_id_calculator_p.jpg"
+ERROR [2017-08-14 20:44:53.685] - Can't find "[id=calculator, path=/opt/test/case1/calculator.png ]" inR[0,0 1280x1024]@S(0)waitFor function in 5 sec.
+org.sakuli.exceptions.SakuliExceptionWithScreenshot: Can't find "[id=calculator, path=/opt/test/case1/calculator.png ]" inR[0,0 1280x1024]@S(0)waitFor function in 5 sec.
+	at org.sakuli.exceptions.SakuliExceptionHandler.transformException(SakuliExceptionHandler.java:265) [sakuli.jar:na]
+	at org.sakuli.exceptions.SakuliExceptionHandler.processException(SakuliExceptionHandler.java:152) [sakuli.jar:na]
+	at org.sakuli.exceptions.SakuliExceptionHandler.handleException(SakuliExceptionHandler.java:140) [sakuli.jar:na]
+	at org.sakuli.exceptions.SakuliExceptionHandler.handleException(SakuliExceptionHandler.java:284) [sakuli.jar:na]
+	at org.sakuli.actions.screenbased.RegionImpl.waitForImage(RegionImpl.java:264) [sakuli.jar:na]
+	at org.sakuli.actions.screenbased.Region.waitForImage(Region.java:249) [sakuli.jar:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_131]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[na:1.8.0_131]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:1.8.0_131]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[na:1.8.0_131]
+	at org.mozilla.javascript.MemberBox.invoke(MemberBox.java:126) [rhino-1.7.7.1.jar:1.7.7.1]
+	at org.mozilla.javascript.NativeJavaMethod.call(NativeJavaMethod.java:225) [rhino-1.7.7.1.jar:1.7.7.1]
+	at org.mozilla.javascript.Interpreter.interpretLoop(Interpreter.java:1479) [rhino-1.7.7.1.jar:1.7.7.1]
+	at org.mozilla.javascript.Interpreter.interpret(Interpreter.java:815) [rhino-1.7.7.1.jar:1.7.7.1]
+	at org.mozilla.javascript.InterpretedFunction.call(InterpretedFunction.java:109) [rhino-1.7.7.1.jar:1.7.7.1]
+	at org.mozilla.javascript.ContextFactory.doTopCall(ContextFactory.java:393) [rhino-1.7.7.1.jar:1.7.7.1]
+	at org.mozilla.javascript.ScriptRuntime.doTopCall(ScriptRuntime.java:3282) [rhino-1.7.7.1.jar:1.7.7.1]
+	at org.mozilla.javascript.InterpretedFunction.exec(InterpretedFunction.java:120) [rhino-1.7.7.1.jar:1.7.7.1]
+	at org.mozilla.javascript.Context.evaluateString(Context.java:1219) [rhino-1.7.7.1.jar:1.7.7.1]
+	at net.sf.sahi.rhino.RhinoScriptRunner.run(RhinoScriptRunner.java:114) [sakuli.jar:na]
+	at java.lang.Thread.run(Thread.java:748) [na:1.8.0_131]
+Caused by: org.sakuli.exceptions.SakuliActionException: Can't find "[id=calculator, path=/opt/test/case1/calculator.png ]" inR[0,0 1280x1024]@S(0)waitFor function in 5 sec.
+	at org.sakuli.exceptions.SakuliExceptionHandler.handleException(SakuliExceptionHandler.java:285) [sakuli.jar:na]
+	... 17 common frames omitted
+INFO  [2017-08-14 20:44:53.696] - "/usr/bin/gnome-calculator" Application.closeApp() with arg(s) [true]
+INFO  [2017-08-14 20:44:53.697] - Close application with name or path "/usr/bin/gnome-calculator".
+INFO  [2017-08-14 20:44:53.731] - "/usr/bin/gedit" Application.kill() with arg(s) [true]
+INFO  [2017-08-14 20:44:53.751] - =========== SAVE Test Case 'case1' ==================
+INFO  [2017-08-14 20:44:53.833] - _sahi.setServerVar('lastURL', window.document.location.href);
+INFO  [2017-08-14 20:44:54.001] - _sahi.setServerVar('browser', navigator.userAgent);
+INFO  [2017-08-14 20:44:54.068] - "test case [id=case1, name=case1]" TestCaseAction.saveResult() - save the result of the current test case with arg(s) [case1, 1502743485394, 1502743493760, http://sahi.example.com/_s_/dyn/Driver_initialized, Mozilla/5.0 (X11, Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/56.0.2924.76 Chrome/56.0.2924.76 Safari/537.36]
+INFO  [2017-08-14 20:44:54.070] - Total Memory in JVM (Xmx) is: 889 MB;<br/>Memory currently in use is: 219 MB;<br/>Memory increment during this test is: 122 MB
+WARN  [2017-08-14 20:44:54.084] -
+----
+Certificate not found: /headless/sakuli/sahi/userdata/certs/ssl_gstatic_com
+----
+WARN  [2017-08-14 20:44:54.368] -
+----
+Certificate not found: /headless/sakuli/sahi/userdata/certs/ssl_gstatic_com
+----
+INFO  [2017-08-14 20:44:58.446] - test suite 'example_xfce' stopped at 2017_08_14_20_44_58_445
+INFO  [2017-08-14 20:44:58.447] - Sahi-Script-Runner executed with FAILURE
+INFO  [2017-08-14 20:44:58.450] - test suite finished
+INFO  [2017-08-14 20:44:58.451] - SHUTDOWN SAHI-Proxy SUCCESSFULLY
+INFO  [2017-08-14 20:44:58.452] - ========== TEAR-DOWN SAKULI TEST SUITE 'example_xfce' ==========
+INFO  [2017-08-14 20:44:58.796] -
+=========== RESULT of SAKULI Testsuite "example_xfce" - ERRORS =================
+test suite id: example_xfce
+guid: example_xfce__2017_08_14_20_44_41_671
+name: example test suite inside of the Xfce desktop for Sakuli
+RESULT STATE: ERRORS
+result code: 6
+db primary key: -1
+duration: 16.774 sec.
+warning time: 30 sec.
+critical time: 40 sec.
+start time: 14-08-2017 20:44:41
+end time: 14-08-2017 20:44:58
+db primary key of job table: -1
+browser: Mozilla/5.0 (X11, Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/56.0.2924.76 Chrome/56.0.2924.76 Safari/537.36
+	======== test case "case1" ended with ERRORS =================
+	test case id: case1
+	name: case1
+	RESULT STATE: ERRORS
+	result code: 4
+	db primary key: -1
+	duration: 8.366 sec.
+	warning time: 20 sec.
+	critical time: 30 sec.
+	start time: 14-08-2017 20:44:45
+	end time: 14-08-2017 20:44:53
+	start URL: http://sahi.example.com/_s_/dyn/Driver_initialized
+	last URL: http://sahi.example.com/_s_/dyn/Driver_initialized
+		======== test case step "Test_Sahi_landing_page" ended with OK =================
+		name: Test_Sahi_landing_page
+		RESULT STATE: OK
+		result code: 0
+		db primary key: -1
+		duration: 1.445 sec.
+		warning time: 5 sec.
+		start time: 14-08-2017 20:44:45
+		end time: 14-08-2017 20:44:46
+		======== test case step "Calculation" ended with ERRORS =================
+		name: Calculation
+		RESULT STATE: ERRORS
+		result code: 4
+		ERRORS:Can't find "[id=calculator, path=/opt/test/case1/calculator.png ]" inR[0,0 1280x1024]@S(0)waitFor function in 5 sec.
+		ERROR - SCREENSHOT: /opt/test/_logs/_screenshots/2017_08_14_20_44_53_536_Can_t_find_id_calculator_p.jpg
+		db primary key: -1
+		duration: -1.0 sec.
+		======== test case step "Editor" ended with INIT =================
+		name: Editor
+		RESULT STATE: INIT
+		result code: -1
+		db primary key: -1
+		duration: -1.0 sec.
+===========  SAKULI Testsuite "example_xfce" execution FINISHED - ERRORS ======================
+
+ERROR [2017-08-14 20:44:58.799] - ERROR:
+CASE "case1":
+	STEP "Calculation": Can't find "[id=calculator, path=/opt/test/case1/calculator.png ]" inR[0,0 1280x1024]@S(0)waitFor function in 5 sec.
+

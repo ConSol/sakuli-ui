@@ -4,6 +4,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.sweetest.platform.server.api.file.FileSystemService;
 import org.sweetest.platform.server.api.file.MimeTypeMap;
@@ -67,9 +69,20 @@ public class LocalFileSystemService implements FileSystemService {
     }
 
     @Override
-    public boolean writeFile(String path, String content) {
+    public boolean deleteFile(String path) {
+        File file = normalizePath(path).toFile();
+        if(file.exists() && file.isFile()) {
+            return file.delete();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean writeFile(String path, byte[] bytes) {
         try {
-            FileUtils.writeStringToFile(normalizePath(path).toFile(), content, FileSystemService.Charset);
+            FileUtils.writeByteArrayToFile(
+                    normalizePath(path).toFile(), bytes
+            );
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,17 +91,11 @@ public class LocalFileSystemService implements FileSystemService {
     }
 
     @Override
-    public Optional<String> readFile(String path) {
+    public Optional<Resource> readFile(String path) {
         try {
-            File file = normalizePath(path).toFile();
-            MimeTypeMap mimeTypeMap = MimeTypeMap.getInstance();
-            String type = mimeTypeMap.getMimeFor(file).orElse("application/octet-stream");
-            if(mimeTypeMap.isText(type)) {
-                return Optional.of(FileUtils.readFileToString(file, FileSystemService.Charset));
-            } else {
-                byte[] encodedFile = Base64.encodeBase64(Files.readAllBytes(file.toPath()));
-                return Optional.of("data:" + type + ";base64," + new String(encodedFile, FileSystemService.Charset));
-            }
+            Path nPath = normalizePath(path);
+            Resource resource = new UrlResource(nPath.toUri());
+            return (resource.isReadable() || resource.exists()) ? Optional.of(resource) : Optional.empty();
         } catch (IOException e) {
             e.printStackTrace();
             return Optional.empty();

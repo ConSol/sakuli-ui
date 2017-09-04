@@ -33,9 +33,6 @@ import org.sweetest.platform.server.api.project.ProjectService;
 public class ProjectController {
 
     @Autowired
-    private FileSystemService fileSystemService;
-
-    @Autowired
     private ProjectService projectService;
 
     @RequestMapping(value = "open", method = RequestMethod.POST)
