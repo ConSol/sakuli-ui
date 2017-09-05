@@ -23,7 +23,7 @@
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
         <configuration>
-          <workingDirectory>src/main/resources/static</workingDirectory>
+          <workingDirectory>src/main/resources</workingDirectory>
           <installDirectory>target</installDirectory>
         </configuration>
         <executions>
@@ -53,6 +53,18 @@
               <arguments>run build</arguments>
             </configuration>
           </execution>
+          <!--
+          <execution>
+            <id>npm-test</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>test</phase>
+            <configuration>
+              <arguments>test</arguments>
+            </configuration>
+          </execution>
+          -->
         </executions>
       </plugin>
       <plugin>

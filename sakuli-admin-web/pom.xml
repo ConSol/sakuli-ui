@@ -64,6 +64,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.sweetest.platform</groupId>
+      <artifactId>sakuli-admin-client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.jooq</groupId>
       <artifactId>jool</artifactId>
       <version>0.9.0</version>
