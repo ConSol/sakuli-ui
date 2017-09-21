@@ -128,8 +128,13 @@ public class SakuliTestService implements TestService {
         EventsResultCallback eventsResultCallback = new EventsResultCallback() {
             @Override
             public void onNext(Event item) {
-                log.info("Event: " + item);
+                log.info("Event: " + ReflectionToStringBuilder.toString(item, ToStringStyle.MULTI_LINE_STYLE));
+                String pid =  item.getActor().getAttributes().get("container");
                 if (item.getAction().equals("disconnect")) {
+                    simpMessagingTemplate.convertAndSend(
+                            "/topic/test-run-info/" + pid,
+                            new SocketEvent(pid, "disconnect")
+                            );
                     super.onComplete();
                 } else {
                     super.onNext(item);
