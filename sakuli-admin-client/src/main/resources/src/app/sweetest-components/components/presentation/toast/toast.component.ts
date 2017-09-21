@@ -7,7 +7,7 @@ import {ToastTypes} from "./toast-state.interface";
     <button *ngIf="closeable"
             (click)="close.next()" 
             type="button" 
-            class="close" 
+            class="close cursor-pointer" 
             data-dismiss="alert" 
             aria-label="Close">
       <span aria-hidden="true">&times;</span>

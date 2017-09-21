@@ -1,3 +1,5 @@
+import construct = Reflect.construct;
+
 const NameCache = [];
 
 export const Name = <T extends string>(n: T)=> {

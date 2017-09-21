@@ -61,6 +61,7 @@ export class ScHxComponent {
         <ng-content></ng-content>
       </div>
     </sc-hx>
+    
   `,
   styles: [`
     :host, sc-hx {

@@ -9,12 +9,12 @@ import {animate, style, transition, trigger} from "@angular/animations";
     trigger('toasts', [
       transition(':enter', [
         style({transform: 'scale(.5)', opacity: 0}),
-        animate('.35s cubic-bezier(.8, -0.6, 0.2, 1.5)',
+        animate('.35s cubic-bezier(0.46,-0.24, 0.37, 1)',
           style({transform: 'scale(1)', opacity: 1}))
       ]),
       transition(':leave', [
         style({ transform: 'scale(1)', opacity: 1, height: '*' }),
-        animate('.35s cubic-bezier(.8, -0.6, 0.2, 1.5)',
+        animate('.35s cubic-bezier(0.46,-0.24, 0.37, 1)',
           style({
             transform: 'scale(0.5)', opacity: 0,
             height: '0px', margin: '0px'
@@ -31,7 +31,19 @@ import {animate, style, transition, trigger} from "@angular/animations";
       [closeable]="true"
       (close)="closeToast(i)"
     >
-      {{toast.message}}
+      <span class="toast-main-content d-flex flex-row justify-content-between">
+        <span>
+          <sc-icon *ngIf="toast.icon"  [icon]="toast.icon"></sc-icon>
+          {{toast.message}}
+        </span>
+        <a (click)="toggleShowMore()" class="cursor-pointer">
+          <sc-icon icon="fa-info-circle"></sc-icon>
+        </a>
+      </span>
+      <div class="toast-info-content" *ngIf="isShowMore">
+        <pre>{{toast.more | json}}</pre>
+      </div>
+      <ng-template #less></ng-template>
     </sc-toast>
   `,
   styles: [`
@@ -42,10 +54,15 @@ import {animate, style, transition, trigger} from "@angular/animations";
       padding-right: 1rem;
       padding-top: 1rem;
     }
+    .toast-info-content {
+      margin-top: 1.5rem;
+    }
   `]
 })
 export class ScToastContainerComponent {
   toasts$: Observable<Toast[]>;
+
+  isShowMore = false;
   constructor(
     private toastService: ScToastService
   ) {
@@ -54,5 +71,9 @@ export class ScToastContainerComponent {
 
   closeToast(i) {
     this.toastService.remove(i);
+  }
+
+  toggleShowMore() {
+    this.isShowMore = !this.isShowMore;
   }
 }

@@ -1,6 +1,6 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {TestCase, TestSuite} from '../../sweetest-components/services/access/model/test-suite.model';
+import {TestCase} from '../../sweetest-components/services/access/model/test-suite.model';
 import {
   SakuliTestCase, SakuliTestSuite
 } from '../../sweetest-components/services/access/model/sakuli-test-model';

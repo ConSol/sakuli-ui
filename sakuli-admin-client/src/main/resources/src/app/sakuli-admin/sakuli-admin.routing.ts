@@ -8,6 +8,7 @@ import {SaAssetsComponent} from "./test/test-detail/tabs/sa-assets/sa-assets.com
 import {TestDetailComponent} from "./test/test-detail/test-detail.component";
 import {SaAssetsConnectedComponent} from "./test/test-detail/tabs/sa-assets/sa-assests-connected.component";
 import {TestDetailConnectedComponent} from "./test/test-detail/test-detail-connected.component";
+import {SaConfigurationComponent} from "./test/configuration/sa-configuration.component";
 
 export const routes: Routes = [
   {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
@@ -31,6 +32,10 @@ export const routes: Routes = [
         {path: ':file', component: SaAssetsConnectedComponent},
       ]
       },
+      {
+        path: 'configuration',
+        component: SaConfigurationComponent
+      }
     ]
   },
   // Project Module

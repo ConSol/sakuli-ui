@@ -2,7 +2,6 @@ import {Injectable} from "@angular/core";
 import {Store} from "@ngrx/store";
 import {
   Toast, ToastAppState,
-  ToastState
 } from "app/sweetest-components/components/presentation/toast/toast-state.interface";
 
 @Injectable()

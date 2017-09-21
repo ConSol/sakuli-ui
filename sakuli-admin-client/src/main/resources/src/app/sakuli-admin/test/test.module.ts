@@ -14,6 +14,7 @@ import {LogModalComponent} from "./test-detail/log-modal.component";
 import {SaAssetsModule} from "./test-detail/tabs/sa-assets/sa-assets.module";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {TestDetailConnectedComponent} from "app/sakuli-admin/test/test-detail/test-detail-connected.component";
+import {SaConfigurationComponent} from "./configuration/sa-configuration.component";
 
 export const DeclareAndExport = [
   TestComponent,
@@ -21,7 +22,8 @@ export const DeclareAndExport = [
   SaSourceComponent,
   RunTestSuiteComponent,
   LogModalComponent,
-  TestDetailConnectedComponent
+  TestDetailConnectedComponent,
+  SaConfigurationComponent
 ];
 
 @NgModule({

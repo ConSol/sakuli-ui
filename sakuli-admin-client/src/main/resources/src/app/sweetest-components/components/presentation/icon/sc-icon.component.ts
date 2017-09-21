@@ -1,7 +1,8 @@
-import {Component, HostBinding, Input, OnInit} from "@angular/core";
+import {ChangeDetectionStrategy, Component, HostBinding, Input, OnInit} from "@angular/core";
 import {FontawesomeIcon} from './fontawesome-icon.utils';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'sc-icon',
   template: `
     <i class="fa" [ngClass]="ngClass" [ngStyle]="{transform:iconTransform}"></i>

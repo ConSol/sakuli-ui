@@ -39,15 +39,15 @@ export class AppComponent {
     this.menuService.defineMenu(
       LayoutMenuService.Menus.SIDEBAR, [
         {label: 'Dashboard', icon: FontawesomeIcons.dashboard, link: '', children: []},
-        {label: 'Configuration', icon: FontawesomeIcons.wrench, link: '', children: []},
         {
-          label: 'Tests', icon: FontawesomeIcons.cubes, link: 'test', children: [
+          label: 'Testsuite', icon: FontawesomeIcons.cubes, link: 'test', children: [
           {label: 'Sources', icon: FontawesomeIcons.code, link: 'test/sources'},
-          {label: 'Assets', icon: FontawesomeIcons.image, link: 'test/assets'}
+          {label: 'Assets', icon: FontawesomeIcons.image, link: 'test/assets'},
+          {label: 'Configuration', icon: FontawesomeIcons.wrench, link: 'test/configuration', children: []}
         ]
         },
-        {label: 'Test Report', icon: FontawesomeIcons.tasks, link: '', children: []},
-        {label: 'Settings', icon: FontawesomeIcons.cogs, link: '', children: []}
+        // {label: 'Test Report', icon: FontawesomeIcons.tasks, link: '', children: []},
+        // {label: 'Settings', icon: FontawesomeIcons.cogs, link: '', children: []}
       ]
     );
 

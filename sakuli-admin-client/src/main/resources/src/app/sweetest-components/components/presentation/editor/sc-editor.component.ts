@@ -1,9 +1,14 @@
-import {AfterViewInit, Component, ElementRef, EventEmitter, forwardRef, OnInit, Output, ViewChild} from "@angular/core";
+import {
+  AfterViewInit, Component, ElementRef, EventEmitter, forwardRef, Input, OnInit, Output,
+  ViewChild
+} from "@angular/core";
 import * as ace from 'brace';
 import 'brace';
 import 'brace/theme/chrome';
 import 'brace/mode/javascript';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgModel} from "@angular/forms";
+import 'brace/mode/properties';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
+import {EditorModes} from "./editor-modes.interface";
 
 const noop = (_: any) => {};
 
@@ -24,6 +29,7 @@ const noop = (_: any) => {};
       position: relative;
       display: flex;
       flex-direction: column;
+      width: 100%;
     }
 
     .editor {
@@ -43,6 +49,8 @@ export class ScEditorComponent implements AfterViewInit, ControlValueAccessor {
   @ViewChild('editorEl') editorEl: ElementRef;
 
   @Output() change = new EventEmitter<any>();
+
+  @Input() mode: string = 'javascript';
 
 
   get editor() {
@@ -64,10 +72,16 @@ export class ScEditorComponent implements AfterViewInit, ControlValueAccessor {
     }
   }
 
+  ngOnInit() {
+    if(EditorModes.indexOf(this.mode) === -1) {
+      throw Error(`Invalid mode ${this.mode} please check if the mode is defined in ${module.id}`)
+    }
+  }
+
   ngAfterViewInit() {
     this._editor = ace.edit(this.id);
     this.editor.setTheme(`ace/theme/chrome`);
-    this.editor.session.setMode(`ace/mode/javascript`);
+    this.editor.session.setMode(`ace/mode/${this.mode}`);
     this.editor.$blockScrolling = Infinity;
     this.editor.setValue("");
     this.editor.on('change', e => this.change.next(e));
