@@ -1,15 +1,32 @@
 import {Injectable} from "@angular/core";
-import {Store} from "@ngrx/store";
+import {Action, Store} from "@ngrx/store";
 import {
   Toast, ToastAppState,
 } from "app/sweetest-components/components/presentation/toast/toast-state.interface";
+import {Name} from "../../../../core/redux.util";
+
+export const CREATE_TOAST = Name('[sc-toast] CREATE_TOAST');
+export class CreateToast implements Action {
+  readonly type = CREATE_TOAST
+  constructor(
+    readonly toast: Toast
+  ) {}
+}
+
+export const REMOVE_TOAST = Name('[sc-toast] REMOVE_TOAST');
+export class RemoveToast implements Action {
+  readonly type = REMOVE_TOAST
+  constructor(
+    readonly index: number
+  ) {}
+}
 
 @Injectable()
 export class ScToastService {
 
   static actions = {
-    create: 'toast.create',
-    remove: 'toast.remove'
+    create: CREATE_TOAST,
+    remove: REMOVE_TOAST
   };
 
   constructor(
@@ -25,17 +42,11 @@ export class ScToastService {
   }
 
   create(toast: Toast) {
-    this.store.dispatch({
-      type: ScToastService.actions.create,
-      toast
-    })
+    this.store.dispatch(new CreateToast(toast))
   }
 
   remove(index: number) {
-    this.store.dispatch({
-      type: ScToastService.actions.remove,
-      index
-    })
+    this.store.dispatch(new RemoveToast(index))
   }
 
 

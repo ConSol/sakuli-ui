@@ -21,6 +21,30 @@ export interface Toast {
   more?: any
 }
 
+export class SuccessToast implements Toast {
+  icon: FontawesomeIcon = 'fa-check';
+  type:ToastTypes = 'success';
+  constructor(
+    readonly message: string
+  ) {}
+}
+
+export class DangerToast implements Toast {
+  icon: FontawesomeIcon = 'fa-warning';
+  type: ToastTypes = 'danger';
+  more: any;
+  constructor(
+    readonly message: string,
+    readonly error: Error
+  ) {
+    this.more = {
+      name: error.name,
+      message: error.message,
+      stack: error.stack.split('\n')
+    }
+  }
+}
+
 export interface ToastAppState {
   scToast: ToastState
 }

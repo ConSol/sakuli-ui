@@ -7,6 +7,8 @@ import {
 import {TestRunInfo} from "../../sweetest-components/services/access/model/test-run-info.interface";
 import {AppState} from "../appstate.interface";
 import {Store} from "@ngrx/store";
+import {project} from "../project/state/project.interface";
+import {ProjectModel} from "../../sweetest-components/services/access/model/project.model";
 
 @Component({
   selector: 'sa-project-open',
@@ -18,7 +20,10 @@ import {Store} from "@ngrx/store";
         icon="fa-cubes"
       ></sc-heading>
       <article class="no-gutter">
-        <run-test-suite [testSuite]="testSuite$ | async"></run-test-suite>
+        <run-test-suite 
+          [testSuite]="testSuite$ | async"
+          [project]="project$ | async"
+        ></run-test-suite>
         <div *ngIf="testRunInfo$ | async">
         </div>
         <div class="margin-y">
@@ -51,6 +56,7 @@ import {Store} from "@ngrx/store";
   `]
 })
 export class TestComponent {
+  project$: Observable<ProjectModel>;
 
   testSuite$: Observable<SakuliTestSuite>;
   testRunInfo$: Observable<TestRunInfo>;
@@ -61,6 +67,7 @@ export class TestComponent {
   constructor(
     private store: Store<AppState>,
   ) {
+    this.project$ = this.store.select(project);
     this.testSuite$ = this.store.select(s => s.test.testSuite as SakuliTestSuite);
     this.title$ = this.testSuite$.map(ts => ts ? ts.configuration.id : '');
     this.subTitle$ = this.testSuite$.map(ts => ts ? ts.configuration.name : '');

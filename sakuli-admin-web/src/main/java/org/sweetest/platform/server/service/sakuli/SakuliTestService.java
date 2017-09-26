@@ -129,7 +129,7 @@ public class SakuliTestService implements TestService {
             @Override
             public void onNext(Event item) {
                 log.info("Event: " + ReflectionToStringBuilder.toString(item, ToStringStyle.MULTI_LINE_STYLE));
-                String pid =  item.getActor().getAttributes().get("container");
+                String pid =  item.getActor().getAttributes().get("containers");
                 if (item.getAction().equals("disconnect")) {
                     simpMessagingTemplate.convertAndSend(
                             "/topic/test-run-info/" + pid,

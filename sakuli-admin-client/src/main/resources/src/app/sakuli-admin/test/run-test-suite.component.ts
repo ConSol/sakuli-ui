@@ -3,43 +3,146 @@ import {TestSuite} from "../../sweetest-components/services/access/model/test-su
 import {AppState} from "../appstate.interface";
 import {Store} from "@ngrx/store";
 import {RunTest} from "./state/test.actions";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {LogModalComponent} from "./test-detail/log-modal.component";
 import {SakuliTestSuite} from "../../sweetest-components/services/access/model/sakuli-test-model";
+import {animate, style, transition, trigger} from "@angular/animations";
+import {ProjectModel} from "../../sweetest-components/services/access/model/project.model";
+import {
+  RunConfiguration, RunConfigurationFeatureName,
+  RunConfigurationSelect, SakuliContainer
+} from "./run-configuration/run-configuration.interface";
+import {
+  LoadRunConfiguration, LoadSakuliContainer, LoadSakuliContainerTags, SAVE_RUN_CONFIGURATION_SUCCESS,
+  SaveRunConfiguration,
+  SaveRunConfigurationSuccess, SelectSakuliContainer
+} from "./run-configuration/run-configuration.actions";
+import {Observable} from "rxjs/Observable";
+import {RunConfigurationTypes} from "./run-configuration/run-configuration-types.enum";
+import {log, notNull} from "../../core/redux.util";
+import {Actions} from "@ngrx/effects";
 
 @Component({
   selector: 'run-test-suite',
+  animations: [
+    trigger('openConfig', [
+      transition(':enter', [
+        style({
+          height: 0,
+          overflowY: 'hidden',
+          paddingTop: 0,
+          paddingBottom: 0,
+        }),
+        animate(".5s ease-out", style({
+          height: 'auto',
+          overflowY: 'initial',
+          paddingTop: '*',
+          paddingBottom: '*'
+        }))
+      ]),
+      transition(':leave', [
+        animate(".3s ease", style({
+          height: 0,
+          overflowY: 'hidden',
+          paddingTop: 0,
+          paddingBottom: 0,
+        }))
+      ])
+    ])
+  ],
   template: `
     <ul class="list-group margin-y">
-      <li class="list-group-item d-flex justify-content-between">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
         <div>
           <button [disabled]="!testSuite" class="btn btn-success" (click)="runSuite()">
-            <sc-icon icon="fa-play-circle">Run</sc-icon>
+            <sc-icon icon="fa-play-circle">Run {{runWithText | async}}</sc-icon>
           </button>
           <sc-loading for="runTest" displayAs="spinner">
             Preparing execution.
           </sc-loading>
         </div>
+        <div *ngIf="!showConfiguration">
+          <button class="btn btn-link" (click)="toggleConfiguration()">Configure</button>
+        </div>
+      </li>
+      <li class="list-group-item" *ngIf="showConfiguration" [@openConfig]="showConfiguration">
+        <run-configuration
+          [project]="project"
+          [config]="runConfiguration$ | async"
+          [containerTags]="containerTags$ | async"
+          [sakuliContainers]="sakuliContainer$ | async"
+          (cancel)="onCancelConfiguration()"
+          (save)="onSaveConfiguration($event)"
+          (containerChange)="onContainerChange($event)"
+        ></run-configuration>
       </li>
     </ul>
   `
 })
-export class RunTestSuiteComponent implements OnInit{
+export class RunTestSuiteComponent {
   @Input() testSuite: TestSuite;
+  @Input() project: ProjectModel;
+
+  showConfiguration = false;
 
   constructor(
     private store: Store<AppState>,
-    private modal: NgbModal
+    readonly actions$: Actions
   ) {}
 
   ngOnInit() {
+    this.store.dispatch(new LoadRunConfiguration());
+    this.store.dispatch(new LoadSakuliContainer());
+    this.actions$.ofType(SAVE_RUN_CONFIGURATION_SUCCESS).subscribe(_ => this.showConfiguration = false);
   }
 
   runSuite() {
     this.store.dispatch(new RunTest(this.testSuite as SakuliTestSuite));
   }
 
-  openModal() {
-    const cmpRef = this.modal.open(LogModalComponent);
+  toggleConfiguration() {
+    this.showConfiguration = !this.showConfiguration;
+    if(this.showConfiguration) {
+      this.store.dispatch(new LoadRunConfiguration());
+    }
+  }
+
+  onCancelConfiguration() {
+    this.showConfiguration = false;
+  }
+
+  onSaveConfiguration($event: RunConfiguration) {
+    this.store.dispatch(new SaveRunConfiguration($event));
+  }
+
+  onContainerChange($event: SakuliContainer) {
+    console.log('E', $event);
+    this.store.dispatch(new SelectSakuliContainer($event));
+  }
+
+  get runConfiguration$(): Observable<RunConfiguration> {
+    return this.store.select(RunConfigurationSelect.runConfiguration).filter(notNull);
+  }
+
+  get sakuliContainer$(): Observable<SakuliContainer[]> {
+    return this.store.select(RunConfigurationSelect.container);
+  }
+
+  get containerTags$(): Observable<SakuliContainer[]> {
+    return this.store.select(RunConfigurationSelect.tagsForSelectedContainer);
+  }
+
+  get runWithText() {
+    return this.runConfiguration$.map(rc => {
+      switch(rc.type as any) {
+        case RunConfigurationTypes[RunConfigurationTypes.DockerCompose]:
+          return `with docker-compose`;
+        case RunConfigurationTypes[RunConfigurationTypes.CustomDocker]:
+          return `with Dockerfile`;
+        case RunConfigurationTypes[RunConfigurationTypes.Local]:
+          return `local`;
+        case RunConfigurationTypes[RunConfigurationTypes.SakuliContainer]:
+          return `sakuli container`
+      }
+      return `Cannot map ${rc.type}`;
+    })
   }
 }

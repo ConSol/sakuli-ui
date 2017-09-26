@@ -15,6 +15,9 @@ import {SaAssetsModule} from "./test-detail/tabs/sa-assets/sa-assets.module";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {TestDetailConnectedComponent} from "app/sakuli-admin/test/test-detail/test-detail-connected.component";
 import {SaConfigurationComponent} from "./configuration/sa-configuration.component";
+import {RunConfigurationComponent} from "./run-configuration/run-configuration.component";
+import {InplaceFileEditorComponent} from "./run-configuration/inplace-file-editor.component";
+import {RunConfigurationModule} from "./run-configuration/run-configuration.module";
 
 export const DeclareAndExport = [
   TestComponent,
@@ -23,7 +26,8 @@ export const DeclareAndExport = [
   RunTestSuiteComponent,
   LogModalComponent,
   TestDetailConnectedComponent,
-  SaConfigurationComponent
+  SaConfigurationComponent,
+
 ];
 
 @NgModule({
@@ -34,7 +38,8 @@ export const DeclareAndExport = [
     EffectsModule.forFeature([TestEffects]),
     StoreModule.forFeature('test', testReducer),
     RouterModule,
-    SaAssetsModule
+    SaAssetsModule,
+    RunConfigurationModule
   ],
   entryComponents: [
     LogModalComponent

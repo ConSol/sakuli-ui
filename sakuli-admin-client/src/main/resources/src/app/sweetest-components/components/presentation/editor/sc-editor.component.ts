@@ -7,6 +7,8 @@ import 'brace';
 import 'brace/theme/chrome';
 import 'brace/mode/javascript';
 import 'brace/mode/properties';
+import 'brace/mode/dockerfile';
+import 'brace/mode/yaml';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {EditorModes} from "./editor-modes.interface";
 

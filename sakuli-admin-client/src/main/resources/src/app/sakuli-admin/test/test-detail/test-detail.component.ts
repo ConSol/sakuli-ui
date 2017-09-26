@@ -32,7 +32,7 @@ import {log, notNull} from "../../../core/redux.util";
             *ngFor="let tab of tabs"
             [id]="tab"
           >
-            <ng-template ngbTabTitle class="d-flex justify-content-between ">
+            <ng-template ngbTabTitle class="d-flex justify-content-between">
               <span>{{tab}}</span>
               <a (click)="onCloseTab($event, tab)">&times;</a>
             </ng-template>
@@ -75,7 +75,7 @@ import {log, notNull} from "../../../core/redux.util";
 })
 export class TestDetailComponent {
 
-  fileTabId = 'test-detail-component-item-tab-id'
+  fileTabId = 'test-detail-component-item-tab-id';
   @Input() tabs: string[] = [];
   @Input() activeTab: string = this.fileTabId;
   @Input() testCase: TestCase = null;

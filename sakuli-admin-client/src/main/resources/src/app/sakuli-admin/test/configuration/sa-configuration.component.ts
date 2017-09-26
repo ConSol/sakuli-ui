@@ -1,11 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FileService} from "../../../sweetest-components/services/access/file.service";
-import {ProjectService} from "../../../sweetest-components/services/access/project.service";
 import {AppState} from "../../appstate.interface";
 import {Store} from "@ngrx/store";
 import {project} from "../../project/state/project.interface";
 import {ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
-import {Open, RefreshProject} from "../../project/state/project.actions";
+import {RefreshProject} from "../../project/state/project.actions";
 
 @Component({
   moduleId: module.id,
