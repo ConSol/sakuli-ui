@@ -19,6 +19,10 @@ import {Observable} from "rxjs/Observable";
 import {RunConfigurationTypes} from "./run-configuration/run-configuration-types.enum";
 import {log, notNull} from "../../core/redux.util";
 import {Actions} from "@ngrx/effects";
+import {
+  DockerPullInfo, dockerPullInfoForCurrentRunInfo, dockerPullInfoForCurrentRunInfoAsArray, DockerPullInfoMap,
+  IdMap
+} from "./state/test.interface";
 
 @Component({
   selector: 'run-test-suite',
@@ -74,6 +78,16 @@ import {Actions} from "@ngrx/effects";
           (containerChange)="onContainerChange($event)"
         ></run-configuration>
       </li>
+      <li class="list-group-item" *ngIf="isDockerPull$ | async" [@openConfig]="isDockerPull$ | async">
+          <ng-container
+            *ngFor="let dockerPullInfo of dockerPullInfo$ | async "
+          >
+            <docker-pull-info-component
+              [dockerPullInfo]="dockerPullInfo"
+            >
+            </docker-pull-info-component>
+          </ng-container>
+      </li>
     </ul>
   `
 })
@@ -128,6 +142,14 @@ export class RunTestSuiteComponent {
 
   get containerTags$(): Observable<SakuliContainer[]> {
     return this.store.select(RunConfigurationSelect.tagsForSelectedContainer);
+  }
+
+  get dockerPullInfo$(): Observable<DockerPullInfo[]> {
+    return this.store.select(dockerPullInfoForCurrentRunInfoAsArray);
+  }
+
+  get isDockerPull$(): Observable<boolean> {
+    return this.dockerPullInfo$.map(s => !!s);
   }
 
   get runWithText() {

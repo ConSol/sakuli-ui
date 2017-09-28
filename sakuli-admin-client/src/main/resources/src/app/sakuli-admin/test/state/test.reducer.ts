@@ -1,4 +1,4 @@
-import {TestState, TestStateInit} from './test.interface';
+import {dockerPullInfo, DockerPullInfo, IdMap, TestState, TestStateInit} from './test.interface';
 import * as Actions from './test.actions';
 import {
   actionTypeFor,
@@ -45,15 +45,47 @@ export function testReducer(state: TestState, action: Actions.AllTypes): TestSta
       return ({...state, testResults: action.results})
     }
     case Actions.APPEND_TEST_RUN_INFO_LOG: {
-      const {socketEvent} = action;
+      const {testExecutionEvent} = action;
       return ({
         ...state,
         testRunInfoLogs: {...state.testRunInfoLogs,
-          [socketEvent.processId]: [...(state.testRunInfoLogs[socketEvent.processId] || []), socketEvent.message]}
+          [testExecutionEvent.processId]: [...(state.testRunInfoLogs[testExecutionEvent.processId] || []), testExecutionEvent.message]}
       })
     }
     case Actions.CLEAR_LOG: {
       return {...state};
+    }
+    case Actions.DOCKER_PULL_STARTED: {
+      return ({...state, dockerPullInfo: {
+        ...state.dockerPullInfo, [action.id]: {}}})
+    }
+    case Actions.DOCKER_PULL_PROGRESS: {
+      const {info} = action;
+      let dockerPullInfo: IdMap<DockerPullInfo>;
+      if(info.status.trim() === "Already exists") {
+        dockerPullInfo = state.dockerPullInfo[action.id];
+      } else
+      if(info.status.trim() === "Download complete") {
+        dockerPullInfo = Object.keys(state.dockerPullInfo)
+          .filter(k => k !== info.id)
+          .reduce((dpiNew, k) => ({...dpiNew, [k]: state.dockerPullInfo[k]}), {})
+      } else {
+        dockerPullInfo = {
+          ...(state.dockerPullInfo[action.id] || {}),
+          [info.id]: info
+        };
+      }
+      return ({...state, dockerPullInfo: {
+        ...state.dockerPullInfo,
+        [action.id]: dockerPullInfo
+      }})
+    }
+    case Actions.DOCKER_PULL_COMPLETED: {
+      let {dockerPullInfo} = state;
+      return ({...state, dockerPullInfo: Object.keys(dockerPullInfo)
+        .filter(k => k !== action.id)
+        .reduce((dpiNew, k) => ({...dpiNew, [k]: dockerPullInfo[k]}), {})
+      })
     }
     default:
       return reduceAsync(state || TestStateInit, action as Action);

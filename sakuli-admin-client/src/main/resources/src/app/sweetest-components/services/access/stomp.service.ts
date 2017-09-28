@@ -14,26 +14,23 @@ export class StompConnection extends Subject<StompConnection> {
     super();
     this.socket = new SockJS(url);
     this.stompClient = Stomp.over(this.socket as any);
-    //this.stompClient.debug = () => {}
+    this.stompClient.debug = () => {}
   }
 
   open() {
     console.log('open')
     if(!this.stompClient.connected) {
-      console.log('not connected')
       this.stompClient.connect({login: '', passcode: ''}, f => {
-          console.log('connected')
           if (f) {
-            console.log('got frame')
             this.next(this);
           }
         },
         e => {
-          console.log('got error')
-          this.error(e);
+          console.warn("Some error trying to reconnect");
+          this.open();
+          //this.error(e);
         })
     } else {
-      console.log('already connected')
       this.next(this);
     }
     return this;
@@ -44,9 +41,7 @@ export class StompConnection extends Subject<StompConnection> {
       const topic = new Subject<T>();
       this.stompClient.subscribe(destination, raw => topic.next(JSON.parse(raw.body)));
       this.topicMap.set(destination, topic);
-      console.log('Created new topic', destination)
     } else {
-      console.log('Already defined dest', destination);
     }
     return this.topicMap.get(destination);
   }

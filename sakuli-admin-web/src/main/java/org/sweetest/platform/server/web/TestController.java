@@ -1,29 +1,21 @@
 package org.sweetest.platform.server.web;
 
-import org.apache.commons.io.FileUtils;
-import org.jooq.lambda.Unchecked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.sweetest.platform.server.api.file.FileSystemService;
 import org.sweetest.platform.server.api.project.ProjectService;
-import org.sweetest.platform.server.api.test.*;
-import org.sweetest.platform.server.api.test.result.BaseResult;
+import org.sweetest.platform.server.api.runconfig.RunConfiguration;
+import org.sweetest.platform.server.api.test.TestRunInfo;
+import org.sweetest.platform.server.api.test.TestService;
+import org.sweetest.platform.server.api.test.TestSuite;
 import org.sweetest.platform.server.api.test.result.TestSuiteResult;
-import org.sweetest.platform.server.common.SakuliTestResultLogReader;
-import org.testng.annotations.Test;
+import org.sweetest.platform.server.service.test.execution.TestExecutionStrategyFactory;
 
-import java.io.File;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 /**
  * Created by timkeiner on 19.07.17.
@@ -40,12 +32,14 @@ public class TestController {
     @Autowired
     private ProjectService projectService;
 
+
     @Autowired
-    private FileSystemService fileSystemService;
+    private TestExecutionStrategyFactory strategyFactory;
 
     @RequestMapping(value = "{test}", method = RequestMethod.GET)
     @ResponseBody
-    public Test getTest(@PathVariable("test") String test) {
+    public ResponseEntity getTest(@PathVariable("test") String test) {
+        strategyFactory.getStrategyByRunConfiguration(new RunConfiguration());
         return null;
     }
 

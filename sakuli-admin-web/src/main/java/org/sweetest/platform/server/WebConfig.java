@@ -50,8 +50,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     class Interceptor extends HandlerInterceptorAdapter {
         @Override
         public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
-            System.out.println("CTX-P: " + request.getContextPath());
             return true;
         }
     }

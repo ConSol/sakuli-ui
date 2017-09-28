@@ -4,11 +4,9 @@ import {TestCase, TestSuite} from "./model/test-suite.model";
 import {Observable} from "rxjs/Observable";
 import {TestRunInfo} from "./model/test-run-info.interface";
 import {StompConnection, StompService} from "./stomp.service";
-import {SocketEvent} from "./model/socket-event.interface";
-import {ActionCreator} from "../ngrx-util/action-creator-metadata";
-import {log} from "../../../core/redux.util";
+import {TestExecutionEvent} from "./model/test-execution-event.interface";
 
-const testUrl = `api/test`
+const testUrl = `api/test`;
 
 @Injectable()
 export class TestService {
@@ -28,15 +26,15 @@ export class TestService {
       .map(r => r.json());
   }
 
-  testRunLogs(processId: string) {
-    console.log('ProcessID outer', processId);
-
+  testRunLogs(processId: string): Observable<TestExecutionEvent> {
     return this.stomp.connect('/api/socket')
-      .combineLatest(Observable.of(processId).do(log('Observable pid')))
-      .do(log('Topic Stream'))
+      .combineLatest(Observable.of(processId))
       .mergeMap(([conn, pid]: [StompConnection, string]) =>{
-        console.log('ProcessID inner', pid)
-        return conn.topic<SocketEvent>(`/topic/test-run-info/${pid}`)
+        return conn.topic<TestExecutionEvent>(`/topic/test-run-info/${pid}`)
+      })
+      .catch(e => {
+        console.warn('Error while fetching logs', e);
+        return Observable.empty() as Observable<TestExecutionEvent>;
       })
   }
 

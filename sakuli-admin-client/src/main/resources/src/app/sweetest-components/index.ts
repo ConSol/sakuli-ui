@@ -33,6 +33,7 @@ import {ScValuePickerModule} from "./components/presentation/value-picker/sc-val
 import {UrlComponentPipe} from "./components/common/url-component.pipe";
 import {ConcatPipe, SplitPipe} from "./components/common/util.pipes";
 import {ScLoadingModule} from "./components/presentation/loading/sc-loading.module";
+import {EntrySet, ScEntrySetPipe} from "./components/common/entry-set.pipe";
 
 
 export const SweetestComponentsAndDirectives  = [
@@ -60,6 +61,7 @@ export const SweetestComponentsAndDirectives  = [
   SplitPipe,
   ConcatPipe,
 
+  ScEntrySetPipe,
   ScLogComponent,
 
 

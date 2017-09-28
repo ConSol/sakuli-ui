@@ -3,9 +3,12 @@ import {Actions, Effect} from '@ngrx/effects';
 import {TestService} from "../../../sweetest-components/services/access/test.service";
 import {
   APPEND_TEST_RUN_INFO_LOG,
-  AppendTestRunInfoLog, LOAD_TESTRESULTS, LOAD_TESTSUITE, LoadTestResultsSuccess, RUN_TEST, RunTest, SET_TEST_RUN_INFO,
+  AppendTestRunInfoLog, DockerPullCompleted, DockerPullProgress, DockerPullStarted, LOAD_TESTRESULTS, LOAD_TESTSUITE,
+  LoadTestResultsSuccess,
+  RUN_TEST, RunTest,
+  SET_TEST_RUN_INFO,
   SetTestRunInfo,
-  SetTestSuite
+  SetTestSuite, TEST_EXECUTION_COMPLETED, TEST_EXECUTION_STARTED, TestExecutionCompleted, TestExecutionStarted
 } from "./test.actions";
 import {OPEN, SET_PROJECT, SetProject} from "../../project/state/project.actions";
 import {log} from "../../../core/redux.util";
@@ -34,30 +37,52 @@ export class TestEffects {
   @Effect() fetchLogLoadingFinish$ = this.actions$.ofType(SET_TEST_RUN_INFO)
     .map(_ => new LoadingSetIdle('runTest'))
 
-  @Effect() fetchLog$ = this.actions$.ofType(SET_TEST_RUN_INFO)
+  @Effect({dispatch: false}) testExecutionStarts$ = this.actions$.ofType(TEST_EXECUTION_STARTED)
     .do(_ => {
-      console.log('Open  modal')
       this.modal
         .open(LogModalComponent, {}, modal => this.modalComponent = modal)
         .then(
           _ => this.modalComponent = null,
           _ => this.modalComponent = null);
     })
-    .mergeMap((tri:SetTestRunInfo) => this.testService.testRunLogs(tri.testRunInfo.containerId))
-    .map(se => new AppendTestRunInfoLog(se));
 
-  @Effect({dispatch: false}) fetchLogFinish$ = this.actions$.ofType(APPEND_TEST_RUN_INFO_LOG)
-    .filter((a: AppendTestRunInfoLog) => a.socketEvent.message === 'disconnect')
+  @Effect() fetchLog$ = this.actions$.ofType(SET_TEST_RUN_INFO)
+    .mergeMap((tri: SetTestRunInfo) => this.testService.testRunLogs(tri.testRunInfo.containerId))
+    .map(se => {
+      const {processId: id} = se;
+      switch (se.type) {
+        case 'test.log': {
+          return new AppendTestRunInfoLog(se);
+        }
+        case 'test.lifecycle.completed': {
+          return new TestExecutionCompleted(id);
+        }
+        case 'test.lifecycle.started': {
+          return new TestExecutionStarted(id);
+        }
+        case 'docker.pull.started': {
+          return new DockerPullStarted(id);
+        }
+        case 'docker.pull.progress': {
+          return new DockerPullProgress(id, JSON.parse(se.message));
+        }
+        case 'docker.pull.completed': {
+          return new DockerPullCompleted(id);
+        }
+      }
+      return {type: 'noob'}
+    });
+
+  @Effect({dispatch: false}) fetchLogFinish$ = this.actions$.ofType(TEST_EXECUTION_COMPLETED)
     .do(_ => {
-      console.log('modal', this.modalComponent);
-      if(this.modalComponent) {
+      if (this.modalComponent) {
         this.modalComponent.close();
       }
       this.toasts.create({
         type: 'success',
         message: 'Finished test execution'
       })
-    })
+    });
 
   @Effect() projectOpen = this.actions$.ofType(SET_PROJECT)
     .map((sp: SetProject) => new SetTestSuite(sp.project.testSuite));
@@ -66,11 +91,10 @@ export class TestEffects {
     .mergeMap(_ => this.testService.testResults())
     .map(r => new LoadTestResultsSuccess(r));
 
-  constructor(
-    private testService: TestService,
-    private actions$: Actions,
-    private modal: ScModalService,
-    private toasts: ScToastService
-  ) {}
+  constructor(private testService: TestService,
+              private actions$: Actions,
+              private modal: ScModalService,
+              private toasts: ScToastService) {
+  }
 
 }

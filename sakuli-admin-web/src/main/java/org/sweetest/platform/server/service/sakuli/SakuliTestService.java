@@ -1,12 +1,6 @@
 package org.sweetest.platform.server.service.sakuli;
 
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.command.CreateContainerResponse;
-import com.github.dockerjava.api.model.*;
-import com.github.dockerjava.core.command.AttachContainerResultCallback;
-import com.github.dockerjava.core.command.EventsResultCallback;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.jooq.lambda.Unchecked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,16 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.SocketUtils;
 import org.sweetest.platform.server.api.file.FileSystemService;
 import org.sweetest.platform.server.api.project.ProjectModel;
 import org.sweetest.platform.server.api.project.ProjectService;
+import org.sweetest.platform.server.api.runconfig.RunConfiguration;
 import org.sweetest.platform.server.api.test.TestRunInfo;
 import org.sweetest.platform.server.api.test.TestService;
 import org.sweetest.platform.server.api.test.TestSuite;
+import org.sweetest.platform.server.api.test.execution.strategy.TestExecutionStrategy;
 import org.sweetest.platform.server.api.test.result.TestSuiteResult;
 import org.sweetest.platform.server.common.SakuliTestResultLogReader;
-import org.sweetest.platform.server.service.SocketEvent;
+import org.sweetest.platform.server.service.test.execution.TestExecutionContext;
+import org.sweetest.platform.server.service.test.execution.TestExecutionStrategyFactory;
+import org.sweetest.platform.server.service.test.execution.config.SakuliRunConfigService;
+import org.testng.internal.RunInfo;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,8 +29,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static com.github.dockerjava.api.model.Ports.Binding.bindPort;
 
 /**
  * Created by timkeiner on 19.07.17.
@@ -42,9 +38,11 @@ public class SakuliTestService implements TestService {
 
     private static final Logger log = LoggerFactory.getLogger(SakuliTestService.class);
 
-
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    private TestExecutionStrategyFactory testExecutionStrategyFactory;
 
     @Autowired
     private FileSystemService fileSystemService;
@@ -53,14 +51,10 @@ public class SakuliTestService implements TestService {
     private ProjectService projectService;
 
     @Autowired
-    private DockerClient dockerClient;
-
-    private String rootDirectory;
+    private SakuliRunConfigService runConfigService;
 
     @Autowired
-    public SakuliTestService(@Qualifier("rootDirectory") String rootDirectory) {
-        this.rootDirectory = rootDirectory;
-    }
+    private TestExecutionContext testExecutionContext;
 
     @Override
     public TestSuite getTestSuite() {
@@ -91,91 +85,22 @@ public class SakuliTestService implements TestService {
         return testSuite;
     }
 
-    private class ContainerCallBack extends AttachContainerResultCallback {
-
-        private String containerID;
-
-        public ContainerCallBack(String containerID) {
-            this.containerID = containerID;
-        }
-
-        @Override
-        public void onNext(Frame item) {
-            String destination = "/topic/test-run-info/" + this.containerID;
-            SocketEvent socketEvent = new SocketEvent(this.containerID, new String(item.getPayload()));
-            simpMessagingTemplate.convertAndSend(
-                    destination,
-                    socketEvent);
-            log.info(String.format("%s: %s", destination, socketEvent));
-            super.onNext(item);
-        }
-    }
-
-
     public TestRunInfo run(TestSuite testSuite) {
-        Info info = dockerClient.infoCmd().exec();
-        log.info(ReflectionToStringBuilder.toString(info, ToStringStyle.MULTI_LINE_STYLE));
-        final String pathInImage = ("/" + testSuite.getRoot()).replace("//", "/");
-        final Volume volume = new Volume(pathInImage);
-        final ExposedPort vncPort = ExposedPort.tcp(5901);
-        final ExposedPort vncWebPort = ExposedPort.tcp(6901);
-        final Ports ports = new Ports();
-        final int availableVncPort = SocketUtils.findAvailableTcpPort(5901, 6900);
-        final int availableVncWebPort = SocketUtils.findAvailableTcpPort(6901);
-        ports.bind(vncPort, bindPort(availableVncPort));
-        ports.bind(vncWebPort, bindPort(availableVncWebPort));
-
-        EventsResultCallback eventsResultCallback = new EventsResultCallback() {
-            @Override
-            public void onNext(Event item) {
-                log.info("Event: " + ReflectionToStringBuilder.toString(item, ToStringStyle.MULTI_LINE_STYLE));
-                String pid =  item.getActor().getAttributes().get("containers");
-                if (item.getAction().equals("disconnect")) {
-                    simpMessagingTemplate.convertAndSend(
-                            "/topic/test-run-info/" + pid,
-                            new SocketEvent(pid, "disconnect")
-                            );
-                    super.onComplete();
-                } else {
-                    super.onNext(item);
-                }
-            }
-        };
-
-        try {
-            dockerClient.eventsCmd().exec(eventsResultCallback);
-            CreateContainerResponse container = dockerClient
-                    .createContainerCmd("consol/sakuli-ubuntu-xfce:dev")
-                    .withCmd("run", pathInImage)
-                    .withExposedPorts(vncPort, vncWebPort)
-                    .withPortBindings(ports)
-                    .withPublishAllPorts(true)
-                    .withVolumes(volume)
-                    .withBinds(new Bind(Paths.get(rootDirectory, testSuite.getRoot()).toString(), volume))
-                    .exec();
-            dockerClient.startContainerCmd(container.getId()).exec();
-            Optional.ofNullable(container.getWarnings()).map(s -> ReflectionToStringBuilder.toString(s))
-                    .ifPresent(w -> log.warn(w));
-
-            ContainerCallBack logCb = new ContainerCallBack(container.getId());
-            dockerClient
-                    .logContainerCmd(container.getId())
-                    .withStdOut(true)
-                    .withStdErr(true)
-                    .withTailAll()
-                    .withFollowStream(true)
-                    .exec(logCb);
-
-            dockerClient.infoCmd().exec().getNoProxy();
-            return new TestRunInfo(
-                    availableVncPort,
-                    availableVncWebPort,
-                    container.getId()
-            );
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return new TestRunInfo(0,0,"");
+        ProjectModel projectModel = projectService.getActiveProject();
+        RunConfiguration runConfiguration = runConfigService.getRunConfigFromProject(projectModel);
+        return testExecutionStrategyFactory
+                .getStrategyByRunConfiguration(runConfiguration)
+                .map(strategy -> {
+                    testExecutionContext.setStrategy(strategy);
+                    return testExecutionContext.executeStrategy(testSuite, event -> {
+                        log.info(ReflectionToStringBuilder.toString(event));
+                        simpMessagingTemplate.convertAndSend(
+                                "/topic/test-run-info/" + event.getProcessId(),
+                                event
+                        );
+                    });
+                })
+                .orElse(null);
     }
 
     private List<SakuliTestCase> getTestCases(SakuliTestSuite testSuite) {

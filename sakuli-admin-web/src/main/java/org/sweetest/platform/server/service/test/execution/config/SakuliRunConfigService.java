@@ -31,7 +31,6 @@ public class SakuliRunConfigService {
                 .getFileFromPath(project.getPath(), FILE_NAME)
                 .map(Unchecked.function(f -> {
                     ObjectMapper mapper = new ObjectMapper();
-                    log.info(ReflectionToStringBuilder.toString(f, ToStringStyle.MULTI_LINE_STYLE));
                     return mapper.readValue(f, RunConfiguration.class);
                 }))
                 .orElse(new RunConfiguration());
@@ -59,5 +58,6 @@ public class SakuliRunConfigService {
             return false;
         }
     }
+
 
 }
