@@ -116,6 +116,15 @@ export class DockerPullProgress implements Action {
   ) {}
 }
 
+export const DOCKER_PULL_STREAM = '[test] DOCKER_PULL_STREAM';
+export class DockerPullStream implements Action {
+  readonly type = DOCKER_PULL_STREAM;
+  constructor(
+    readonly id: string,
+    readonly info: DockerPullInfo
+  ) {}
+}
+
 export const DOCKER_PULL_COMPLETED = '[test] DOCKER_PULL_COMPLETED';
 export class DockerPullCompleted implements Action {
   readonly type = DOCKER_PULL_COMPLETED;
@@ -138,4 +147,5 @@ export type AllTypes = LoadTestsuite
   | TestExecutionStarted
   | DockerPullStarted
   | DockerPullProgress
+  | DockerPullStream
   | DockerPullCompleted;

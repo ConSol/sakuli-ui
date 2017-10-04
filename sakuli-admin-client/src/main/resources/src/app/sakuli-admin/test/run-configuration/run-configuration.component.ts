@@ -1,9 +1,8 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {RunConfigurationTypes} from "./run-configuration-types.enum";
 import {ContainerTag, RunConfiguration, SakuliContainer} from "./run-configuration.interface";
 import {ProjectModel} from "../../../sweetest-components/services/access/model/project.model";
 import {InplaceFileEditorComponent} from "./inplace-file-editor.component";
-import {Http} from "@angular/http";
 
 @Component({
   moduleId: module.id,
@@ -29,12 +28,14 @@ import {Http} from "@angular/http";
           <div *ngIf="config.type === types[types.SakuliContainer]" class="config-area margin-y">
             Container:
             <sc-loading for="sakuli-container" #loadingContainer></sc-loading>
-            <select *ngIf="!(loadingContainer.show$ | async)" [(ngModel)]="config.sakuli.container" (change)="containerChange.next(config.sakuli.container)" [ngModelOptions]="{standalone: true}">
+            <select *ngIf="!(loadingContainer.show$ | async)" [(ngModel)]="config.sakuli.container"
+                    (change)="containerChange.next(config.sakuli.container)" [ngModelOptions]="{standalone: true}">
               <option *ngFor="let c of sakuliContainers" [ngValue]="c">{{c.name}}</option>
             </select>
             Tag:
             <sc-loading for="tags" #loadingTags></sc-loading>
-            <select *ngIf="!(loadingTags.show$ | async)" [(ngModel)]="config.sakuli.tag" [ngModelOptions]="{standalone: true}">
+            <select *ngIf="!(loadingTags.show$ | async)" [(ngModel)]="config.sakuli.tag"
+                    [ngModelOptions]="{standalone: true}">
               <option *ngFor="let t of containerTags" [ngValue]="t">{{t.name}}</option>
             </select>
           </div>
@@ -58,10 +59,10 @@ import {Http} from "@angular/http";
         <div class="form-check">
           <label class="form-check-label">
             <input type="radio" class="form-check-input" name="runType" [(ngModel)]="config.type"
-                   [value]="types[types.CustomDocker]"/>
+                   [value]="types[types.Dockerfile]"/>
             Run with <code>dockerfile</code>
           </label>
-          <div *ngIf="config.type === types[types.CustomDocker]" class="config-area margin-y">
+          <div *ngIf="config.type === types[types.Dockerfile]" class="config-area margin-y">
             <inplace-file-editor
               [project]="project"
               file="dockerfile"
@@ -118,7 +119,6 @@ services:
   dockerComposeFileEditor: InplaceFileEditorComponent;
 
   constructor(
-    private readonly http: Http
   ) {
   }
 

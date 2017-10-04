@@ -21,13 +21,11 @@ import org.springframework.web.context.WebApplicationContext;
 import org.sweetest.platform.server.api.runconfig.SakuliExecutionConfiguration;
 import org.sweetest.platform.server.api.test.TestRunInfo;
 import org.sweetest.platform.server.api.test.execution.strategy.AbstractTestExecutionStrategy;
-import org.sweetest.platform.server.api.test.execution.strategy.Observer;
 import org.sweetest.platform.server.api.test.execution.strategy.TestExecutionEvent;
 import org.sweetest.platform.server.api.test.execution.strategy.TestExecutionSubject;
 import org.sweetest.platform.server.api.test.execution.strategy.events.*;
-
+import org.sweetest.platform.server.api.common.*;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,6 +36,7 @@ import static com.github.dockerjava.api.model.Ports.Binding.bindPort;
 public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<SakuliExecutionConfiguration> {
 
     private static final Logger log = LoggerFactory.getLogger(SakuliContainerStrategy.class);
+    private static final String INTERNAL_READY_TO_RUN = "internal.ready-to-run";
 
     @Autowired
     private DockerClient dockerClient;
@@ -91,7 +90,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
             }
         });
         executionId = UUID.randomUUID().toString();
-        readyToRun = new TestExecutionEvent("internal.ready-to-run", "", executionId);
+        readyToRun = new TestExecutionEvent(INTERNAL_READY_TO_RUN, "", executionId);
         pathInImage = ("/" + testSuite.getRoot()).replace("//", "/");
         volume = new Volume(pathInImage);
         vncPort = ExposedPort.tcp(5901);
@@ -141,7 +140,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
                 .exec(new PullImageResultCallback() {
                     @Override
                     public void onNext(PullResponseItem item) {
-                        log.info("PullImageResultCallback:" + ReflectionToStringBuilder.toString(item));
+                        //log.info("PullImageResultCallback:" + ReflectionToStringBuilder.toString(item));
                         ObjectMapper mapper = new ObjectMapper();
                         try {
                             String pullResponse = mapper.writeValueAsString(item);

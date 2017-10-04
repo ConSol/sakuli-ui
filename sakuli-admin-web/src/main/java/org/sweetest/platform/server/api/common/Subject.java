@@ -1,4 +1,4 @@
-package org.sweetest.platform.server.api.test.execution.strategy;
+package org.sweetest.platform.server.api.common;
 
 public interface Subject<E> {
     void subscribe(Observer<E> observer);

@@ -2,6 +2,6 @@
 export enum RunConfigurationTypes {
   Local,
   SakuliContainer,
-  CustomDocker,
+  Dockerfile,
   DockerCompose
 }

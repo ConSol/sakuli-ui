@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from "@angular/core";
+import {Component, Input} from "@angular/core";
 import {TestSuite} from "../../sweetest-components/services/access/model/test-suite.model";
 import {AppState} from "../appstate.interface";
 import {Store} from "@ngrx/store";
@@ -7,21 +7,20 @@ import {SakuliTestSuite} from "../../sweetest-components/services/access/model/s
 import {animate, style, transition, trigger} from "@angular/animations";
 import {ProjectModel} from "../../sweetest-components/services/access/model/project.model";
 import {
-  RunConfiguration, RunConfigurationFeatureName,
-  RunConfigurationSelect, SakuliContainer
+  RunConfiguration, RunConfigurationSelect, SakuliContainer
 } from "./run-configuration/run-configuration.interface";
 import {
-  LoadRunConfiguration, LoadSakuliContainer, LoadSakuliContainerTags, SAVE_RUN_CONFIGURATION_SUCCESS,
+  LoadRunConfiguration, LoadSakuliContainer, SAVE_RUN_CONFIGURATION_SUCCESS,
   SaveRunConfiguration,
-  SaveRunConfigurationSuccess, SelectSakuliContainer
+  SelectSakuliContainer
 } from "./run-configuration/run-configuration.actions";
 import {Observable} from "rxjs/Observable";
 import {RunConfigurationTypes} from "./run-configuration/run-configuration-types.enum";
-import {log, notNull} from "../../core/redux.util";
+import {notNull} from "../../core/redux.util";
 import {Actions} from "@ngrx/effects";
 import {
-  DockerPullInfo, dockerPullInfoForCurrentRunInfo, dockerPullInfoForCurrentRunInfoAsArray, DockerPullInfoMap,
-  IdMap
+  DockerPullInfo, dockerPullInfoForCurrentRunInfoAsArray, dockerPullStreamForCurrentRunInfo,
+  LogMessage, logsForCurrentRunInfo
 } from "./state/test.interface";
 
 @Component({
@@ -78,7 +77,16 @@ import {
           (containerChange)="onContainerChange($event)"
         ></run-configuration>
       </li>
+      <li class="list-group-item" *ngIf="(logs$ | async).length">
+        <sc-logs [messages]="logs$ | async">
+        </sc-logs>
+      </li>
+      <li class="list-group-item" *ngIf="isDockerPullStream$ | async" [@openConfig]="isDockerPullStream$ | async">
+        <h4>Building Docker image</h4>
+        <sc-logs><ng-container *ngFor="let stream of dockerPullStream$ | async">{{stream}}</ng-container></sc-logs>
+      </li>
       <li class="list-group-item" *ngIf="isDockerPull$ | async" [@openConfig]="isDockerPull$ | async">
+          <h4>Pulling Docker image</h4>
           <ng-container
             *ngFor="let dockerPullInfo of dockerPullInfo$ | async "
           >
@@ -96,6 +104,7 @@ export class RunTestSuiteComponent {
   @Input() project: ProjectModel;
 
   showConfiguration = false;
+
 
   constructor(
     private store: Store<AppState>,
@@ -152,12 +161,24 @@ export class RunTestSuiteComponent {
     return this.dockerPullInfo$.map(s => !!s);
   }
 
+  get dockerPullStream$(): Observable<string[]> {
+    return this.store.select(dockerPullStreamForCurrentRunInfo);
+  }
+
+  get isDockerPullStream$(): Observable<boolean> {
+    return this.dockerPullStream$.map(s => !!s && !!s.length);
+  }
+
+  get logs$(): Observable<LogMessage[]> {
+    return this.store.select(logsForCurrentRunInfo);
+  }
+
   get runWithText() {
     return this.runConfiguration$.map(rc => {
       switch(rc.type as any) {
         case RunConfigurationTypes[RunConfigurationTypes.DockerCompose]:
           return `with docker-compose`;
-        case RunConfigurationTypes[RunConfigurationTypes.CustomDocker]:
+        case RunConfigurationTypes[RunConfigurationTypes.Dockerfile]:
           return `with Dockerfile`;
         case RunConfigurationTypes[RunConfigurationTypes.Local]:
           return `local`;

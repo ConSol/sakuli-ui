@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from "@angular/core";
+import {Component, ElementRef, ViewChild} from "@angular/core";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {TestRunInfo} from "../../../sweetest-components/services/access/model/test-run-info.interface";
 import {Store} from "@ngrx/store";
@@ -6,13 +6,13 @@ import {AppState} from "../../appstate.interface";
 import {Observable} from "rxjs/Observable";
 import {notNull} from "../../../core/redux.util";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
+import {logsForCurrentRunInfo} from "../state/test.interface";
 
 @Component({
   selector: 'sa-vnc-modal',
   template: `
     <div class="modal-body no-gutter">
-      <sc-logs #logs class="logs col" *ngIf="view.logs" [follow]="true">
-        {{testRunLogs$ | async}}
+      <sc-logs #logs class="logs col" *ngIf="view.logs" [follow]="true" [messages]="testRunLogs$ | async">
       </sc-logs>
       <div #iframe class="vnc col" *ngIf="view.vnc">
         <iframe allowfullscreen #iframe [src]="vncSrc$ | async">
@@ -86,7 +86,6 @@ export class LogModalComponent {
   @ViewChild('logs') logs;
 
   testRunInfo$: Observable<TestRunInfo>;
-  testRunLogs$: Observable<string>;
   vncSrc$: Observable<SafeResourceUrl>;
   vncExtern$: Observable<SafeResourceUrl>;
   vncReady$: Observable<boolean>;
@@ -121,14 +120,13 @@ export class LogModalComponent {
       .map(tri => `vnc://localhost:${tri.vncPort}?password=sakuli`)
       .map(url => this.sanitizer.bypassSecurityTrustResourceUrl(url));
 
-    this.testRunLogs$ = this.testRunInfo$
-      .mergeMap(tri => this.store.select(s => s.test.testRunInfoLogs[tri.containerId]))
-      .filter(notNull)
-      .map(lines => lines.join(''));
-
     this.vncReady$ = this.testRunLogs$.map(lines => lines.indexOf('noVNC HTML client started') >= 0);
     this.vncReady$.filter(r => r === true).take(1).subscribe(ready => this.view.vnc = true)
 
+  }
+
+  get testRunLogs$() {
+    return this.store.select(logsForCurrentRunInfo);
   }
 
   close() {

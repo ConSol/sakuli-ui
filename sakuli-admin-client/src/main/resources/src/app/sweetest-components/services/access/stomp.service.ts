@@ -14,11 +14,11 @@ export class StompConnection extends Subject<StompConnection> {
     super();
     this.socket = new SockJS(url);
     this.stompClient = Stomp.over(this.socket as any);
-    this.stompClient.debug = () => {}
+    //console.log(this.stompClient);
+    this.stompClient.debug = (...args: any[]) => {}
   }
 
   open() {
-    console.log('open')
     if(!this.stompClient.connected) {
       this.stompClient.connect({login: '', passcode: ''}, f => {
           if (f) {
@@ -67,8 +67,8 @@ export class StompService {
       const conn = new StompConnection(url);
       this.connectionMap.set(url, conn);
     }
-    //return this.connectionMap.get(url).open();
-    return new StompConnection(url).open();
+    return this.connectionMap.get(url).open();
+    //return new StompConnection(url).open();
   }
 
 }

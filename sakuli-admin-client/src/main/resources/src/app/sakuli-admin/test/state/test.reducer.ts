@@ -1,4 +1,4 @@
-import {dockerPullInfo, DockerPullInfo, IdMap, TestState, TestStateInit} from './test.interface';
+import {DockerPullInfo, TestState, TestStateInit} from './test.interface';
 import * as Actions from './test.actions';
 import {
   actionTypeFor,
@@ -18,7 +18,8 @@ export function testReducer(state: TestState, action: Actions.AllTypes): TestSta
     case Actions.OPEN_TEST: {
       const {testCase: activeTest} = action;
       const hasTest = state.openTests.indexOf(activeTest) > -1 || activeTest === '';
-      return ({ ...state,
+      return ({
+        ...state,
         activeTest: activeTest === '' ? null : activeTest,
         openTests: hasTest ? state.openTests : [...state.openTests, activeTest]
       })
@@ -48,43 +49,62 @@ export function testReducer(state: TestState, action: Actions.AllTypes): TestSta
       const {testExecutionEvent} = action;
       return ({
         ...state,
-        testRunInfoLogs: {...state.testRunInfoLogs,
-          [testExecutionEvent.processId]: [...(state.testRunInfoLogs[testExecutionEvent.processId] || []), testExecutionEvent.message]}
+        testRunInfoLogs: {
+          ...state.testRunInfoLogs,
+          [testExecutionEvent.processId]: [...(state.testRunInfoLogs[testExecutionEvent.processId] || []), testExecutionEvent.message.trim()]
+        }
       })
     }
     case Actions.CLEAR_LOG: {
       return {...state};
     }
     case Actions.DOCKER_PULL_STARTED: {
-      return ({...state, dockerPullInfo: {
-        ...state.dockerPullInfo, [action.id]: {}}})
+      return ({
+        ...state, dockerPullInfo: {
+          ...state.dockerPullInfo, [action.id]: {}
+        }
+      })
     }
     case Actions.DOCKER_PULL_PROGRESS: {
       const {info} = action;
-      let dockerPullInfo: IdMap<DockerPullInfo>;
-      if(info.status.trim() === "Already exists") {
-        dockerPullInfo = state.dockerPullInfo[action.id];
-      } else
-      if(info.status.trim() === "Download complete") {
-        dockerPullInfo = Object.keys(state.dockerPullInfo)
-          .filter(k => k !== info.id)
-          .reduce((dpiNew, k) => ({...dpiNew, [k]: state.dockerPullInfo[k]}), {})
-      } else {
-        dockerPullInfo = {
-          ...(state.dockerPullInfo[action.id] || {}),
-          [info.id]: info
-        };
-      }
-      return ({...state, dockerPullInfo: {
-        ...state.dockerPullInfo,
-        [action.id]: dockerPullInfo
-      }})
+      const prevInfo = ((state.dockerPullInfo[action.id] || {})[info.id]);
+      const updateInfo = function (prev: DockerPullInfo, next: DockerPullInfo): DockerPullInfo {
+        if (prev.progressDetail && !next.progressDetail) {
+          return ({...prev, status: next.status})
+        }
+        return next;
+      };
+      return ({
+        ...state, dockerPullInfo: {
+          ...state.dockerPullInfo,
+          [action.id]: {
+            ...(state.dockerPullInfo[action.id] || {}),
+            [info.id]: prevInfo ? updateInfo(prevInfo, info) : info
+          }
+        }
+      })
+    }
+    case Actions.DOCKER_PULL_STREAM: {
+      const {id, info: {stream}} = action;
+      return ({
+        ...state, dockerPullStream: {
+          ...state.dockerPullStream, [id]: [
+            ...(state.dockerPullStream[id] || []),
+            stream
+          ]
+        }
+      })
     }
     case Actions.DOCKER_PULL_COMPLETED: {
-      let {dockerPullInfo} = state;
-      return ({...state, dockerPullInfo: Object.keys(dockerPullInfo)
-        .filter(k => k !== action.id)
-        .reduce((dpiNew, k) => ({...dpiNew, [k]: dockerPullInfo[k]}), {})
+      const {dockerPullInfo, dockerPullStream} = state;
+      return ({
+        ...state,
+        dockerPullInfo: Object.keys(dockerPullInfo)
+          .filter(k => k !== action.id)
+          .reduce((dpiNew, k) => ({...dpiNew, [k]: dockerPullInfo[k]}), {}),
+        dockerPullStream: Object.keys(dockerPullStream)
+          .filter(k => k !== action.id)
+          .reduce((dpsNew, k) => ({...dpsNew, [k]: dockerPullInfo[k]}), {})
       })
     }
     default:
@@ -92,18 +112,18 @@ export function testReducer(state: TestState, action: Actions.AllTypes): TestSta
   }
 }
 
-const isAsyncSuccess = <T>(action: Action, type: Type<T>, method: keyof T): action is Action&{payload:T[keyof T]} => {
+const isAsyncSuccess = <T>(action: Action, type: Type<T>, method: keyof T): action is Action & { payload: T[keyof T] } => {
   return action.type === actionTypeFor(type, method, AsyncActionLifecycle.Success);
-}
+};
 
 function reduceAsync(state: TestState, action: Action) {
-  if(isAsyncSuccess(action, TestService, "testResults")) {
+  if (isAsyncSuccess(action, TestService, "testResults")) {
 
   }
 
   switch (action.type) {
     case actionTypeFor(TestService, 'testResults', AsyncActionLifecycle.Success): {
-      const {payload} = action as Action&{payload: TestSuiteResult[]};
+      const {payload} = action as Action & { payload: TestSuiteResult[] };
       return ({...state, testResults: payload})
     }
   }

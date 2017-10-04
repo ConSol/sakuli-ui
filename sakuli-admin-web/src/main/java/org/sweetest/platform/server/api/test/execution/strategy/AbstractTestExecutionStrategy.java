@@ -3,6 +3,7 @@ package org.sweetest.platform.server.api.test.execution.strategy;
 import org.sweetest.platform.server.api.test.TestRunInfo;
 import org.sweetest.platform.server.api.test.TestSuite;
 import org.sweetest.platform.server.service.sakuli.SakuliTestSuite;
+import org.sweetest.platform.server.api.common.*;
 
 public abstract class AbstractTestExecutionStrategy<T> implements TestExecutionStrategy<T> {
     protected T configuration;

@@ -9,6 +9,7 @@ import {AppState} from "../appstate.interface";
 import {Store} from "@ngrx/store";
 import {project} from "../project/state/project.interface";
 import {ProjectModel} from "../../sweetest-components/services/access/model/project.model";
+import {notNull} from "../../core/redux.util";
 
 @Component({
   selector: 'sa-project-open',
@@ -68,7 +69,7 @@ export class TestComponent {
     private store: Store<AppState>,
   ) {
     this.project$ = this.store.select(project);
-    this.testSuite$ = this.store.select(s => s.test.testSuite as SakuliTestSuite);
+    this.testSuite$ = this.store.select(s => s.test.testSuite as SakuliTestSuite).filter(notNull);
     this.title$ = this.testSuite$.map(ts => ts ? ts.configuration.id : '');
     this.subTitle$ = this.testSuite$.map(ts => ts ? ts.configuration.name : '');
     this.testCases$ = this.testSuite$.map(ts => ts.testCases);

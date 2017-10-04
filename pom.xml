@@ -17,14 +17,17 @@
     <javadoc.options>-Xdoclint:none</javadoc.options>
     <node.version>v8.1.3</node.version>
     <npm.version>5.0.3</npm.version>
+    <!-- This  is somehow neccessary to run spring-boot-tests -->
     <thymeleaf.version>3.0.3.RELEASE</thymeleaf.version>
     <thymeleaf-layout-dialect.version>2.2.1</thymeleaf-layout-dialect.version>
   </properties>
+
   <groupId>org.sweetest.platform</groupId>
   <artifactId>sakuli-admin</artifactId>
   <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>sakuli-admin</name>
+
   <modules>
     <module>sakuli-admin-web</module>
     <module>sakuli-admin-client</module>

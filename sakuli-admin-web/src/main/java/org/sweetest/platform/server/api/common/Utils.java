@@ -1,4 +1,4 @@
-package org.sweetest.platform.server.common;
+package org.sweetest.platform.server.api.common;
 
 import java.util.function.Function;
 

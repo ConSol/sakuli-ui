@@ -5,6 +5,7 @@ import {project} from "../../project/state/project.interface";
 import {nothrow} from "nothrow";
 import {TestSuite} from "../../../sweetest-components/services/access/model/test-suite.model";
 import {nothrowFn} from "../../../core/utils";
+import {DockerPullStream} from "./test.actions";
 
 export interface DockerPullInfoProgressDetail {
   current: number;
@@ -12,6 +13,7 @@ export interface DockerPullInfoProgressDetail {
 }
 
 export interface DockerPullInfo {
+  stream: string;
   status: string;
   progressDetail: DockerPullInfoProgressDetail;
   progress: string;
@@ -21,14 +23,17 @@ export interface DockerPullInfo {
 export type IdMap<T> = {[id: string]: T};
 export type DockerPullInfoMap = IdMap<IdMap<DockerPullInfo>>;
 
+export type LogMessage = string;
+
 export interface TestState {
   testSuite: TestSuite | null;
   openTests: string[];
   activeTest: string | null;
   testRunInfo: TestRunInfo | null;
-  testRunInfoLogs: { [id: string]: string[] }
+  testRunInfoLogs: { [id: string]: LogMessage[] }
   testResults: TestSuiteResult[],
-  dockerPullInfo: DockerPullInfoMap
+  dockerPullInfo: DockerPullInfoMap,
+  dockerPullStream: IdMap<string[]>
 };
 
 export const TestStateInit: TestState = {
@@ -38,7 +43,8 @@ export const TestStateInit: TestState = {
   testRunInfo: null,
   testRunInfoLogs: {},
   testResults: [],
-  dockerPullInfo: {}
+  dockerPullInfo: {},
+  dockerPullStream: {}
 };
 
 export const testState = createFeatureSelector<TestState>('test');
@@ -63,6 +69,7 @@ export const allTestCases = createSelector(
 export const runInfo = createSelector(testState, nothrowFn((s) => s.testRunInfo));
 
 export const dockerPullInfo = createSelector(testState, nothrowFn((s) => s.dockerPullInfo));
+export const dockerPullStream = createSelector(testState, nothrowFn((s) => s.dockerPullStream));
 
 export const dockerPullInfoForCurrentRunInfo = createSelector(
   runInfo,
@@ -73,4 +80,28 @@ export const dockerPullInfoForCurrentRunInfo = createSelector(
 export const dockerPullInfoForCurrentRunInfoAsArray = createSelector(
   dockerPullInfoForCurrentRunInfo,
   nothrowFn(dockerPullInfoMap => Object.keys(dockerPullInfoMap).reduce((l, d) => ([...l, dockerPullInfoMap[d]]), []))
-)
+);
+
+export const dockerPullStreamForCurrentRunInfo = createSelector(
+  runInfo,
+  dockerPullStream,
+  nothrowFn((tri: TestRunInfo, dpi: IdMap<string[]>) => dpi[tri.containerId])
+);
+
+/*
+ this.testRunLogs$ = this.testRunInfo$
+      .mergeMap(tri => this.store.select(s => s.test.testRunInfoLogs[tri.containerId]))
+      .filter(notNull)
+      .map(lines => lines.join('\n'));
+ */
+
+export const testRunLogs = createSelector(
+  testState,
+  nothrowFn(t => t.testRunInfoLogs)
+);
+
+export const logsForCurrentRunInfo = createSelector(
+  testRunLogs,
+  runInfo,
+  nothrowFn((trl: { [id: string]: LogMessage[] }, tri: TestRunInfo) => trl[tri.containerId], [])
+);

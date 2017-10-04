@@ -1,11 +1,11 @@
-package org.sweetest.platform.server.common;
+package org.sweetest.platform.server.api.common;
 
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class SwitchPattern {
+public class SwitchPattern {
     private String switchValue;
 
     public SwitchPattern(String switchValue) {

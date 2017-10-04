@@ -1,4 +1,4 @@
-package org.sweetest.platform.server.common;
+package org.sweetest.platform.server.api.common;
 
 import org.sweetest.platform.server.api.test.result.TestSuiteResult;
 import org.testng.annotations.BeforeMethod;
