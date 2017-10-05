@@ -25,31 +25,6 @@ import {notNull} from "../../core/redux.util";
           [testSuite]="testSuite$ | async"
           [project]="project$ | async"
         ></run-test-suite>
-        <div *ngIf="testRunInfo$ | async">
-        </div>
-        <div class="margin-y">
-          <input class="form-control" [ngbTypeahead]="search" [resultFormatter]="formatter">
-        </div>
-        <sc-table>
-          <thead>
-          <tr>
-            <th></th>
-            <th>Testcase</th>
-            <th>Status</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngFor="let testCase of testCases$|async">
-            <td>
-
-            </td>
-            <td>
-              <a [routerLink]="['/test', 'sources', testCase.name]">{{testCase.name}}</a>
-            </td>
-            <td></td>
-          </tr>
-          </tbody>
-        </sc-table>
       </article>
     </sc-content>
   `,

@@ -24,22 +24,19 @@ export class AnsiColorPipe implements PipeTransform {
 
   constructor(){}
 
-  transform(message: string, ...args: any[]): any {
-    const parts = Array.from(
-      message.match(ansiRegEx()) || [],
-      m => m
-    )
-      .map(m => ({token: m, position: message.indexOf(m)}))
-      .concat({token: '', position: message.length - 1})
-      .map((index, i, a) => ([index, a[i + 1] || {token: '', position: message.length - 1}]))
-      .filter(([start, end]) => start.position !== end.position)
-      .filter(([start]) => start.token.endsWith('m'))
-      .map(([start, end]) => `<span class="${this.tokenClass(start.token)}">${
-        strip_ansi(message
-        .slice(start.position, end.position))
-      }</span>`)
-      .join('');
-    return parts;
+  transform(message: string, ...args: any[]): string {
+
+    const parts = message.split(ansiRegEx()).reverse();
+    const tokens = Array.from(message.match(ansiRegEx()) || []).reverse();
+
+    return parts.map((p, i) => {
+      const token = tokens[i];
+      if(token) {
+        return `<span class="${this.tokenClass(token)}">${p}</span>`
+      } else {
+        return p;
+      }
+    }).reverse().join('');
   }
 
   tokenClass(token: string) {
