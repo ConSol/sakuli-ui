@@ -17,6 +17,7 @@ import {TestDetailConnectedComponent} from "app/sakuli-admin/test/test-detail/te
 import {SaConfigurationComponent} from "./configuration/sa-configuration.component";
 import {RunConfigurationModule} from "./run-configuration/run-configuration.module";
 import {SaDockerPullInfoComponent} from "./sa-docker-pull-info.component";
+import {SaReportComponent} from "./report/sa-report.component";
 
 export const DeclareAndExport = [
   TestComponent,
@@ -26,7 +27,8 @@ export const DeclareAndExport = [
   LogModalComponent,
   TestDetailConnectedComponent,
   SaConfigurationComponent,
-  SaDockerPullInfoComponent
+  SaDockerPullInfoComponent,
+  SaReportComponent
 ];
 
 @NgModule({
