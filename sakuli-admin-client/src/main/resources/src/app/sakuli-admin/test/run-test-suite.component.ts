@@ -20,7 +20,7 @@ import {notNull} from "../../core/redux.util";
 import {Actions} from "@ngrx/effects";
 import {
   DockerPullInfo, dockerPullInfoForCurrentRunInfoAsArray, dockerPullStreamForCurrentRunInfo,
-  LogMessage, logsForCurrentRunInfo
+  logsForCurrentRunInfo
 } from "./state/test.interface";
 
 @Component({
@@ -52,8 +52,8 @@ import {
     ])
   ],
   template: `
-    <ul class="list-group margin-y">
-      <li class="list-group-item d-flex justify-content-between align-items-center">
+    <div class="card margin-y">
+      <div class="card-block d-flex justify-content-between align-items-center">
         <div>
           <button [disabled]="!testSuite" class="btn btn-success" (click)="runSuite()">
             <sc-icon icon="fa-play-circle">Run {{runWithText | async}}</sc-icon>
@@ -65,8 +65,8 @@ import {
         <div *ngIf="!showConfiguration">
           <button class="btn btn-link" (click)="toggleConfiguration()">Configure</button>
         </div>
-      </li>
-      <li class="list-group-item" *ngIf="showConfiguration" [@openConfig]="showConfiguration">
+      </div>
+      <div class="card-block" *ngIf="showConfiguration" [@openConfig]="showConfiguration">
         <run-configuration
           [project]="project"
           [config]="runConfiguration$ | async"
@@ -76,16 +76,12 @@ import {
           (save)="onSaveConfiguration($event)"
           (containerChange)="onContainerChange($event)"
         ></run-configuration>
-      </li>
-      <li class="list-group-item" *ngIf="(logs$ | async).length">
-        <sc-logs [messages]="logs$ | async">
-        </sc-logs>
-      </li>
-      <li class="list-group-item" *ngIf="isDockerPullStream$ | async" [@openConfig]="isDockerPullStream$ | async">
+      </div>
+      <div class="card-block" *ngIf="isDockerPullStream$ | async" [@openConfig]="isDockerPullStream$ | async">
         <h4>Building Docker image</h4>
         <sc-logs><ng-container *ngFor="let stream of dockerPullStream$ | async">{{stream}}</ng-container></sc-logs>
-      </li>
-      <li class="list-group-item" *ngIf="isDockerPull$ | async" [@openConfig]="isDockerPull$ | async">
+      </div>
+      <div class="card-block" *ngIf="isDockerPull$ | async" [@openConfig]="isDockerPull$ | async">
           <h4>Pulling Docker image</h4>
           <ng-container
             *ngFor="let dockerPullInfo of dockerPullInfo$ | async "
@@ -95,9 +91,23 @@ import {
             >
             </docker-pull-info-component>
           </ng-container>
-      </li>
-    </ul>
-  `
+      </div>
+    </div>
+    <div class="row" *ngIf="hasLogs$ | async">
+      <div class="col-12">
+        <sa-log-card></sa-log-card>
+      </div>
+    </div>
+  `,
+  styles: [`
+    sa-log-card {
+      height: 400px;
+    }
+    
+    .card-block {
+      padding: .5rem;
+    }
+  `]
 })
 export class RunTestSuiteComponent {
   @Input() testSuite: TestSuite;
@@ -166,11 +176,11 @@ export class RunTestSuiteComponent {
   }
 
   get isDockerPullStream$(): Observable<boolean> {
-    return this.dockerPullStream$.map(s => !!s && !!s.length);
+    return this.dockerPullStream$.map(s => !!s && !!s.length).distinctUntilChanged();
   }
 
-  get logs$(): Observable<LogMessage[]> {
-    return this.store.select(logsForCurrentRunInfo);
+  get hasLogs$(): Observable<boolean> {
+    return this.store.select(logsForCurrentRunInfo).map(l => !!l && !!l.length).distinctUntilChanged();
   }
 
   get runWithText() {

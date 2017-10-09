@@ -10,7 +10,13 @@ describe("AnsiColorPipe", () => {
     expect(formatted).toEqual('<span class="log-message-4m">Unicorn</span><span class="log-message-0m"></span>')
   });
 
-  it('should do nothing', () => {
+  it('should keep everything as is', () => {
+    const str = 'Using local websockify at /noVNC/utils/websockify/run';
+    const formatted = pipe.transform(str);
+    expect(formatted).toEqual(str);
+  })
+
+  it('strip_ansi should remove  nothing', () => {
     const formatted = strip_ansi('<span>\u001B[0m</span>');
     expect(formatted).toEqual('<span></span>');
   })

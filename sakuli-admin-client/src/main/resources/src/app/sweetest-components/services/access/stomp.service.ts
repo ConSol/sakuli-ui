@@ -14,7 +14,6 @@ export class StompConnection extends Subject<StompConnection> {
     super();
     this.socket = new SockJS(url);
     this.stompClient = Stomp.over(this.socket as any);
-    //console.log(this.stompClient);
     this.stompClient.debug = (...args: any[]) => {}
   }
 
@@ -27,8 +26,7 @@ export class StompConnection extends Subject<StompConnection> {
         },
         e => {
           console.warn("Some error trying to reconnect");
-          this.open();
-          //this.error(e);
+          this.error(e);
         })
     } else {
       this.next(this);
@@ -67,8 +65,8 @@ export class StompService {
       const conn = new StompConnection(url);
       this.connectionMap.set(url, conn);
     }
-    return this.connectionMap.get(url).open();
-    //return new StompConnection(url).open();
+    //return this.connectionMap.get(url).open();
+    return new StompConnection(url).open();
   }
 
 }

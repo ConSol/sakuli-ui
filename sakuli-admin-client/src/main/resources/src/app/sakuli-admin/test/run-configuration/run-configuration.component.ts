@@ -10,7 +10,7 @@ import {InplaceFileEditorComponent} from "./inplace-file-editor.component";
   template: `
     <sc-loading class="d-block margin-y" #loadingCmp displayAs="progressbar" for="runconfig"></sc-loading>
     <form>
-      <fieldset class="form-group" *ngIf="!(loadingCmp.show$ | async) && config">
+      <fieldset class="form-group" *ngIf="!(loadingCmp.show$ | async) && !!config">
         <legend>Run Configuration</legend>
         <div class="form-check">
           <label class="form-check-label">

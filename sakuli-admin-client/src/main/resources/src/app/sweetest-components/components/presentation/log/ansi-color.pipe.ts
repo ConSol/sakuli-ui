@@ -1,5 +1,6 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {ansiRegEx} from "../../../utils";
+
 const strip_ansi = require("strip-ansi");
 
 @Pipe({
@@ -7,39 +8,63 @@ const strip_ansi = require("strip-ansi");
 })
 export class AnsiColorPipe implements PipeTransform {
 
-  static readonly Styles = ([
-    ['30m', [   0,   0,   0]],
-    ['31m', [ 170,   0,   0]],
-    ['32m', [   0, 170,   0]],
-    ['33m', [ 170,  85,   0]],
-    ['34m', [   0,   0, 170]],
-    ['35m', [ 170,   0, 170]],
-    ['36m', [   0, 170, 170]],
-    ['37m', [ 170, 170, 170]],
-  ] as [string, number[]][]).map(([code, rgb]) => `
-    :host /deep/ .log-message-${code} {
-      color: rgb(${rgb.join(', ')})
+  static readonly Styles = `
+    :host /deep/ .log-message-30m {
+      color: rgb(0, 0, 0)
     }
-  `).join('\n');
+  
 
-  constructor(){}
+    :host /deep/ .log-message-31m {
+      color: rgb(170, 0, 0)
+    }
+  
 
-  transform(message: string, ...args: any[]): any {
-    const parts = Array.from(
-      message.match(ansiRegEx()) || [],
-      m => m
-    )
-      .map(m => ({token: m, position: message.indexOf(m)}))
-      .concat({token: '', position: message.length - 1})
-      .map((index, i, a) => ([index, a[i + 1] || {token: '', position: message.length - 1}]))
-      .filter(([start, end]) => start.position !== end.position)
-      .filter(([start]) => start.token.endsWith('m'))
-      .map(([start, end]) => `<span class="${this.tokenClass(start.token)}">${
-        strip_ansi(message
-        .slice(start.position, end.position))
-      }</span>`)
-      .join('');
-    return parts;
+    :host /deep/ .log-message-32m {
+      color: rgb(0, 170, 0)
+    }
+  
+
+    :host /deep/ .log-message-33m {
+      color: rgb(170, 85, 0)
+    }
+  
+
+    :host /deep/ .log-message-34m {
+      color: rgb(0, 0, 170)
+    }
+  
+
+    :host /deep/ .log-message-35m {
+      color: rgb(170, 0, 170)
+    }
+  
+
+    :host /deep/ .log-message-36m {
+      color: rgb(0, 170, 170)
+    }
+  
+
+    :host /deep/ .log-message-37m {
+      color: rgb(170, 170, 170)
+    }
+  `;
+
+  constructor() {
+  }
+
+  transform(message: string, ...args: any[]): string {
+
+    const parts = message.split(ansiRegEx()).reverse();
+    const tokens = Array.from(message.match(ansiRegEx()) || []).reverse();
+
+    return parts.map((p, i) => {
+      const token = tokens[i];
+      if (token) {
+        return `<span class="${this.tokenClass(token)}">${p}</span>`
+      } else {
+        return p;
+      }
+    }).reverse().join('');
   }
 
   tokenClass(token: string) {

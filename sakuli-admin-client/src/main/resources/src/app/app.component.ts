@@ -43,7 +43,8 @@ export class AppComponent {
           label: 'Testsuite', icon: FontawesomeIcons.cubes, link: 'test', children: [
           {label: 'Sources', icon: FontawesomeIcons.code, link: 'test/sources'},
           {label: 'Assets', icon: FontawesomeIcons.image, link: 'test/assets'},
-          {label: 'Configuration', icon: FontawesomeIcons.wrench, link: 'test/configuration', children: []}
+          {label: 'Configuration', icon: FontawesomeIcons.wrench, link: 'test/configuration', children: []},
+          {label: 'Reports', icon: FontawesomeIcons.tasks, link: 'test/reports', children: []}
         ]
         },
         // {label: 'Test Report', icon: FontawesomeIcons.tasks, link: '', children: []},

@@ -785,8 +785,7 @@ export type FontawesomeIcon =
   | "fa-youtube"
   | "fa-youtube-play"
   | "fa-youtube-square";
-
-export const FontawesomeIcons: { [name: string]: FontawesomeIcon } = {
+export const FontawesomeIcons: {[name:string]: FontawesomeIcon} = {
   "500px": "fa-500px",
   "addressBook": "fa-address-book",
   "addressBookO": "fa-address-book-o",

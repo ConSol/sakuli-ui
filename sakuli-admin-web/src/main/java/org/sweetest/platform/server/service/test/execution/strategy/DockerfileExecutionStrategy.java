@@ -136,6 +136,9 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
             @Override
             public void onNext(Event item) {
                 log.info(item.getAction());
+                if(item.getAction().equals("start")) {
+                    next(new TestExecutionStartEvent(executionId));
+                }
                 if (item.getAction().equals("disconnect")) {
                     subject.next(new TestExecutionCompletedEvent(executionId));
                     if(item.getActor().getAttributes() != null && item.getActor().getAttributes().containsKey("container")) {
@@ -149,7 +152,7 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
                 }
             }
         });
-        subject.next(new TestExecutionStartEvent(executionId));
+        //subject.next(new TestExecutionStartEvent(executionId));
         dockerClient.startContainerCmd(container.getId()).exec();
         Optional.ofNullable(container.getWarnings()).map(s -> ReflectionToStringBuilder.toString(s))
                 .ifPresent(w -> {
