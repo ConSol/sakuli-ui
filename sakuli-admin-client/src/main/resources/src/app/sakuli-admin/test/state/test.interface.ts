@@ -88,13 +88,6 @@ export const dockerPullStreamForCurrentRunInfo = createSelector(
   nothrowFn((tri: TestRunInfo, dpi: IdMap<string[]>) => dpi[tri.containerId])
 );
 
-/*
- this.testRunLogs$ = this.testRunInfo$
-      .mergeMap(tri => this.store.select(s => s.test.testRunInfoLogs[tri.containerId]))
-      .filter(notNull)
-      .map(lines => lines.join('\n'));
- */
-
 export const testRunLogs = createSelector(
   testState,
   nothrowFn(t => t.testRunInfoLogs)
@@ -105,3 +98,8 @@ export const logsForCurrentRunInfo = createSelector(
   runInfo,
   nothrowFn((trl: { [id: string]: LogMessage[] }, tri: TestRunInfo) => trl[tri.containerId], [])
 );
+
+export const testResults = createSelector(
+  testState,
+  nothrowFn(ts => ts.testResults, [])
+)

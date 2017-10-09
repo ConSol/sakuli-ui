@@ -26,10 +26,12 @@ import {ScModalModule} from "./components/presentation/modal/sc-modal.module";
 import {ScIconModule} from "./components/presentation/icon/sc-icon.module";
 import {ScValuePickerModule} from "./components/presentation/value-picker/sc-value-picker.module";
 import {UrlComponentPipe} from "./components/common/url-component.pipe";
-import {ConcatPipe, SafeHtmlPipe, SplitPipe} from "./components/common/util.pipes";
+import {ConcatPipe, NumberPipe, SafeHtmlPipe, SplitPipe} from "./components/common/util.pipes";
 import {ScLoadingModule} from "./components/presentation/loading/sc-loading.module";
 import {ScEntrySetPipe} from "./components/common/entry-set.pipe";
 import {AnsiColorPipe} from "./components/presentation/log/ansi-color.pipe";
+import {ScCollapseComponent} from "./components/common/sc-collapse.component";
+import {DateDiffPipe, MomentPipe} from "./components/common/date-util.pipes";
 
 
 export const SweetestComponentsAndDirectives  = [
@@ -62,7 +64,11 @@ export const SweetestComponentsAndDirectives  = [
   ScEntrySetPipe,
   ScLogComponent,
 
+  ScCollapseComponent,
 
+  DateDiffPipe,
+  NumberPipe,
+  MomentPipe,
 ];
 
 export const Providers = [

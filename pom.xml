@@ -38,6 +38,11 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <groupId>external.atlassian.jgitflow</groupId>
+          <artifactId>jgitflow-maven-plugin</artifactId>
+          <version>1.0-m5.1</version>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.5.1</version>
@@ -160,6 +165,31 @@
 
     <!-- Default plugins for all modules -->
     <plugins>
+      <plugin>
+        <groupId>external.atlassian.jgitflow</groupId>
+        <artifactId>jgitflow-maven-plugin</artifactId>
+        <configuration>
+          <flowInitContext>
+            <!-- default git flow prefixes -->
+            <masterBranchName>master</masterBranchName>
+            <developBranchName>dev</developBranchName>
+            <featureBranchPrefix>feature/</featureBranchPrefix>
+            <releaseBranchPrefix>release/</releaseBranchPrefix>
+            <hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
+            <!-- non default 'v' prefix -->
+            <versionTagPrefix>v</versionTagPrefix>
+          </flowInitContext>
+          <!--<defaultOriginUrl-->
+          <pushFeatures>true</pushFeatures>
+          <pushHotfixes>true</pushHotfixes>
+          <pushReleases>true</pushReleases>
+          <updateDependencies>true</updateDependencies>
+          <scmCommentPrefix>mvn-jgitflow:</scmCommentPrefix>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <enableSshAgent>true</enableSshAgent>
+          <useReleaseProfile>true</useReleaseProfile>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>

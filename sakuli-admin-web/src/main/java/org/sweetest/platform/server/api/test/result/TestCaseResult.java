@@ -6,22 +6,23 @@ import java.util.List;
 public class TestCaseResult extends BaseResult {
     private String id;
     private String startUrl;
-    private String endUrl;
-    private List<TestCaseStepResult> stepResults = new ArrayList<>();
+    private String lastUrl;
+    private List<TestCaseStepResult> steps = new ArrayList<>();
+    private List<TestActionResult> testActions = new ArrayList<>();
 
     public TestCaseStepResult latestStepResult() {
-        if(stepResults.isEmpty()) {
-            stepResults.add(new TestCaseStepResult());
+        if(steps.isEmpty()) {
+            steps.add(new TestCaseStepResult());
         }
-        return stepResults.get(stepResults.size() - 1);
+        return steps.get(steps.size() - 1);
     }
 
-    public List<TestCaseStepResult> getStepResults() {
-        return stepResults;
+    public List<TestCaseStepResult> getSteps() {
+        return steps;
     }
 
-    public void setStepResults(List<TestCaseStepResult> stepResults) {
-        this.stepResults = stepResults;
+    public void setSteps(List<TestCaseStepResult> steps) {
+        this.steps = steps;
     }
 
     public String getId() {
@@ -40,11 +41,19 @@ public class TestCaseResult extends BaseResult {
         this.startUrl = startUrl;
     }
 
-    public String getEndUrl() {
-        return endUrl;
+    public String getLastUrl() {
+        return lastUrl;
     }
 
-    public void setEndUrl(String endUrl) {
-        this.endUrl = endUrl;
+    public void setLastUrl(String lastUrl) {
+        this.lastUrl = lastUrl;
+    }
+
+    public List<TestActionResult> getTestActions() {
+        return testActions;
+    }
+
+    public void setTestActions(List<TestActionResult> testActions) {
+        this.testActions = testActions;
     }
 }

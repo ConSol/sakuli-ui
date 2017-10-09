@@ -33,14 +33,11 @@ export class SafeHtmlPipe implements PipeTransform {
 
 }
 
-/*
 @Pipe({
-  name: 'slice'
+  name: 'number'
 })
-export class SlicePipe implements PipeTransform {
-  transform(value: any[], ...args: any[]): any {
-    const [start, end] = args;
-    return (value || []).slice(start, end);
+export class NumberPipe implements PipeTransform {
+  transform(value: any, ...args: any[]): any {
+    return Number(value).toPrecision(args[0] | 2);
   }
 }
-*/

@@ -32,7 +32,7 @@ public class SakuliTestResultLogReaderTest {
 
         assertEquals(testSuiteResult.getTestCaseResults().size(), 1, "First Suite has one case");
 
-        assertEquals(testSuiteResult.getTestCaseResults().get(0).getStepResults().size(), 3, "3 steps");
+        assertEquals(testSuiteResult.getTestCaseResults().get(0).getSteps().size(), 3, "3 steps");
     }
 
 }

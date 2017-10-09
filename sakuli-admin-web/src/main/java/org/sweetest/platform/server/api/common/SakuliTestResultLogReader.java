@@ -81,7 +81,7 @@ public class SakuliTestResultLogReader {
 
                     switchPattern.matches("======== test case step \"(.*)\" ended with (.*) =================")
                             .ifPresent(s -> {
-                                last(resultList).latestTestCaseResult().getStepResults().add(new TestCaseStepResult());
+                                last(resultList).latestTestCaseResult().getSteps().add(new TestCaseStepResult());
                                 setRecordType(STEP);
                             });
 
@@ -99,7 +99,7 @@ public class SakuliTestResultLogReader {
 
                     switchPattern.matches("browser: (.*)")
                             .map(group1)
-                            .ifPresent(s -> last(resultList).setBrowser(s));
+                            .ifPresent(s -> last(resultList).setBrowserInfo(s));
 
                     /**
                      * Setting case specific values
@@ -111,7 +111,7 @@ public class SakuliTestResultLogReader {
 
                     switchPattern.matches("last URL: (.*)")
                             .map(group1)
-                            .ifPresent(s -> last(resultList).latestTestCaseResult().setEndUrl(s));
+                            .ifPresent(s -> last(resultList).latestTestCaseResult().setLastUrl(s));
 
                     /**
                      * Setting step specifc values
@@ -131,7 +131,7 @@ public class SakuliTestResultLogReader {
 
                     switchPattern.matches("RESULT STATE: (.*)")
                             .map(group1)
-                            .ifPresent(s -> getBaseResultForRecordType().setResultState(s));
+                            .ifPresent(s -> getBaseResultForRecordType().setState(s));
 
                     switchPattern.matches("result code: (.*)")
                             .map(group1)
@@ -159,12 +159,12 @@ public class SakuliTestResultLogReader {
                     switchPattern.matches("start time: (.*)")
                             .map(group1)
                             .map(Unchecked.function(s -> dateFormat.parse(s)))
-                            .ifPresent(s -> getBaseResultForRecordType().setStartTime(s));
+                            .ifPresent(s -> getBaseResultForRecordType().setStartDate(s));
 
                     switchPattern.matches("end time: (.*)")
                             .map(group1)
                             .map(Unchecked.function(s -> dateFormat.parse(s)))
-                            .ifPresent(s -> getBaseResultForRecordType().setEndTime(s));
+                            .ifPresent(s -> getBaseResultForRecordType().setStopDate(s));
 
 
                 });
