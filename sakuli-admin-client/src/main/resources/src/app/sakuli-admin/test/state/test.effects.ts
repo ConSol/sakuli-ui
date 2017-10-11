@@ -4,53 +4,33 @@ import {TestService} from "../../../sweetest-components/services/access/test.ser
 import {
   AppendTestRunInfoLog, DockerPullCompleted, DockerPullProgress, DockerPullStarted,
   DockerPullStream,
-  LOAD_TESTRESULTS, LOAD_TESTSUITE,
+  LOAD_TESTRESULTS, LOAD_TESTRESULTS_SUCCESS, LOAD_TESTSUITE,
   LoadTestResultsSuccess,
   RUN_TEST, RunTest,
   SET_TEST_RUN_INFO,
   SetTestRunInfo,
-  SetTestSuite, TEST_EXECUTION_COMPLETED, TEST_EXECUTION_STARTED, TestExecutionCompleted, TestExecutionStarted
+  SetTestSuite, TEST_EXECUTION_COMPLETED, TestExecutionCompleted, TestExecutionStarted
 } from "./test.actions";
 import {SET_PROJECT, SetProject} from "../../project/state/project.actions";
-import {
-  LoadingSetBusy,
-  LoadingSetIdle
-} from "../../../sweetest-components/components/presentation/loading/sc-loading.state";
-import {LogModalComponent} from "../test-detail/log-modal.component";
 import {ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
-import {ScModalService} from "../../../sweetest-components/components/presentation/modal/sc-modal.service";
-import {TestExecutionEvent} from "../../../sweetest-components/services/access/model/test-execution-event.interface";
-import {Action} from "@ngrx/store";
+
 import {Observable} from "rxjs/Observable";
-import {log} from "../../../core/redux.util";
-import {noop} from "rxjs/util/noop";
+import {ScLoadingService} from "../../../sweetest-components/components/presentation/loading/sc-loading.service";
 
 @Injectable()
 export class TestEffects {
-  modalComponent: LogModalComponent;
 
   @Effect() loadTestSuite$ = this.actions$.ofType(LOAD_TESTSUITE)
     .mergeMap(_ => this.testService.testSuite().map(ts => new SetTestSuite(ts)));
 
-  @Effect() runTestLoading$ = this.actions$.ofType(RUN_TEST)
-    .map(_ => new LoadingSetBusy('runTest'));
-
   @Effect() runTest$ = this.actions$.ofType(RUN_TEST)
     .mergeMap((rt: RunTest) => this.testService.run(rt.testSuite).map(tri => new SetTestRunInfo(tri)));
 
-  @Effect() fetchLogLoadingFinish$ = this.actions$.ofType(SET_TEST_RUN_INFO)
-    .map(_ => new LoadingSetIdle('runTest'));
-
-  @Effect({dispatch: false}) testExecutionStarts$ = this.actions$.ofType(TEST_EXECUTION_STARTED)
-    .do(_ => {
-      /*
-      this.modal
-        .open(LogModalComponent, {}, modal => this.modalComponent = modal)
-        .then(
-          _ => this.modalComponent = null,
-          _ => this.modalComponent = null);
-          */
-    })
+  @Effect() runTestLoadin$ = this.loading.registerLoadingActions(
+    'runTest',
+    RUN_TEST,
+    SET_TEST_RUN_INFO
+  );
 
   @Effect() fetchLogs$ = this.actions$.ofType(SET_TEST_RUN_INFO)
     .mergeMap((tri: SetTestRunInfo) => this.testService.testRunLogs(tri.testRunInfo.containerId))
@@ -77,11 +57,6 @@ export class TestEffects {
 
   @Effect({dispatch: false}) fetchLogFinish$ = this.actions$.ofType(TEST_EXECUTION_COMPLETED)
     .do(_ => {
-      /*
-      if (this.modalComponent) {
-        this.modalComponent.close();
-      }
-      */
       this.toasts.create({
         type: 'success',
         message: 'Finished test execution'
@@ -95,9 +70,15 @@ export class TestEffects {
     .mergeMap(_ => this.testService.testResults())
     .map(r => new LoadTestResultsSuccess(r));
 
+  @Effect() loadingTestResult = this.loading.registerLoadingActions(
+    "loadingTestResults",
+    LOAD_TESTRESULTS,
+    LOAD_TESTRESULTS_SUCCESS
+  );
+
   constructor(private testService: TestService,
               private actions$: Actions,
-              private modal: ScModalService,
+              private loading: ScLoadingService,
               private toasts: ScToastService) {
   }
 

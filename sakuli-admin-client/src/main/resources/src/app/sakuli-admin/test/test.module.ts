@@ -12,11 +12,12 @@ import {SaSourceComponent} from "./test-detail/tabs/source.component";
 import {RunTestSuiteComponent} from "./run-test-suite.component";
 import {LogModalComponent} from "./test-detail/log-modal.component";
 import {SaAssetsModule} from "./test-detail/tabs/sa-assets/sa-assets.module";
-import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModule, NgbTooltip, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {TestDetailConnectedComponent} from "app/sakuli-admin/test/test-detail/test-detail-connected.component";
 import {SaConfigurationComponent} from "./configuration/sa-configuration.component";
 import {RunConfigurationModule} from "./run-configuration/run-configuration.module";
 import {SaDockerPullInfoComponent} from "./sa-docker-pull-info.component";
+import {SaReportModule} from "./report/sa-report.module";
 
 export const DeclareAndExport = [
   TestComponent,
@@ -38,7 +39,8 @@ export const DeclareAndExport = [
     StoreModule.forFeature('test', testReducer),
     RouterModule,
     SaAssetsModule,
-    RunConfigurationModule
+    RunConfigurationModule,
+    SaReportModule
   ],
   entryComponents: [
     LogModalComponent

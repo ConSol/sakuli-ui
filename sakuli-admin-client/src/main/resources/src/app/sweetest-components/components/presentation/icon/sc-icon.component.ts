@@ -5,7 +5,7 @@ import {FontawesomeIcon} from './fontawesome-icon.utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'sc-icon',
   template: `
-    <i class="fa" [ngClass]="ngClass" [ngStyle]="{transform:iconTransform}"></i>
+    <i [class]="'fa ' + iconClass" [ngClass]="ngClass" [ngStyle]="{transform:iconTransform}"></i>
     <ng-content></ng-content>
   `,
   styles: [`
@@ -31,6 +31,7 @@ export class ScIconComponent implements OnInit {
   @Input() rotate?: number = 0;
   @Input() size: number;
   @Input() lg: boolean;
+  @Input() iconClass: string = '';
 
   ngOnInit() {
   }

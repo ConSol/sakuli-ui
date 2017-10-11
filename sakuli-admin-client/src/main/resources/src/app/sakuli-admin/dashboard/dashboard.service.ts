@@ -16,12 +16,11 @@ export class DashboardService {
   ) {}
 
   get testResults() {
-    return this.testState$.map(s => s.testResults.sort((tr1, tr2) => tr2.startTime - tr1.startTime));
+    return this.testState$.map(s => s.testResults);
   }
 
   get latest$() {
-    return this.testResults.map(tr => tr
-      .find((_, i) => i === 0));
+    return this.testResults.map(tr => tr.find((_, i) => i === 0));
   }
 
 }

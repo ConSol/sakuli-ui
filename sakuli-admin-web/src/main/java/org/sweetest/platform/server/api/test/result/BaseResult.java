@@ -1,20 +1,30 @@
 package org.sweetest.platform.server.api.test.result;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+
 import java.util.Date;
 
 public abstract class BaseResult {
 
     private String name;
-    private String resultState;
+    private String state;
     private String resultCode;
     private String dbPrimaryKey;
     private float duration;
     private float warningTime;
     private float criticalTime;
-    private Date startTime;
-    private Date endTime;
+    private Object execption;
+    private String id;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
+    private Date startDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
+    private Date stopDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
+    private Date creationDate;
 
     public String getName() {
         return name;
@@ -24,12 +34,12 @@ public abstract class BaseResult {
         this.name = name;
     }
 
-    public String getResultState() {
-        return resultState;
+    public String getState() {
+        return state;
     }
 
-    public void setResultState(String resultState) {
-        this.resultState = resultState;
+    public void setState(String state) {
+        this.state = state;
     }
 
     public String getResultCode() {
@@ -72,19 +82,43 @@ public abstract class BaseResult {
         this.criticalTime = criticalTime;
     }
 
-    public Date getStartTime() {
-        return startTime;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
-    public Date getEndTime() {
-        return endTime;
+    public Date getStopDate() {
+        return stopDate;
     }
 
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
+    public void setStopDate(Date stopDate) {
+        this.stopDate = stopDate;
+    }
+
+    public Object getExecption() {
+        return execption;
+    }
+
+    public void setExecption(Object execption) {
+        this.execption = execption;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

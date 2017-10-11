@@ -9,7 +9,6 @@ import {SakuliProjectGuardService} from "./sakuli-project-guard.service";
 import {FormsModule} from "@angular/forms";
 import {DashboardModule} from "./dashboard/dashboard.module";
 
-
 @NgModule({
   imports: [
     SweetestComponentsModule,
