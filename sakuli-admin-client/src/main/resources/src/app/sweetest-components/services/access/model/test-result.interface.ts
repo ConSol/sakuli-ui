@@ -41,6 +41,7 @@ export interface TestActionResult {
 
 export interface TestCaseStepResult extends BaseResult {
   exception: TestCaseException;
+  testActions: TestActionResult[];
 }
 
 export interface TestCaseException {
