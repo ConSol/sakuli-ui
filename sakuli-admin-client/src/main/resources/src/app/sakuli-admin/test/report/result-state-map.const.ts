@@ -3,3 +3,8 @@ export const resultStateMap = {
   'WARNING_IN_STEP': 'bg-warning',
   'ERRORS': 'bg-danger',
 }
+
+
+export const colors = [
+  'blue', 'red', 'yellow', 'green'
+];

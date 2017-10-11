@@ -3,6 +3,8 @@ import {AppState} from "../../appstate.interface";
 import {Store} from "@ngrx/store";
 import {testResults} from "../state/test.interface";
 import {LoadTestResults} from "../state/test.actions";
+import {BoundIndexIterator} from "../../../sweetest-components/utils";
+import {notNull} from "../../../core/redux.util";
 
 @Component({
   selector: 'sa-report',
@@ -26,17 +28,19 @@ import {LoadTestResults} from "../state/test.actions";
 })
 export class SaReportComponent implements OnInit {
 
+  indexIterator: BoundIndexIterator = new BoundIndexIterator(0,0);
+
   index = 0;
 
   constructor(private store: Store<AppState>) {
   }
 
   prev() {
-    this.index--;
+    this.indexIterator.prev();
   }
 
   next() {
-    this.index++;
+    this.indexIterator.next();
   }
 
   get testResults$() {
@@ -44,14 +48,17 @@ export class SaReportComponent implements OnInit {
   }
 
   get currentResult$() {
-    return this.testResults$.map(trs => trs[this.index]);
+    return this.testResults$.map(trs => trs[this.indexIterator.current]);
   }
 
   ngOnInit() {
-    this.testResults$.first().subscribe(tr => {
-      if (!tr.length) {
-        this.store.dispatch(new LoadTestResults());
-      }
-    })
+    const [withEntries, withoutEntries] = this.testResults$.partition(tr => !!tr.length);
+    withEntries
+      .first()
+      .subscribe(tr => this.indexIterator = new BoundIndexIterator(tr.length, this.index));
+
+    withoutEntries
+      .first()
+      .subscribe(tr => this.store.dispatch(new LoadTestResults()));
   }
 }

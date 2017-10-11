@@ -8,6 +8,38 @@ function Mixin<MBase extends Constructor>(Base: MBase) {
   }
 }
 
+export class BoundIndexIterator {
+  private _current;
+  constructor(
+    readonly length,
+    readonly init = 0
+  ) {
+    this._current = init;
+  }
+
+  get current() {
+    return this._current;
+  }
+
+  next() {
+    if(this._current < this.length -1) {
+      this._current++;
+    } else {
+      this._current = 0;
+    }
+    return this.current;
+  }
+
+  prev() {
+    if(this._current > 0) {
+      this._current--;
+    } else {
+      this._current = this.length - 1;
+    }
+    return this.current;
+  }
+}
+
 export function ansiRegEx() {
   const pattern = [
     '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\\u0007)',

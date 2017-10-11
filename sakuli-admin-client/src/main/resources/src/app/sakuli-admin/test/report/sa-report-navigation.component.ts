@@ -6,13 +6,13 @@ import {resultStateMap} from "./result-state-map.const";
   selector: 'sa-report-navigation',
   template: `
     <div [class]="cardClass" *ngIf="testResult">
-      <div class="d-flex flex-row justify-content-between align-items-center">
+      <div [class]="'d-flex flex-row justify-content-between align-items-center ' + stateClass">
         <button class="btn btn-link" (click)="prev.next()">
           <sc-icon icon="fa-chevron-left"></sc-icon>
         </button>
         <div style="flex-grow: 1" class="text-center">
           <sc-icon icon="fa-calendar">
-            {{testResult.startDate | date:'dd-mm-y MM:ss'}}
+            {{testResult.startDate | date:'dd-MM-y hh:mm:ss'}}
           </sc-icon> |
           <span><sc-icon icon="fa-clock-o">
             {{((testResult.stopDate|dateDiff:testResult.startDate) / 1000)|number}} sec
@@ -37,11 +37,13 @@ export class SaReportNavigationComponent implements OnInit {
   @Output() next = new EventEmitter();
   @Output() prev = new EventEmitter();
 
+  get stateClass() {
+    const {state = ''} = this.testResult;
+    return resultStateMap[state] || '';
+  }
 
   get cardClass() {
-    const {state = ''} = this.testResult;
-    const stateClass = resultStateMap[state] || '';
-    return `card d-block ${stateClass}`;
+    return `card d-block`;
   }
 
   constructor() {

@@ -5,13 +5,24 @@ import {TestActionResult} from "../../../sweetest-components/services/access/mod
   moduleId: module.id,
   selector: 'sa-action',
   template: `
-    <div style="flex-grow: 1">
+    <div style="flex-grow: 1" class="pl-4">
       <div class="action">
         <span class="object">{{action.object}}</span>.<span class="method">{{action.method}}</span>(<span
         class="args">
-        <div *ngFor="let arg of action.args || []" class="pl-3">
-          {{arg | json}}
-        </div>
+        <ng-container *ngIf="showArgs; else hideArgs">
+          <div *ngFor="let arg of action.args || []" class="pl-3">
+            {{arg | json}}
+          </div>
+          <div>
+          <sc-icon icon="fa-minus-square-o" (click)="showArgs = false"></sc-icon>
+          </div>
+        </ng-container>
+        <ng-template #hideArgs>
+          <span class="badge badge-info" 
+                *ngIf="action.args"
+                (click)="showArgs = true"
+          >{{action.args.length}} arguments</span>
+        </ng-template>
       </span>)
       </div>
       <span class="text-muted font-italic">{{action.message}}</span>
@@ -24,7 +35,7 @@ import {TestActionResult} from "../../../sweetest-components/services/access/mod
     .action {
       font-family: medium Consolas, "Andale Mono", Monaco, "Liberation Mono", "Bitstream Vera Sans Mono", "DejaVu Sans Mono", monospace;
     }
-    
+
     .method {
       color: blue;
     }
@@ -34,6 +45,8 @@ import {TestActionResult} from "../../../sweetest-components/services/access/mod
 export class SaActionComponent implements OnInit {
 
   @Input() action: TestActionResult;
+
+  showArgs = false;
 
   @HostBinding('class')
   get hostClass() {

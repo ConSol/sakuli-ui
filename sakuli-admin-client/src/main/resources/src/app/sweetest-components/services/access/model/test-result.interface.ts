@@ -8,7 +8,6 @@ export interface BaseResult {
   criticalTime: number;
   startDate: string;
   stopDate: string;
-  exception: any;
   creationDate: string;
   id: string;
 }
@@ -27,6 +26,7 @@ export interface TestSuiteResult extends BaseResult {
 export interface TestCaseResult extends BaseResult {
   startUrl: string;
   lastUrl: string;
+  exception: any;
   steps: TestCaseStepResult[];
   testActions: TestActionResult[];
 }
@@ -40,5 +40,11 @@ export interface TestActionResult {
 }
 
 export interface TestCaseStepResult extends BaseResult {
-  errorScreenshot: string;
+  exception: TestCaseException;
+}
+
+export interface TestCaseException {
+  stackTrace: string;
+  detailMessage: string;
+  screenshot: string;
 }
