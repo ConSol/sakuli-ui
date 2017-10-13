@@ -10,7 +10,6 @@ import {FormsModule} from "@angular/forms";
 import {DashboardModule} from "./dashboard/dashboard.module";
 import {SaReportComponent} from "./test/report/sa-report.component";
 
-
 @NgModule({
   imports: [
     SweetestComponentsModule,

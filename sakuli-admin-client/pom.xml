@@ -106,7 +106,7 @@
               <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>run serve</arguments>
+              <arguments>run start</arguments>
             </configuration>
           </plugin>
         </plugins>
