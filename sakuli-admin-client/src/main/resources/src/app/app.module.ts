@@ -6,7 +6,6 @@ import {SweetestComponentsModule} from "./sweetest-components/index";
 import {StoreModule} from "@ngrx/store";
 import {StoreDevtoolsModule} from "@ngrx/store-devtools";
 import {ProjectOpenComponent} from "./sakuli-admin/project/project-open.component";
-import {initReducer} from "./sakuli-admin/appstate.interface";
 
 @NgModule({
   declarations: [

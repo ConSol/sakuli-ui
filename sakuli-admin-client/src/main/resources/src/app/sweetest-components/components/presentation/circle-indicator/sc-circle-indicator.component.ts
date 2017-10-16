@@ -14,7 +14,7 @@ import {Component, HostBinding, Input} from "@angular/core";
           alignment-baseline="middle"
         >{{value}}</text>
         <circle cx="50" cy="50" r="40"
-                [attr.stroke]="color || 'silver'"
+                [attr.stroke]="color"
                 [ngClass]="circleClass"
                 fill="none"></circle>
       </svg>
@@ -40,9 +40,9 @@ import {Component, HostBinding, Input} from "@angular/core";
 })
 export class ScCircleIndicatorComponent {
 
-  @Input() color: string;
-  @Input() state: "success"|"danger"|"warning"|"info";
-  @Input() value;
+  @Input() color = 'silver';
+  @Input() state: "success"|"danger"|"warning"|"info" = 'info';
+  @Input() value = 0;
 
   ngOnInit() {
     this.color = 'black';

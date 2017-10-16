@@ -27,7 +27,7 @@ import {TestCaseStepResult} from "../../../sweetest-components/services/access/m
           <li class="list-group-item d-flex flex-column">
             <strong>{{step.exception.detailMessage}}</strong>
             <a [href]="'api/files' + step.exception.screenshot" target="_blank">
-              <img [src]="'api/files' + step.exception.screenshot" width="100"/>
+              <img [src]="'api/files' + step.exception.screenshot" width="250"/>
             </a>
             <div>
               <button class="btn btn-link" (click)="showStacktrace = !showStacktrace">Show Stacktrace</button>
@@ -35,7 +35,7 @@ import {TestCaseStepResult} from "../../../sweetest-components/services/access/m
                       *ngIf="showStacktrace"
                       (click)="toClipBoard(stackTraceArea)">Copy stack trace to clipboard
               </button>
-            </div>
+            </div> 
             <textarea #stackTraceArea 
                       [disabled]="true" 
                       rows="20"
