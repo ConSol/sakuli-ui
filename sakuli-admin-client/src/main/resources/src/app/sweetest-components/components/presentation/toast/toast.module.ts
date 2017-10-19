@@ -6,6 +6,7 @@ import {ScToastContainerComponent} from "./toast-container.component";
 import {CommonModule} from "@angular/common";
 import {ScToastComponent} from "./toast.component";
 import {ScIconModule} from "../icon/sc-icon.module";
+import {NGRX_TOAST_FEATURE_NAME} from "./toast-state.interface";
 
 export const exportAndDeclare = [
   ScToastContainerComponent,
@@ -16,7 +17,7 @@ export const exportAndDeclare = [
   imports: [
     CommonModule,
     ScIconModule,
-    StoreModule.forFeature('scToast', toastReducer)
+    StoreModule.forFeature(NGRX_TOAST_FEATURE_NAME, toastReducer)
   ],
   providers: [
     ScToastService
@@ -24,4 +25,6 @@ export const exportAndDeclare = [
   exports: exportAndDeclare,
   declarations: exportAndDeclare
 })
-export class ToastModule {}
+export class ScToastModule {
+
+}

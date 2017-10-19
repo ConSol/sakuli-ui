@@ -8,6 +8,7 @@ import {StoreRouterConnectingModule} from "@ngrx/router-store";
 import {SakuliProjectGuardService} from "./sakuli-project-guard.service";
 import {FormsModule} from "@angular/forms";
 import {DashboardModule} from "./dashboard/dashboard.module";
+import {SaAppLogModule} from "./app-log/app-log.module";
 
 @NgModule({
   imports: [
@@ -19,6 +20,7 @@ import {DashboardModule} from "./dashboard/dashboard.module";
     TestModule,
     StoreRouterConnectingModule,
     FormsModule,
+    SaAppLogModule,
   ],
   providers: [
     SakuliProjectGuardService

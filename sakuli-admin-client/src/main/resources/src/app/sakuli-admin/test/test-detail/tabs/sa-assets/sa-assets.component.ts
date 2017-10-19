@@ -160,7 +160,7 @@ export class SaAssetsComponent implements OnInit {
   preventDragBehaviour($event: Event) {
     $event.preventDefault();
     $event.stopPropagation();
-    $event.cancelBubble = true;
+    //$event.cancelBubble = true;
   }
 
   @HostListener('document:paste', ['$event'])
@@ -179,7 +179,7 @@ export class SaAssetsComponent implements OnInit {
 
   @HostListener('dragenter', ['$event'])
   onDragenter($event: DragEvent) {
-    this.preventDragBehaviour($event)
+    this.preventDragBehaviour($event);
     this.dragOver = true;
   }
 
@@ -200,11 +200,12 @@ export class SaAssetsComponent implements OnInit {
 
   @HostListener('drop', ['$event'])
   onDrop($event: DragEvent) {
-    this.preventDragBehaviour($event);
+    //this.preventDragBehaviour($event);
     this.dragOver = false;
     if ($event.dataTransfer.files) {
       this.handleUpload($event.dataTransfer.files);
     }
+    //return false;
   }
 
   constructor(private filesService: FileService,

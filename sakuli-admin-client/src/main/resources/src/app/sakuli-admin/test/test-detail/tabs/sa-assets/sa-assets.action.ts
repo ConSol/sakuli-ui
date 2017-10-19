@@ -1,8 +1,8 @@
-import {Name} from "../../../../../core/redux.util";
+import {uniqueName} from "../../../../../core/redux.util";
 import {Action} from "@ngrx/store";
 import {FileResponse} from "../../../../../sweetest-components/services/access/model/file-response.interface";
 
-export const ASSETS_LOAD_FOLDER = Name('assets.load-folders');
+export const ASSETS_LOAD_FOLDER = uniqueName('assets.load-folders');
 export class AssetLoadFolder implements Action {
   readonly type = ASSETS_LOAD_FOLDER
   constructor(

@@ -3,31 +3,28 @@ import {Action, Store} from "@ngrx/store";
 import {
   Toast, ToastAppState,
 } from "app/sweetest-components/components/presentation/toast/toast-state.interface";
-import {Name} from "../../../../core/redux.util";
+import {uniqueName} from "../../../../core/redux.util";
 
-export const CREATE_TOAST = Name('[sc-toast] CREATE_TOAST');
+export const CREATE_TOAST = uniqueName('[sc-toast] CREATE_TOAST');
 export class CreateToast implements Action {
-  readonly type = CREATE_TOAST
+  readonly type = CREATE_TOAST;
   constructor(
     readonly toast: Toast
   ) {}
 }
 
-export const REMOVE_TOAST = Name('[sc-toast] REMOVE_TOAST');
+export const REMOVE_TOAST = uniqueName('[sc-toast] REMOVE_TOAST');
 export class RemoveToast implements Action {
-  readonly type = REMOVE_TOAST
+  readonly type = REMOVE_TOAST;
   constructor(
     readonly index: number
   ) {}
 }
 
+export type ToastActions = CreateToast | RemoveToast;
+
 @Injectable()
 export class ScToastService {
-
-  static actions = {
-    create: CREATE_TOAST,
-    remove: REMOVE_TOAST
-  };
 
   constructor(
     private store: Store<ToastAppState>
