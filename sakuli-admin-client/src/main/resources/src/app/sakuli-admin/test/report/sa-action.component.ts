@@ -10,11 +10,11 @@ import {TestActionResult} from "../../../sweetest-components/services/access/mod
         <span class="object">{{action.object}}</span>.<span class="method">{{action.method}}</span>(<span
         class="args">
         <ng-container *ngIf="showArgs; else hideArgs">
+          <sc-icon icon="fa-minus-square-o" (click)="showArgs = false"></sc-icon>
           <div *ngFor="let arg of action.args || []" class="pl-3">
-            {{arg | json}}
+            <pre>{{arg | json}}</pre>
           </div>
           <div>
-          <sc-icon icon="fa-minus-square-o" (click)="showArgs = false"></sc-icon>
           </div>
         </ng-container>
         <ng-template #hideArgs>
@@ -38,6 +38,10 @@ import {TestActionResult} from "../../../sweetest-components/services/access/mod
 
     .method {
       color: blue;
+    }
+    
+    pre {
+      margin-bottom: 0;
     }
   `]
 })

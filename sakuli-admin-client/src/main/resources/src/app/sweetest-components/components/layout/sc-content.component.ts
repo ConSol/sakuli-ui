@@ -3,7 +3,7 @@ import {Component} from "@angular/core";
 @Component({
   selector: 'sc-content',
   template: `
-    <div class="container-fluid">
+    <div class="container">
       <ng-content select="sc-heading, header"></ng-content>
       <ng-content select="article"></ng-content>
       <ng-content select="footer"></ng-content>
@@ -18,9 +18,9 @@ import {Component} from "@angular/core";
       display: block;
     }
 
-    .container-fluid {
+    .container {
       width: 100%;
-      height: calc(100vh - 61px);
+      height: calc(100vh - 62px);
       display: flex;
       flex: 1 1 0;
       flex-direction: column;

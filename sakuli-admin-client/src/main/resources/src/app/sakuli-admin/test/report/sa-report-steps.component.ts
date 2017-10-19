@@ -5,28 +5,28 @@ import {TestCaseStepResult} from "../../../sweetest-components/services/access/m
   selector: 'sa-report-steps',
   template: `
     <ng-container>
-      <li class="list-group-item pointer-cursor" (click)="toggleCollapse()">
+      <li class="list-group-item pointer-cursor d-flex flex-row" (click)="toggleCollapse()">
         <sc-icon [icon]="step.testActions.length ? 'fa-caret-right' : ''" [fixedWidth]="true" [rotate]="collapsed ? 90 : 0"></sc-icon>
         <ng-container *ngIf="step.exception">
           <sc-icon iconClass="text-danger" icon="fa-exclamation-triangle"></sc-icon>
         </ng-container>
         <strong>{{step.name}}</strong>
         <ng-template #noException>
-          <span>{{step.testActions.length}} actions </span>
-          <span class="text-muted" *ngIf="step.stopDate">
+          <span class=" pl-1">{{step.testActions.length}} actions </span>
+          <span class="text-muted  pl-1" *ngIf="step.stopDate">
             <sc-icon icon="fa-clock-o"></sc-icon>
             {{((step.stopDate | dateDiff:step.startDate) / 1000) | number}} ec
           </span>
         </ng-template>
         <ng-container *ngIf="step.exception; else noException">
-          <span class="text-danger">Step aborted with exception</span>
+          <div class="exception-title text-danger pl-1">{{step.exception.detailMessage}}</div>
         </ng-container>
       </li>
       <sc-collapse [show]="collapsed">
         <ng-container *ngIf="step.exception; else actions">
           <li class="list-group-item d-flex flex-column">
             <strong>{{step.exception.detailMessage}}</strong>
-            <a [href]="'api/files' + step.exception.screenshot" target="_blank">
+            <a [href]="'api/files' + step.exception.screenshot" target="_blank" class="text-center mt-1 mb-1">
               <img [src]="'api/files' + step.exception.screenshot" width="250"/>
             </a>
             <div>
@@ -62,6 +62,17 @@ import {TestCaseStepResult} from "../../../sweetest-components/services/access/m
       overflow: auto;
       padding: 5px;
       width: auto;
+    }
+    
+    .exception-title {
+      flex-grow: 1;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    
+    textarea {
+      border: 0;
     }
   `]
 })
