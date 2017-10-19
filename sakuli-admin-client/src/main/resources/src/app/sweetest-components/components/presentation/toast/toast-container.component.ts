@@ -36,7 +36,7 @@ import {animate, style, transition, trigger} from "@angular/animations";
           <sc-icon *ngIf="toast.icon"  [icon]="toast.icon"></sc-icon>
           {{toast.message}}
         </span>
-        <a (click)="toggleShowMore()" class="cursor-pointer">
+        <a (click)="toggleShowMore()" class="cursor-pointer" *ngIf="more">
           <sc-icon icon="fa-info-circle"></sc-icon>
         </a>
       </span>

@@ -1,6 +1,6 @@
 import {Action} from "@ngrx/store";
 import {TestSuite} from "../../../sweetest-components/services/access/model/test-suite.model";
-import {Name} from "../../../core/redux.util";
+import {uniqueName} from "../../../core/redux.util";
 import {TestRunInfo} from "../../../sweetest-components/services/access/model/test-run-info.interface";
 import {TestExecutionEvent} from "../../../sweetest-components/services/access/model/test-execution-event.interface";
 import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
@@ -9,12 +9,12 @@ import {DockerPullInfo} from "./test.interface";
 
 
 
-export const LOAD_TESTSUITE = Name('[test] loadtestsuite');
+export const LOAD_TESTSUITE = uniqueName('[test] loadtestsuite');
 export class LoadTestsuite implements Action {
   readonly type = LOAD_TESTSUITE;
 }
 
-export const SET_TESTSUITE = Name('[test] settestsuite');
+export const SET_TESTSUITE = uniqueName('[test] settestsuite');
 export class SetTestSuite implements Action {
   readonly type = SET_TESTSUITE;
   constructor(
@@ -22,7 +22,7 @@ export class SetTestSuite implements Action {
   ) {}
 }
 
-export const OPEN_TEST = Name('[test] opentest');
+export const OPEN_TEST = uniqueName('[test] opentest');
 export class OpenTest implements Action {
   readonly type = OPEN_TEST;
   constructor(
@@ -30,7 +30,7 @@ export class OpenTest implements Action {
   ) {}
 }
 
-export const CLOSE_TEST = Name('[test] closetest');
+export const CLOSE_TEST = uniqueName('[test] closetest');
 export class CloseTest implements Action {
   readonly type = CLOSE_TEST;
   constructor(
@@ -38,7 +38,7 @@ export class CloseTest implements Action {
   ) {}
 }
 
-export const RUN_TEST = Name('[test] runtest');
+export const RUN_TEST = uniqueName('[test] runtest');
 export class RunTest implements Action {
   readonly type = RUN_TEST;
   constructor(
@@ -46,7 +46,7 @@ export class RunTest implements Action {
   ) {}
 }
 
-export const SET_TEST_RUN_INFO = Name('[test] settestruninfo');
+export const SET_TEST_RUN_INFO = uniqueName('[test] settestruninfo');
 export class SetTestRunInfo implements Action {
   readonly type = SET_TEST_RUN_INFO;
   constructor(
@@ -55,7 +55,7 @@ export class SetTestRunInfo implements Action {
   ) {}
 }
 
-export const APPEND_TEST_RUN_INFO_LOG = Name('[test] appendtestruninfolog');
+export const APPEND_TEST_RUN_INFO_LOG = uniqueName('[test] appendtestruninfolog');
 export class AppendTestRunInfoLog implements Action {
   readonly type = APPEND_TEST_RUN_INFO_LOG;
   constructor(
@@ -69,13 +69,13 @@ export class ClearLog implements Action {
   constructor() {}
 }
 
-export const LOAD_TESTRESULTS = Name('[test] LOAD_TESTRESULTS');
+export const LOAD_TESTRESULTS = uniqueName('[test] LOAD_TESTRESULTS');
 export class LoadTestResults implements Action {
   readonly type = LOAD_TESTRESULTS;
   constructor() {}
 }
 
-export const LOAD_TESTRESULTS_SUCCESS = Name('[test] LOAD_TESTRESULTS_SUCCESS');
+export const LOAD_TESTRESULTS_SUCCESS = uniqueName('[test] LOAD_TESTRESULTS_SUCCESS');
 export class LoadTestResultsSuccess implements Action {
   readonly type = LOAD_TESTRESULTS_SUCCESS;
   constructor(
@@ -83,7 +83,7 @@ export class LoadTestResultsSuccess implements Action {
   ) {}
 }
 
-export const TEST_EXECUTION_STARTED = Name('[test] TEST_EXECUTION_STARTED');
+export const TEST_EXECUTION_STARTED = uniqueName('[test] TEST_EXECUTION_STARTED');
 export class TestExecutionStarted implements Action {
   readonly type = TEST_EXECUTION_STARTED
   constructor(

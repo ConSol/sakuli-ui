@@ -10,6 +10,7 @@ import {SaAssetsConnectedComponent} from "./test/test-detail/tabs/sa-assets/sa-a
 import {TestDetailConnectedComponent} from "./test/test-detail/test-detail-connected.component";
 import {SaConfigurationComponent} from "./test/configuration/sa-configuration.component";
 import {SaReportComponent} from "./test/report/sa-report.component";
+import {AppLogComponent} from "./app-log/app-log.component";
 
 export const routes: Routes = [
   {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
@@ -42,6 +43,10 @@ export const routes: Routes = [
         component: SaReportComponent
       }
     ]
+  },
+  {
+    path: 'app.log',
+    component: AppLogComponent
   },
   // Project Module
   /*

@@ -3,7 +3,7 @@ import {FileResponse} from "../../../sweetest-components/services/access/model/f
 import {Tree, TreeItem} from "../../../sweetest-components/components/presentation/tree/tree.interface";
 import {ProjectModel} from "../../../sweetest-components/services/access/model/project.model";
 import {actionTypeFor} from "../../../sweetest-components/services/ngrx-util/action-creator-metadata";
-import {Name} from "../../../core/redux.util";
+import {uniqueName} from "../../../core/redux.util";
 
 export const LOAD_PATH = 'loadpath';
 
@@ -59,7 +59,7 @@ export class SetProject implements Action {
   ) {}
 }
 
-export const REFRESH_PROJECT = Name('[project] REFRESH_PROJECT');
+export const REFRESH_PROJECT = uniqueName('[project] REFRESH_PROJECT');
 export class RefreshProject implements Action {
   readonly type = REFRESH_PROJECT;
   constructor() {}

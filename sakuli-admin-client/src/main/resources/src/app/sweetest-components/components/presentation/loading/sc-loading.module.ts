@@ -5,7 +5,8 @@ import {ScLoadingFeatureName, scLoadingReducer} from "./sc-loading.state";
 import {CommonModule} from "@angular/common";
 import {ScIconModule} from "../icon/sc-icon.module";
 import {ScLoadingService} from "./sc-loading.service";
-import {NgbModule, NgbProgressbarModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {ScLoadingPresentationComponent} from "./sc-loading-presentation.component";
 
 
 @NgModule({
@@ -15,8 +16,8 @@ import {NgbModule, NgbProgressbarModule} from "@ng-bootstrap/ng-bootstrap";
     NgbModule,
     StoreModule.forFeature(ScLoadingFeatureName, scLoadingReducer)
   ],
-  exports: [ScLoadingComponent],
-  declarations: [ScLoadingComponent],
+  exports: [ScLoadingComponent, ScLoadingPresentationComponent],
+  declarations: [ScLoadingComponent, ScLoadingPresentationComponent],
   providers: [
     ScLoadingService
   ],

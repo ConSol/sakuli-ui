@@ -31,7 +31,7 @@ export class AppComponent {
 
     this.menuService.defineMenu(
       LayoutMenuService.Menus.SECONDARY, [
-        {label: 'Log', icon: FontawesomeIcons.filesO, link: '', children: []},
+        {label: 'Log', icon: FontawesomeIcons.filesO, link: 'app-log', children: []},
         {label: '', icon: FontawesomeIcons.questionCircle, link: '', children: []}
       ]
     );

@@ -12,10 +12,14 @@ import {
   SetTestSuite, TEST_EXECUTION_COMPLETED, TestExecutionCompleted, TestExecutionStarted
 } from "./test.actions";
 import {SET_PROJECT, SetProject} from "../../project/state/project.actions";
-import {ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
+import {CreateToast, ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
 
 import {Observable} from "rxjs/Observable";
 import {ScLoadingService} from "../../../sweetest-components/components/presentation/loading/sc-loading.service";
+import {
+  ErrorMessage,
+  SuccessToast
+} from "../../../sweetest-components/components/presentation/toast/toast-state.interface";
 
 @Injectable()
 export class TestEffects {
@@ -26,7 +30,7 @@ export class TestEffects {
   @Effect() runTest$ = this.actions$.ofType(RUN_TEST)
     .mergeMap((rt: RunTest) => this.testService.run(rt.testSuite).map(tri => new SetTestRunInfo(tri)));
 
-  @Effect() runTestLoadin$ = this.loading.registerLoadingActions(
+  @Effect() runTestLoading$ = this.loading.registerLoadingActions(
     'runTest',
     RUN_TEST,
     SET_TEST_RUN_INFO
@@ -53,22 +57,19 @@ export class TestEffects {
         'test.pull.completed': () => ({processId}) => new DockerPullCompleted(processId)
       })[gtee$.key] || noop)();
     })
-    //.do(log('fetchlog'));
+    .catch(ErrorMessage('Unable to proceed server event'))
 
-  @Effect({dispatch: false}) fetchLogFinish$ = this.actions$.ofType(TEST_EXECUTION_COMPLETED)
-    .do(_ => {
-      this.toasts.create({
-        type: 'success',
-        message: 'Finished test execution'
-      })
-    });
+  @Effect() fetchLogFinish$ = this.actions$.ofType(TEST_EXECUTION_COMPLETED)
+    .map(_ => new CreateToast(new SuccessToast('Finished test execution')));
 
   @Effect() projectOpen = this.actions$.ofType(SET_PROJECT)
     .map((sp: SetProject) => new SetTestSuite(sp.project.testSuite));
 
   @Effect() loadTestResults = this.actions$.ofType(LOAD_TESTRESULTS)
     .mergeMap(_ => this.testService.testResults())
-    .map(r => new LoadTestResultsSuccess(r));
+    .map(r => new LoadTestResultsSuccess(r))
+    .catch(ErrorMessage('Unable to load test results'))
+  ;
 
   @Effect() loadingTestResult = this.loading.registerLoadingActions(
     "loadingTestResults",

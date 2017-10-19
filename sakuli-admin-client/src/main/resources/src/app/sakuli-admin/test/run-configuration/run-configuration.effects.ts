@@ -16,7 +16,10 @@ import {AppState} from "../../appstate.interface";
 import {Store} from "@ngrx/store";
 import {ContainerTag, RunConfiguration, RunConfigurationSelect, SakuliContainer} from "./run-configuration.interface";
 import {CreateToast, ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
-import {SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast-state.interface";
+import {
+  ErrorMessage,
+  SuccessToast
+} from "../../../sweetest-components/components/presentation/toast/toast-state.interface";
 import {ScLoadingService} from "../../../sweetest-components/components/presentation/loading/sc-loading.service";
 
 @Injectable()
@@ -24,8 +27,11 @@ export class RunConfigurationEffects {
 
   @Effect() getConfig$ = this.actions$
     .ofType(LOAD_RUN_CONFIGURATION)
-    .mergeMap(_ => this.runConfigurationService.getRunConfiguration())
-    .map((r: RunConfiguration) => new LoadRunConfigurationSuccess(r));
+    .mergeMap(_ => this.runConfigurationService
+      .getRunConfiguration()
+      .map((r: RunConfiguration) => new LoadRunConfigurationSuccess(r))
+      .catch(ErrorMessage(`cannot fetch current configuration`))
+    );
 
   @Effect() getConfigSuccess$ = this.actions$
     .ofType(LOAD_RUN_CONFIGURATION_SUCCESS)
@@ -33,11 +39,16 @@ export class RunConfigurationEffects {
 
   @Effect() saveConfig$ = this.actions$
     .ofType(SAVE_RUN_CONFIGURATION)
-    .mergeMap((a: SaveRunConfiguration) => this.runConfigurationService.saveRunConfiguration(a.runConfiguration).map(_ => a.runConfiguration))
-    .mergeMap((rc) => [
-      new SaveRunConfigurationSuccess(),
-      new LoadRunConfigurationSuccess(rc)
-    ]);
+    .mergeMap((a: SaveRunConfiguration) => this
+      .runConfigurationService
+      .saveRunConfiguration(a.runConfiguration)
+      .map(_ => a.runConfiguration)
+      .mergeMap((rc) => [
+        new SaveRunConfigurationSuccess(),
+        new LoadRunConfigurationSuccess(rc)
+      ])
+      .catch(ErrorMessage(`Unable to save configuration`))
+    );
 
   @Effect() saveConfigSuccess$ = this.actions$
     .ofType(SAVE_RUN_CONFIGURATION_SUCCESS)
@@ -47,21 +58,18 @@ export class RunConfigurationEffects {
 
 
   @Effect() loadContainer$ = this.actions$.ofType(LOAD_SAKULI_CONTAINER)
-    .mergeMap(_ => this.runConfigurationService.loadSakuliContainer())
-    .map((c:SakuliContainer[]) => new LoadSakuliContainerSuccess(c));
-
-  /*
-  @Effect() loadContainerSuccess$ = this.actions$.ofType(LOAD_SAKULI_CONTAINER_SUCCESS)
-    .map((a: LoadSakuliContainerSuccess) => a.containers)
-    .mergeMap(c => this.store.select(RunConfigurationSelect.sakuliConfig).first().map(sc => [c, sc] as [typeof c, typeof sc]))
-    .map(([containers, s]) => new SelectSakuliContainer(containers.find(c => c.name === s.containers.name)));
-  */
+    .mergeMap(_ => this.runConfigurationService
+      .loadSakuliContainer()
+      .map((c:SakuliContainer[]) => new LoadSakuliContainerSuccess(c))
+      .catch(ErrorMessage(`Unable to fetch sakuli-containers`))
+    );
 
   @Effect() loadContainerTags$ = this.actions$.ofType(LOAD_SAKULI_CONTAINER_TAGS)
     .mergeMap((a: LoadSakuliContainerTags) => this
       .runConfigurationService
       .loadSakuliContainerTags(a.container.name)
       .map((c:ContainerTag[]) => new LoadSakuliContainerTagsSuccess(a.container, c))
+      .catch(ErrorMessage(`Unable to fetch tags for '${a.container.name}'`))
     );
 
   @Effect() selectContainer$ = this.actions$.ofType(SELECT_SAKULI_CONTAINER)

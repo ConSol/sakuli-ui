@@ -18,7 +18,7 @@ import {ScTreeItemComponent} from './components/presentation/tree/sc-tree-item.c
 import {ScTableComponent} from "./components/presentation/table/table.component";
 import {ScEditorComponent} from "./components/presentation/editor/sc-editor.component";
 import {FormsModule} from "@angular/forms";
-import {ToastModule} from "./components/presentation/toast/toast.module";
+import {ScToastModule} from "./components/presentation/toast/toast.module";
 import {AbsPathPipe, FileNamePipe, PathPipe} from "./components/common/file.pipes";
 import {ScLogComponent} from "./components/presentation/log/log.component";
 import {ScAccessModule} from "./services/access/access.module";
@@ -83,7 +83,7 @@ export const Providers = [
     NgbModule.forRoot(),
     BrowserAnimationsModule,
     ScAccessModule,
-    ToastModule,
+    ScToastModule,
     ScModalModule,
     ScValuePickerModule,
     ScIconModule,
@@ -97,7 +97,7 @@ export const Providers = [
     NgbModule,
     FormsModule,
     ScAccessModule,
-    ToastModule,
+    ScToastModule,
     ScModalModule,
     ScValuePickerModule,
     ScIconModule,
