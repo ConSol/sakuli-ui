@@ -1,12 +1,9 @@
 import * as moment from 'moment';
 import {Moment} from "moment";
 
-export type Constructor<T = {}> = new (...args: any[]) => T;
-
-function Mixin<MBase extends Constructor>(Base: MBase) {
-  return class extends Base {
-  }
-}
+export const splitFilter = <T>(predicate: (i:T)=> boolean ,a: T[]) => {
+  return [a.filter(predicate), a.filter(i => !predicate(i))];
+};
 
 export class BoundIndexIterator {
   private _current;
@@ -89,4 +86,37 @@ export class DateUtil {
     const m2 = DateUtil.createMoment(t2);
     return m1.diff(m2);
   }
+}
+
+export class Deferred<T> {
+
+  private _promise: Promise<T>;
+  private _resolve: (value: T) => void;
+  private _reject: (reason: any) => void;
+
+  constructor() {
+    this._promise = new Promise((res, rej) => {
+      this._resolve = res;
+      this._reject = rej;
+    })
+  }
+
+  resolve(value: T) {
+    this._resolve(value);
+  }
+
+  reject(reason: any) {
+    this._reject(reason);
+  }
+
+  get promise() {
+    return this._promise;
+  }
+
+  async getValue(): Promise<T> {
+    return new Promise<T>((res, rej) => {
+      this.promise.then(res, rej);
+    })
+  }
+
 }

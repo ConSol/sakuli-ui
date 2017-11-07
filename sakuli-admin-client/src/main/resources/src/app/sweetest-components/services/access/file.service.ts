@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {Http, Headers} from "@angular/http";
 import {Observable} from "rxjs/Observable";
 import {FileResponse, FileWithContent} from "./model/file-response.interface";
-import {ActionCreator} from "../ngrx-util/action-creator-metadata";
 
 const projectUrl = '/api/files';
 
@@ -15,7 +14,7 @@ export class FileService {
 
   files(path: string = ''): Observable<FileResponse[]> {
     return this.http
-      .get(`${projectUrl}/ls/${path}`)
+      .get(`${projectUrl}/ls?path=${path}`)
       .map(r => r.json() as FileResponse[])
       .map(fr => fr
         .sort((a, b) => (a.name.toLowerCase() === b.name.toLowerCase()) ? 0 : (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1)
@@ -31,7 +30,7 @@ export class FileService {
 
   read(path: string): Observable<string> {
     return this.http
-      .get(`${projectUrl}/${path}`)
+      .get(`${projectUrl}?path=${path}`)
       .map(r => r.text())
   }
 
@@ -39,13 +38,13 @@ export class FileService {
     const formData = new FormData();
     formData.append('file', file);
     return this.http
-      .post(`${projectUrl}/${path}/${file.name}`, formData)
+      .post(`${projectUrl}?path=${path}/${file.name}`, formData)
       .map(r => r.toString())
   }
 
   delete(file: string) {
     return this.http
-      .delete(`${projectUrl}/${file}`)
+      .delete(`${projectUrl}?path=${file}`)
       .map(r => r.toString());
   }
 }

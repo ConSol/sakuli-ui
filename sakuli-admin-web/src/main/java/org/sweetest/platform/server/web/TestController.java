@@ -13,15 +13,18 @@ import org.sweetest.platform.server.api.test.TestRunInfo;
 import org.sweetest.platform.server.api.test.TestService;
 import org.sweetest.platform.server.api.test.TestSuite;
 import org.sweetest.platform.server.api.test.result.TestSuiteResult;
+import org.sweetest.platform.server.service.sakuli.SakuliTestSuite;
 import org.sweetest.platform.server.service.test.execution.TestExecutionStrategyFactory;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import javax.ws.rs.QueryParam;
 import java.util.List;
 
 /**
  * Created by timkeiner on 19.07.17.
  */
 @Controller
-@RequestMapping("api/test")
+@RequestMapping("api/testsuite")
 public class TestController {
 
     private static final Logger log = LoggerFactory.getLogger(TestController.class);
@@ -38,15 +41,21 @@ public class TestController {
 
     @RequestMapping(value = "{test}", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity getTest(@PathVariable("test") String test) {
-        strategyFactory.getStrategyByRunConfiguration(new RunConfiguration());
-        return null;
+    public ResponseEntity getTest(
+            @PathVariable("test") String test,
+            @RequestParam("path") String path
+    ) {
+        throw new NotImplementedException();
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @GetMapping()
     @ResponseBody
-    public TestSuite getTestSuite() {
-        return testService.getTestSuite();
+    public ResponseEntity<TestSuite> getTestSuite(
+            @RequestParam("path") String path
+    ) {
+        return testService.getTestSuite(path)
+                .map(ts -> ResponseEntity.ok().body(ts))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @RequestMapping(value = "run", method = RequestMethod.POST)
@@ -61,6 +70,17 @@ public class TestController {
     public List<TestSuiteResult> getResults() {
         String sakuliPath = projectService.getActiveProject().getPath();
         return testService.getTestSuiteResults(sakuliPath);
+    }
+
+    @PutMapping
+    @ResponseBody
+    public ResponseEntity putTest(
+            @RequestBody SakuliTestSuite testSuite) {
+        boolean success = projectService
+                .readProject(testSuite.getRoot())
+                .map(p -> testService.saveTestSuite(p, testSuite))
+                .orElse(false);
+        return success ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
 
 }

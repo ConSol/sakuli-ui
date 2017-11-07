@@ -1,13 +1,13 @@
 import {Injectable, Type} from '@angular/core';
-import {} from '@angular/common'
 import {Http} from "@angular/http";
 import {Observable} from "rxjs/Observable";
-import {FileResponse} from "./model/file-response.interface";
 import {ProjectModel} from "./model/project.model";
-import {ActionCreator} from "../ngrx-util/action-creator-metadata";
 
 const projectUrl = '/api/project';
 
+/**
+ * @Deprecated
+ */
 @Injectable()
 export class ProjectService {
 
@@ -20,7 +20,6 @@ export class ProjectService {
       .mergeMap(r => this.activeProject())
   }
 
-  @ActionCreator()
   activeProject(): Observable<ProjectModel> {
     return this.http.get(`${projectUrl}/active-project`)
       .map(r => r

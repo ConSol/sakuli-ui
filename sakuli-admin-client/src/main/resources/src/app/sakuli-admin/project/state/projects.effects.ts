@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Actions, Effect, toPayload} from '@ngrx/effects';
+import {Actions, Effect} from '@ngrx/effects';
 import {ProjectService} from '../../../sweetest-components/services/access/project.service';
 import {
   AppendChildren, LOAD_PATH, LoadPath, OPEN, Open, REFRESH_PROJECT, SetProject, TOGGLE_OPEN,
@@ -9,6 +9,7 @@ import {of} from 'rxjs/observable/of';
 import {absPath} from "../../../sweetest-components/services/access/model/file-response.interface";
 import {FileService} from "../../../sweetest-components/services/access/file.service";
 import {ErrorMessage} from "../../../sweetest-components/components/presentation/toast/toast-state.interface";
+import {LoadTestsuite} from "../../test/state/testsuite.state";
 
 @Injectable()
 export class ProjectEffects {
@@ -34,13 +35,8 @@ export class ProjectEffects {
     .catch(ErrorMessage(`Error while opening path`));
 
   @Effect() open = this.actions$.ofType(OPEN)
-    .mergeMap((open: Open) => {
-      return this.projectService
-        .open(open.file.path)
-        .map(p => new SetProject(p))
-        .catch(ErrorMessage(`Error while opening project in '${open.file.path}'`));
-        ;
-    });
+    .map((open: Open) => new LoadTestsuite(
+      open.file.directory ? absPath(open.file) : open.file.path));
 
   constructor(
     private projectService: ProjectService,

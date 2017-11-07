@@ -2,9 +2,9 @@ import {uniqueName} from "../../../../../core/redux.util";
 import {Action} from "@ngrx/store";
 import {FileResponse} from "../../../../../sweetest-components/services/access/model/file-response.interface";
 
-export const ASSETS_LOAD_FOLDER = uniqueName('assets.load-folders');
+export const ASSETS_LOAD_FOLDER = uniqueName('[asset] LOAD_FOLDER');
 export class AssetLoadFolder implements Action {
-  readonly type = ASSETS_LOAD_FOLDER
+  readonly type = ASSETS_LOAD_FOLDER;
   constructor(
     readonly folder: string
   ) {}
@@ -22,15 +22,16 @@ export class AssetLoadFolderSuccess implements Action {
 
 export const ASSETS_SET_CURRENT_FOLDER = '[asset] ASSETS_SET_CURRENT_FOLDER';
 export class AssetsSetCurrentFolder implements Action {
-  readonly type = ASSETS_SET_CURRENT_FOLDER
+  readonly type = ASSETS_SET_CURRENT_FOLDER;
   constructor(
-    readonly folder: string
+    readonly folder: string,
+    readonly basePath: string
   ) {}
 }
 
 export const ASSETS_UPLOAD = '[asset] ASSETS_UPLOAD';
 export class AssetsUpload implements Action {
-  readonly type = ASSETS_UPLOAD
+  readonly type = ASSETS_UPLOAD;
   constructor(
     private _files: FileList,
     readonly targetFolder: string,
@@ -86,7 +87,8 @@ export const ASSETS_OPEN_FILE = '[asset] ASSETS_OPEN_FILE';
 export class AssetsOpenFile implements Action {
   readonly type = ASSETS_OPEN_FILE;
   constructor(
-    readonly file: string
+    readonly file: string,
+    readonly base: string
   ) {}
 }
 

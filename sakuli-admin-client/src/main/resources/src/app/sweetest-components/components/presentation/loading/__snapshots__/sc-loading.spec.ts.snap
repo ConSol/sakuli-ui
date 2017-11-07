@@ -88,26 +88,35 @@ exports[`ScLoading Component should fullfill snapshot for spinner and show: true
         
           <sc-icon
     _nghost-c2=""
-    class="flex-row"
+    class="d-inline-block"
     icon="fa-spinner"
     ng-reflect-icon="fa-spinner"
     ng-reflect-spin="true"
   >
     
       
-    <i
+    <div
       _ngcontent-c2=""
-      class="fa fa-spin fa-spinner"
-      ng-reflect-klass="fa "
-      ng-reflect-ng-class="[object Object]"
-      ng-reflect-ng-style="[object Object]"
-    />
-    
+      class="grow flex-row d-flex flex-nowrap align-content-center align-items-center"
+    >
       
-    
+        
+      <i
+        _ngcontent-c2=""
+        class="fa fa-spin fa-spinner"
+        ng-reflect-klass="fa"
+        ng-reflect-ng-class="[object Object]"
+        ng-reflect-ng-style="[object Object]"
+      />
+      
+        
+      
             
-    
+      
           
+      
+      
+    </div>
     
     
   </sc-icon>

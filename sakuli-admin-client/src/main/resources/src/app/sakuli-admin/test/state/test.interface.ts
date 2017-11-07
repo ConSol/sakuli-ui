@@ -3,9 +3,8 @@ import {TestSuiteResult} from "../../../sweetest-components/services/access/mode
 import {createFeatureSelector, createSelector} from "@ngrx/store";
 import {project} from "../../project/state/project.interface";
 import {nothrow} from "nothrow";
-import {TestSuite} from "../../../sweetest-components/services/access/model/test-suite.model";
 import {nothrowFn} from "../../../core/utils";
-import {DockerPullStream} from "./test.actions";
+import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
 
 export interface DockerPullInfoProgressDetail {
   current: number;
@@ -26,7 +25,7 @@ export type DockerPullInfoMap = IdMap<IdMap<DockerPullInfo>>;
 export type LogMessage = string;
 
 export interface TestState {
-  testSuite: TestSuite | null;
+  testSuite: SakuliTestSuite | null;
   openTests: string[];
   activeTest: string | null;
   testRunInfo: TestRunInfo | null;

@@ -5,8 +5,9 @@ import {currentChildren, currentFolder, uploading} from "./sa-assets.interface";
 import {projectFileRoot} from "../../../../project/state/project.interface";
 import {absPath, FileResponse} from "../../../../../sweetest-components/services/access/model/file-response.interface";
 import {AssetsDelete, AssetsOpenFile, AssetsSetCurrentFolder, AssetsUpload} from "./sa-assets.action";
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Store} from "@ngrx/store";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'sa-assests-connected',
@@ -23,17 +24,27 @@ import {Store} from "@ngrx/store";
     ></sa-assets>
   `
 })
-export class SaAssetsConnectedComponent {
+export class SaAssetsConnectedComponent implements OnInit {
 
   constructor(
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private route: ActivatedRoute
   ) {}
 
+  suiteParam$ = this.route.params.map(p => decodeURIComponent(p['suite']));
   testCase$ = this.store.select(testCase);
   targetFolder$ = this.store.select(currentChildren);
   currentFolder$ = this.store.select(currentFolder);
-  basePath$ = this.store.select(projectFileRoot);
+  basePath$ = this.suiteParam$.map(p => `api/files?path=${p}`);
   uploading$ = this.store.select(uploading);
+
+  ngOnInit() {
+    this.route.paramMap.subscribe(m => {
+      const suite = m.has('suite') ? decodeURIComponent(m.get('suite')) : '';
+      const file = m.has('file') ? decodeURIComponent(m.get('file')) : '';
+      this.store.dispatch(new AssetsSetCurrentFolder(file, suite));
+    });
+  }
 
   onDelete(e: FileResponse) {
     this.store.dispatch(new AssetsDelete(e));
@@ -44,14 +55,12 @@ export class SaAssetsConnectedComponent {
   }
 
   onFileSelected(f: FileResponse) {
-    f.directory ?
-      new AssetsSetCurrentFolder(absPath(f)):
-      new AssetsOpenFile(absPath(f))
-
-    if(f.directory) {
-      this.store.dispatch(new AssetsSetCurrentFolder(absPath(f)))
-    } else {
-      this.store.dispatch(new AssetsOpenFile(absPath(f)))
-    }
+    this.suiteParam$.first().subscribe(suite => {
+      if(f.directory) {
+        this.store.dispatch(new AssetsSetCurrentFolder(absPath(f), suite))
+      } else {
+        this.store.dispatch(new AssetsOpenFile(absPath(f), suite))
+      }
+    })
   }
 }

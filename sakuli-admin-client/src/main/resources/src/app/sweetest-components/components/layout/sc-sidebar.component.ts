@@ -1,30 +1,50 @@
 import {Component, EventEmitter, HostBinding, Input, Output} from "@angular/core";
 import {Theme} from "../theme";
-import {MenuItem} from "./menu-item.interface";
 import {ActivatedRoute, Router} from "@angular/router";
-import {log} from "../../../core/redux.util";
+import {IMenuItem} from "./menu/menu-item.interface";
+import {AppState} from "../../../sakuli-admin/appstate.interface";
+import {Store} from "@ngrx/store";
+import {menuSelectors} from "./menu/menu.state";
+import {SelectionState} from "../../model/tree";
+import {FontawesomeIcons} from "../presentation/icon/fontawesome-icon.utils";
 
 @Component({
   selector: 'sc-sidebar',
   template: `
     <ul class="nav flex-column">
+      <!--
+      <li class="nav-item d-flex flex-row sc-link align-items-center justify-content-around">
+        <div class="d-flex">
+          <sc-icon
+            ngbTooltip="Open Testsuite"
+            icon="fa-folder-o"
+          ></sc-icon>
+        </div>
+        <div class="d-flex">
+          <sc-icon
+            ngbTooltip="New Testsuite"
+            icon="fa-plus"
+          ></sc-icon>
+        </div>
+      </li>
+      -->
       <ng-container *ngFor="let menuItem of menuItems">
         <sc-link [fixedIconWidth]="true"
                  [icon]="menuItem.icon"
                  (click)="onMenuItemSelected(menuItem)"
+                 [ngStyle]="{order: menuItem.order}"
         >
-          <span class="hidden-xs-down link-text">{{menuItem.label}}</span>
+          <span class="hidden-md-down link-text">{{menuItem.label}}</span>
         </sc-link>
-      <ul *ngIf="isActive([menuItem.link]) && menuItem.children.length">
-        
-        <sc-link *ngFor="let menuItem of menuItem.children"
-          [fixedIconWidth]="true"
-          [icon]="menuItem.icon"
-          (click)="onMenuItemSelected(menuItem)"
-        >
-          <span class="hidden-xs-down link-text">{{menuItem.label}}</span>
-        </sc-link>
-      </ul>
+        <ul *ngIf="isActive(menuItem)" [ngStyle]="{order: menuItem.order}">
+          <sc-link *ngFor="let childItem of childrenFor$(menuItem.id) | async"
+                   [fixedIconWidth]="true"
+                   [icon]="childItem.icon"
+                   (click)="onMenuItemSelected(childItem)"
+          >
+            <span class="hidden-xs-down link-text">{{childItem.label}}</span>
+          </sc-link>
+        </ul>
       </ng-container>
     </ul>
   `,
@@ -35,10 +55,13 @@ import {log} from "../../../core/redux.util";
       padding: 0;
     }
 
-    :host /deep/ sc-link {
+    :host /deep/ sc-link, .sc-link {
       height: 4rem;
       border-bottom: 1px solid #dae6f3;
       display: flex;
+    }
+    
+    :host /deep/ sc-link {
       justify-content: flex-start;
       align-items: center;
     }
@@ -52,40 +75,43 @@ import {log} from "../../../core/redux.util";
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-     ul ul {
-       padding-left: 0;
-     }
-    
+
+    ul ul {
+      padding-left: 0;
+    }
+
     ul ul sc-link {
       padding-left: 25px;
     }
-   
+
   `]
 })
 export class ScSidebarComponent {
 
-  @Input() menuItems: MenuItem[];
+  icons = FontawesomeIcons;
 
-  @Output() menuItemSelected = new EventEmitter<MenuItem>();
+  @Input() menuItems: IMenuItem[];
+
+  @Output() menuItemSelected = new EventEmitter<IMenuItem>();
 
   @HostBinding('class')
   get hostClass() {
     return 'col-1 col-sm-3 flex';
   }
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-  ) {
+  constructor(private store: Store<AppState>) {
 
   }
 
-  onMenuItemSelected(menuItem: MenuItem) {
+  childrenFor$(parent: string) {
+    return this.store.select(menuSelectors.byParent(parent));
+  }
+
+  onMenuItemSelected(menuItem: IMenuItem) {
     this.menuItemSelected.next(menuItem)
   }
 
-  isActive(url: string[]) {
-
-    return this.router.isActive(url.join('/'), false);
+  isActive(item: IMenuItem) {
+    return item.selected === SelectionState.Selected || item.selected === SelectionState.Indeterminate;
   }
 }

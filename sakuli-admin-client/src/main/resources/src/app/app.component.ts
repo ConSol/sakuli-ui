@@ -1,10 +1,15 @@
-import {Component} from '@angular/core';
+import {Component, HostListener} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {LayoutMenuService} from "./sweetest-components/components/layout/layout-menu.service";
 import {FontawesomeIcons} from "./sweetest-components/components/presentation/icon/fontawesome-icon.utils";
 import {Router} from "@angular/router";
-import {MenuItem} from "./sweetest-components/components/layout/menu-item.interface";
 import {ProjectOpenComponent} from "./sakuli-admin/project/project-open.component";
+import {AppState} from "./sakuli-admin/appstate.interface";
+import {Store} from "@ngrx/store";
+import {LayoutMenuService} from "./sweetest-components/components/layout/menu/layout-menu.service";
+import {IMenuItem, MenuItem} from "./sweetest-components/components/layout/menu/menu-item.interface";
+import {SelectMenuItem} from "./sweetest-components/components/layout/menu/menu.state";
+import {SelectionState} from "./sweetest-components/model/tree";
+import {RouterGo} from "./sweetest-components/services/router/router.actions";
 
 @Component({
   selector: 'app-root',
@@ -18,47 +23,58 @@ import {ProjectOpenComponent} from "./sakuli-admin/project/project-open.componen
 })
 export class AppComponent {
 
+  @HostListener('window:beforeunload', ['$event'])
+  hostBeforeUnload() {
+    this.store.select(s => s).first().subscribe(s => {
+      sessionStorage.setItem("sakuli-admin-state", JSON.stringify(s))
+    })
+  }
+
   constructor(private menuService: LayoutMenuService,
               private router: Router,
+              private store: Store<AppState>,
               private modal: NgbModal) {
 
-    this.menuService.defineMenu(
-      LayoutMenuService.Menus.PRIMARY, [
-        {label: 'New', icon: FontawesomeIcons.plus, link: '', children: []},
-        {label: 'Open', icon: FontawesomeIcons.folderOpen, link: 'project/open', children: []}
+    this.menuService.addMenuItems(
+      [
+
       ]
     );
 
-    this.menuService.defineMenu(
-      LayoutMenuService.Menus.SECONDARY, [
-        {label: 'Log', icon: FontawesomeIcons.filesO, link: 'app-log', children: []},
-        {label: '', icon: FontawesomeIcons.questionCircle, link: '', children: []}
+    this.menuService.addMenuItems(
+      [
+        new MenuItem('secondary.log', 'Log', 'app-log', FontawesomeIcons.plus, LayoutMenuService.Menus.SECONDARY),
+        new MenuItem('secondary.help', '', '', FontawesomeIcons.questionCircle, LayoutMenuService.Menus.SECONDARY),
       ]
     );
 
-    this.menuService.defineMenu(
-      LayoutMenuService.Menus.SIDEBAR, [
-        {label: 'Dashboard', icon: FontawesomeIcons.dashboard, link: '', children: []},
-        {
-          label: 'Testsuite', icon: FontawesomeIcons.cubes, link: 'test', children: [
-          {label: 'Sources', icon: FontawesomeIcons.code, link: 'test/sources'},
-          {label: 'Assets', icon: FontawesomeIcons.image, link: 'test/assets'},
-          {label: 'Configuration', icon: FontawesomeIcons.wrench, link: 'test/configuration', children: []},
-          {label: 'Reports', icon: FontawesomeIcons.tasks, link: 'test/reports', children: []}
-        ]
-        },
-        // {label: 'Test Report', icon: FontawesomeIcons.tasks, link: '', children: []},
-        // {label: 'Settings', icon: FontawesomeIcons.cogs, link: '', children: []}
+    this.menuService.addMenuItems(
+      [
+        new MenuItem('primary.new', 'New', 'new', FontawesomeIcons.plus, LayoutMenuService.Menus.PRIMARY),
+        new MenuItem('primary.open', 'Open', 'project/open', FontawesomeIcons.folderO, LayoutMenuService.Menus.PRIMARY),
+        new MenuItem('sidebar.dashboard',
+          'Dashboard', '',
+          FontawesomeIcons.dashboard,
+          LayoutMenuService.Menus.PRIMARY,
+        ),
+
+        new MenuItem('sidebar.reports',
+          'Reports', 'reports',
+          FontawesomeIcons.tasks,
+          LayoutMenuService.Menus.PRIMARY,
+          SelectionState.UnSelected,
+        ),
       ]
     );
 
   }
 
-  onLink(item: MenuItem) {
-    if (item.link === 'project/open') {
+  onLink(item: IMenuItem) {
+    this.store.dispatch(new SelectMenuItem(item.id));
+    if (item.link[0] === 'project/open') {
       this.modal.open(ProjectOpenComponent);
     } else {
-      this.router.navigate([item.link]);
+      this.store.dispatch(new RouterGo({path: item.link}));
     }
   }
 }

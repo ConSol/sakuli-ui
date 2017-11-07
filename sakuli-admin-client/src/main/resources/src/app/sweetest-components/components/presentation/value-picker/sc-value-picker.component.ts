@@ -46,7 +46,6 @@ export class ScFolderPickerComponent<T> implements ControlValueAccessor {
         pickValueText: this.pickValueText,
         pickIcon: this.pickIcon
       }).then(v => {
-        console.log('Hello', v);
         this.value = v
     })
   }

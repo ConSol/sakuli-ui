@@ -1,6 +1,6 @@
 import {Component, ElementRef, EventEmitter, HostBinding, Input, OnInit, Output, ViewChild} from "@angular/core";
 import {Theme} from "../theme";
-import {MenuItem} from "./menu-item.interface";
+import {IMenuItem} from "./menu/menu-item.interface";
 
 @Component({
   selector: 'sc-header',
@@ -49,12 +49,12 @@ export class ScHeaderComponent {
 
   @Input() brandLogo: string;
   @Input() brandName: string;
-  @Input() primaryMenuItems: MenuItem[];
-  @Input() secondaryMenuItems: MenuItem[];
+  @Input() primaryMenuItems: IMenuItem[];
+  @Input() secondaryMenuItems: IMenuItem[];
 
-  @Output() menuItemSelected = new EventEmitter<MenuItem>();
+  @Output() menuItemSelected = new EventEmitter<IMenuItem>();
 
-  onLinkClick(item: MenuItem) {
+  onLinkClick(item: IMenuItem) {
     this.menuItemSelected.next(item);
   }
 }

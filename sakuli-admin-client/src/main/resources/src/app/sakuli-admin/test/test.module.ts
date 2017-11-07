@@ -18,6 +18,9 @@ import {SaConfigurationComponent} from "./configuration/sa-configuration.compone
 import {RunConfigurationModule} from "./run-configuration/run-configuration.module";
 import {SaDockerPullInfoComponent} from "./sa-docker-pull-info.component";
 import {SaReportModule} from "./report/sa-report.module";
+import {ReactiveFormsModule} from "@angular/forms";
+import {testsuiteReducer} from "./state/testsuite.state";
+import {TestsuiteEffects} from "./state/testsuite.effects";
 
 export const DeclareAndExport = [
   TestComponent,
@@ -35,18 +38,24 @@ export const DeclareAndExport = [
     CommonModule,
     SweetestComponentsModule,
     NgbModule,
-    EffectsModule.forFeature([TestEffects]),
+    EffectsModule.forFeature([
+      TestEffects,
+      TestsuiteEffects
+    ]),
+    StoreModule.forFeature('testsuite', testsuiteReducer),
     StoreModule.forFeature('test', testReducer),
     RouterModule,
     SaAssetsModule,
     RunConfigurationModule,
-    SaReportModule
+    SaReportModule,
+    ReactiveFormsModule
   ],
   entryComponents: [
     LogModalComponent
   ],
   providers: [
-    TestEffects
+    TestEffects,
+    TestsuiteEffects
   ],
   declarations: [
     ...DeclareAndExport

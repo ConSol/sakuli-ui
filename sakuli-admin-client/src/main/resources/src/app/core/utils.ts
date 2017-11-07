@@ -24,3 +24,14 @@ export function nothrowFn(cb: (...args: any[]) => any,  defaultValue: any = unde
     }
   })
 }
+
+export const urlencoded = (s: TemplateStringsArray, ...v:any[]) => {
+  let result = '';
+  for(let i = 0; i < Math.max(s.length, v.length); i++) {
+    const literal = s[i] || '';
+    const variable = v[i] || '';
+    result += literal;
+    result += encodeURIComponent(variable);
+  }
+  return result;
+};

@@ -1,11 +1,17 @@
-import {TestCase, TestSuite} from './test-suite.model';
-
 export interface SakuliTestCaseConfiguration {
   url: string;
 }
 
 
-export interface SakuliTestCase extends TestCase<SakuliTestCaseConfiguration> {};
+export interface SakuliTestCase {
+  configuration: SakuliTestCaseConfiguration,
+  mainFile: string;
+  startUrl: string;
+  name: string;
+  sourceFiles: string[],
+  assetFiles: string[],
+  configurationFiles: string []
+};
 
 export interface SakuliTestSuiteConfiguration {
   id: string,
@@ -18,6 +24,13 @@ export interface SakuliTestSuiteConfiguration {
 }
 
 
-export interface SakuliTestSuite extends TestSuite<SakuliTestSuiteConfiguration, SakuliTestCase> {};
+export interface SakuliTestSuite {
+  id: string;
+  name: string;
+  testCases: SakuliTestCase[];
+  configurationFiles: string[];
+  configuration: SakuliTestSuiteConfiguration;
+  root: string;
+};
 
 

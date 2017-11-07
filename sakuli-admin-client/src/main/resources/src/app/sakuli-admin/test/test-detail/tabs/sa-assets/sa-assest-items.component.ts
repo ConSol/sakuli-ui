@@ -1,20 +1,6 @@
 import {
-  ChangeDetectionStrategy,
-  Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnInit, Output, TemplateRef,
-  ViewChild
-} from '@angular/core';
-import {Observable} from "rxjs/Observable";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {SaImageModal} from "./sa-image-modal.component";
-import {Store, StoreRootModule} from "@ngrx/store";
-import {TestCase} from "../../../../../sweetest-components/services/access/model/test-suite.model";
-import {
-  FileResponse,
-  FileWithContent
-} from "../../../../../sweetest-components/services/access/model/file-response.interface";
-import {FileService} from "../../../../../sweetest-components/services/access/file.service";
-import {AppState} from "../../../../appstate.interface";
-import {log, notNull} from "../../../../../core/redux.util";
+  Component, EventEmitter, HostBinding, Input, Output} from '@angular/core';
+import {FileResponse} from "../../../../../sweetest-components/services/access/model/file-response.interface";
 import {AssetItemType, getItemType} from "./asset-item-type.enum";
 
 

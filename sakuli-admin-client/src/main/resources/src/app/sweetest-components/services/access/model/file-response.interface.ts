@@ -1,5 +1,5 @@
 export function absPath(f: FileResponse) {
-  return `${f.path}/${f.name}`;
+  return [f.path,f.name].filter(p => p.length).join('/');
 }
 
 export interface FileResponse {

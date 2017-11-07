@@ -1,11 +1,8 @@
-import {Component, Input} from "@angular/core";
-import {ActivatedRoute, Router} from "@angular/router";
-import {Store} from "@ngrx/store";
-import {CloseTest, OpenTest} from "../state/test.actions";
-import {AppState} from "../../appstate.interface";
+import {Component, EventEmitter, Input, Output, ViewChild} from "@angular/core";
 import {NgbTabChangeEvent} from "@ng-bootstrap/ng-bootstrap";
-import {TestCase} from "../../../sweetest-components/services/access/model/test-suite.model";
-import {log, notNull} from "../../../core/redux.util";
+import {SakuliTestCase, SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
+import {FormBaseComponent} from "../../../sweetest-components/components/forms/form-base-component.interface";
+import {SaSourceComponent} from "./tabs/source.component";
 
 @Component({
   selector: 'sa-test-detail',
@@ -21,11 +18,17 @@ import {log, notNull} from "../../../core/redux.util";
               <sc-icon icon="fa-files-o"></sc-icon>
             </ng-template>
             <ng-template ngbTabContent class="test-cnt">
-              <ul class="list-group margin-y">
-                <li class="list-group-item" *ngFor="let case of allTestCases">
-                  <sc-link [routerLink]="['/test', 'sources', case | urlComponent ]" icon="fa-code">{{case | fileName}}</sc-link>
-                </li>
-              </ul>
+              <ng-container *ngFor="let testCase of allTestCases">
+                <h4>{{testCase.name}}</h4>
+                <ul class="list-group margin-y">
+                  <li class="list-group-item" *ngFor="let testCase of testCasesGrouped[tcName]">
+                    <sc-link
+                      (click)="navigateTo(testCase)"
+                      icon="fa-code">{{testCase.name}}
+                    </sc-link>
+                  </li>
+                </ul>
+              </ng-container>
             </ng-template>
           </ngb-tab>
           <ngb-tab
@@ -37,7 +40,20 @@ import {log, notNull} from "../../../core/redux.util";
               <a (click)="onCloseTab($event, tab)">&times;</a>
             </ng-template>
             <ng-template ngbTabContent class="test-cnt">
-              <sa-source [testCase]="testCase" class="d-flex"></sa-source>
+              <sa-source
+                [testSuite]="testSuite"
+                [testCase]="testCase"
+                class="d-flex flex-column"
+                *ngIf="testCase && testCase; else loading"
+                #sourceEditor
+              >
+              </sa-source>
+              <ng-template #loading>
+                <ngb-progressbar
+                  class="d-flex"
+                >
+                </ngb-progressbar>
+              </ng-template>
             </ng-template>
           </ngb-tab>
         </ngb-tabset>
@@ -67,56 +83,57 @@ import {log, notNull} from "../../../core/redux.util";
     sa-test-detail-editor {
       flex-grow: 1;
     }
-    
+
     sa-source {
       flex-grow: 1;
     }
   `]
 })
-export class TestDetailComponent {
+export class TestDetailComponent implements FormBaseComponent {
+  @ViewChild(SaSourceComponent)
+  sourceEditor: SaSourceComponent;
 
   fileTabId = 'test-detail-component-item-tab-id';
+  @Input() testSuite: SakuliTestSuite;
   @Input() tabs: string[] = [];
   @Input() activeTab: string = this.fileTabId;
-  @Input() testCase: TestCase = null;
-  @Input() allTestCases: TestCase[] = [];
+  @Input() testCase: SakuliTestCase = null;
+  @Input() allTestCases: SakuliTestCase[] = [];
 
-
-  constructor(private route: ActivatedRoute,
-              private router: Router,
-              private store: Store<AppState>,
-              ) {
-    /** TODO: Extract Effects for routing **/
-    const [fileUrl$, noUrl$] =this.route.paramMap
-      .map(p => p.get('file'))
-      .partition(notNull)
-
-      noUrl$
-        .subscribe(_ => this.store.dispatch(new OpenTest('')))
-
-      fileUrl$
-        .map(decodeURIComponent)
-        .do(log('sddfgdfg'))
-        .subscribe(u => this.store.dispatch(new OpenTest(u)));
-
-  }
+  @Output() testSelect = new EventEmitter<NgbTabChangeEvent>();
+  @Output() homeSelect = new EventEmitter<NgbTabChangeEvent>();
+  @Output() tabClose = new EventEmitter<string>();
+  @Output() openCase = new EventEmitter<string>();
 
   onTabChange($event: NgbTabChangeEvent) {
-    if($event.nextId !== this.fileTabId) {
-      this.router.navigate(['/test', 'sources', $event.nextId]);
+    if ($event.nextId !== this.fileTabId) {
+      this.testSelect.next($event);
     } else {
-      this.router.navigate(['/test', 'sources'])
+      this.homeSelect.next($event);
     }
   }
 
   onCloseTab($event: MouseEvent, test: string) {
     $event.preventDefault();
-    this.store.dispatch(new CloseTest(test))
-    this.router.navigate(['/test', 'sources'])
+    this.tabClose.next(test);
   }
 
-  case2Url(testCase: TestCase) {
-    return encodeURIComponent(testCase.name);
+  navigateTo(testCase: SakuliTestCase) {
+    this.openCase.next([testCase.name, testCase.mainFile].join('/'));
   }
 
+  get testCaseGroupNames() {
+    return Object.keys(this.testCasesGrouped);
+  }
+
+  get testCasesGrouped() {
+    return this.allTestCases.reduce((all, tc) => {
+      const tcs = [...(all[tc.name] || []), tc];
+      return {...all, [tc.name]: tcs}
+    }, {});
+  }
+
+  getForm() {
+    return this.sourceEditor.getForm();
+  }
 }

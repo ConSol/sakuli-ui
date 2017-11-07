@@ -10,9 +10,8 @@ import {
   SaveRunConfigurationSuccess,
   SelectSakuliContainer
 } from "./run-configuration.actions";
-import Mock = jest.Mock;
 import {RunConfigurationService} from "../../../sweetest-components/services/access/run-configuration.service";
-import {StoreModule} from "@ngrx/store";
+import {Store, StoreModule} from "@ngrx/store";
 import {RunConfigurationModule} from "./run-configuration.module";
 import {CreateToast, ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
 import {EffectsModule} from "@ngrx/effects";
@@ -20,16 +19,18 @@ import {RunConfiguration} from "./run-configuration.interface";
 import {RunConfigurationTypes} from "./run-configuration-types.enum";
 import {
   DangerToast,
-  SuccessToast
+  SuccessToast, Toast
 } from "../../../sweetest-components/components/presentation/toast/toast-state.interface";
 import {
   LoadingSetBusy,
   LoadingSetIdle
 } from "../../../sweetest-components/components/presentation/loading/sc-loading.state";
+import {RouterModule} from "@angular/router";
+import {APP_BASE_HREF} from "@angular/common";
+import Mocked = jest.Mocked;
+import {createMock} from "../../../sweetest-components/utils";
 
-type Mocked<T> = {
-  [P in keyof T]: Mock<T[P]>;
-  }
+Error.stackTraceLimit = 1;
 
 describe(RunConfigurationEffects.name, () => {
 
@@ -51,39 +52,33 @@ describe(RunConfigurationEffects.name, () => {
     let mockActions: Observable<any>;
     let effects: RunConfigurationEffects;
 
-    const mockRunConfigurationService: Mocked<RunConfigurationService> = {
-      getRunConfiguration: jest.fn(),
+    const mockRunConfigurationService: Mocked<Partial<RunConfigurationService>> = {
       loadSakuliContainerTags: jest.fn(),
       loadSakuliContainer: jest.fn(),
-      saveRunConfiguration: jest.fn()
+      saveRunConfiguration: jest.fn(),
+      getRunConfiguration: jest.fn()
     };
-
-    const mockToastService: Mocked<ScToastService> = {
-      remove: jest.fn(),
-      create: jest.fn(),
-      toastCount$: jest.fn(),
-      toasts$: jest.fn()
-    }
 
     beforeEach(async () => {
       await TestBed.configureTestingModule({
         imports: [
           StoreModule.forRoot({}),
           EffectsModule.forRoot([]),
-          RunConfigurationModule
+          RunConfigurationModule,
+          RouterModule.forRoot([])
         ],
         providers: [
           RunConfigurationEffects,
           provideMockActions(() => mockActions),
           {provide: RunConfigurationService, useValue: mockRunConfigurationService},
-          {provide: ScToastService, useValue: mockToastService}
+          {provide: ScToastService, useValue: {}},
+          {provide: APP_BASE_HREF, useValue: ''},
         ]
-      })
+      });
       effects = TestBed.get(RunConfigurationEffects);
     });
 
     describe('getConfig$', () => {
-
       it('positive', marbles(m => {
         mockActions = m.hot('---a-', {
           a: new LoadRunConfiguration()
@@ -140,7 +135,7 @@ describe(RunConfigurationEffects.name, () => {
       it('negative', marbles(m => {
         mockActions = m.hot('-a', {
           a: new SaveRunConfiguration(runConfiguration)
-        })
+        });
         const error = Error();
         mockRunConfigurationService.saveRunConfiguration
           .mockReturnValueOnce(m.cold('#', null, error))
@@ -156,7 +151,7 @@ describe(RunConfigurationEffects.name, () => {
       it('positive', marbles(m => {
         mockActions = m.hot('-a', {
           a: new SaveRunConfigurationSuccess()
-        })
+        });
         mockRunConfigurationService.saveRunConfiguration
           .mockReturnValueOnce(m.cold('a|', {a: runConfiguration}));
         const expect = m.cold('-a', {

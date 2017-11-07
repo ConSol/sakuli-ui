@@ -1,5 +1,4 @@
 import {Action} from "@ngrx/store";
-import {TestSuite} from "../../../sweetest-components/services/access/model/test-suite.model";
 import {uniqueName} from "../../../core/redux.util";
 import {TestRunInfo} from "../../../sweetest-components/services/access/model/test-run-info.interface";
 import {TestExecutionEvent} from "../../../sweetest-components/services/access/model/test-execution-event.interface";
@@ -7,20 +6,6 @@ import {SakuliTestSuite} from "../../../sweetest-components/services/access/mode
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
 import {DockerPullInfo} from "./test.interface";
 
-
-
-export const LOAD_TESTSUITE = uniqueName('[test] loadtestsuite');
-export class LoadTestsuite implements Action {
-  readonly type = LOAD_TESTSUITE;
-}
-
-export const SET_TESTSUITE = uniqueName('[test] settestsuite');
-export class SetTestSuite implements Action {
-  readonly type = SET_TESTSUITE;
-  constructor(
-    readonly testSuite: TestSuite
-  ) {}
-}
 
 export const OPEN_TEST = uniqueName('[test] opentest');
 export class OpenTest implements Action {
@@ -51,7 +36,7 @@ export class SetTestRunInfo implements Action {
   readonly type = SET_TEST_RUN_INFO;
   constructor(
     readonly testRunInfo: TestRunInfo,
-    readonly testSuite?: TestSuite
+    readonly testSuite?: SakuliTestSuite
   ) {}
 }
 
@@ -133,8 +118,7 @@ export class DockerPullCompleted implements Action {
   ) {}
 }
 
-export type AllTypes = LoadTestsuite
-  | SetTestSuite
+export type AllTypes =
   | CloseTest
   | OpenTest
   | RunTest

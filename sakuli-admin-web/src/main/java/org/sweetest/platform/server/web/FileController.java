@@ -14,15 +14,19 @@ import org.sweetest.platform.server.api.file.FileSystemService;
 import org.sweetest.platform.server.api.project.ProjectService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(FileController.RequestBasePath)
 public class FileController {
 
-    final static String RequestBasePath = "/api/files";
+    final static String RequestBasePath = "api/files";
 
     @Autowired
     private FileSystemService fileSystemService;
@@ -30,48 +34,49 @@ public class FileController {
     @Autowired
     private ProjectService projectService;
 
-    private String cleanRequestPathFor(HttpServletRequest request, String _for) {
-        return ((String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE))
-                .replace(RequestBasePath + _for, "");
-    }
-
-    private String cleanRequestPath(HttpServletRequest request) {
-        return cleanRequestPathFor(request, "/");
-    }
-
-    @GetMapping(value = "ls/**")
+    @GetMapping(value = "ls")
     @ResponseBody
-    public List<FileModel> getFiles(HttpServletRequest request) {
-        String requestPath = cleanRequestPathFor(request, "/ls/");
-        return fileSystemService.getFiles(requestPath)
+    public List<FileModel> getFiles(
+            @RequestParam("path") String path,
+            @RequestParam("filter") Optional<String> filter
+    ) {
+        return fileSystemService.getFiles(path)
                 .filter(FileSystemService.hiddenFiles)
-                .map(FileSystemService.toFileModel.apply(requestPath))
+                .filter(createFilter(filter))
+                .map(FileSystemService.toFileModel.apply(path))
                 .collect(Collectors.toList());
     }
 
-    @GetMapping(value = "/**")
+    private Predicate<File> createFilter(Optional<String> optionalFilter) {
+        Predicate<File> noFilter = f -> true;
+        Function<String, Predicate<File>> byFilter = filter -> file -> file.getName().matches(filter);
+        return optionalFilter
+                .map(byFilter)
+                .orElse(noFilter);
+    }
+
+    @GetMapping()
     @ResponseBody
-    public ResponseEntity<Resource> readFile(HttpServletRequest request) {
-        String requestPath = cleanRequestPath(request);
-        return fileSystemService.readFile(requestPath)
+    public ResponseEntity<Resource> readFile(@RequestParam("path") String path) {
+        return fileSystemService.readFile(path)
                 .map(cnt -> ResponseEntity.ok().body(cnt))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping(value = "/**")
+    @PostMapping()
     @ResponseBody
-    public ResponseEntity writeFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws IOException {
-        String requestPath = cleanRequestPath(request);
-        boolean success = fileSystemService.writeFile(requestPath, file.getBytes());
+    public ResponseEntity writeFile(
+            @RequestParam("path") String path,
+            @RequestParam("file") MultipartFile file) throws IOException {
+        boolean success = fileSystemService.writeFile(path, file.getBytes());
         projectService.readProject(projectService.getActiveProject().getPath())
                 .ifPresent(pm -> projectService.setActiveProject(pm));
         return success ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
 
-    @DeleteMapping(value = "/**")
-    public ResponseEntity deleteFile(HttpServletRequest request) {
-        String requestPath = cleanRequestPath(request);
-        boolean success = fileSystemService.deleteFile(requestPath);
+    @DeleteMapping()
+    public ResponseEntity deleteFile(@RequestParam("path") String path) {
+        boolean success = fileSystemService.deleteFile(path);
         projectService.readProject(projectService.getActiveProject().getPath())
                 .ifPresent(pm -> projectService.setActiveProject(pm));
         return success ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();

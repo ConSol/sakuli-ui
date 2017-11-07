@@ -1,6 +1,5 @@
 import {Injectable, Type} from "@angular/core";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {ActionCreator} from "../../../services/ngrx-util/action-creator-metadata";
 
 @Injectable()
 export class ScModalService {

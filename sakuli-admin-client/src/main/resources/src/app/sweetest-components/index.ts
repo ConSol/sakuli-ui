@@ -7,7 +7,6 @@ import {ScHeaderComponent} from './components/layout/sc-header.component';
 import {ScContentComponent} from './components/layout/sc-content.component';
 import {ScLinkComponent} from './components/layout/sc-link.component';
 import {ScCircleIndicatorComponent} from './components/presentation/circle-indicator/sc-circle-indicator.component';
-import {LayoutMenuService} from './components/layout/layout-menu.service';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {PrimaryContextDirective} from './components/common/context-states.directive';
 import {ScCounterComponent} from './components/presentation/counter/sc-counter.component';
@@ -32,6 +31,9 @@ import {ScEntrySetPipe} from "./components/common/entry-set.pipe";
 import {AnsiColorPipe} from "./components/presentation/log/ansi-color.pipe";
 import {ScCollapseComponent} from "./components/common/sc-collapse.component";
 import {DateDiffPipe, MomentPipe} from "./components/common/date-util.pipes";
+import {ScMenuModule} from "./components/layout/menu/menu.module";
+import {ScRouterModule} from "./services/router/router.module";
+import {PreventRoutingGuardService} from "./components/forms/prevent-routing-guard.service";
 
 
 export const SweetestComponentsAndDirectives  = [
@@ -71,10 +73,6 @@ export const SweetestComponentsAndDirectives  = [
   MomentPipe,
 ];
 
-export const Providers = [
-  LayoutMenuService,
-];
-
 @NgModule({
   imports: [
     CommonModule,
@@ -87,10 +85,15 @@ export const Providers = [
     ScModalModule,
     ScValuePickerModule,
     ScIconModule,
-    ScLoadingModule
+    ScLoadingModule,
+    ScMenuModule,
+    ScRouterModule,
   ],
   declarations: [
     ...(SweetestComponentsAndDirectives)
+  ],
+  providers: [
+    PreventRoutingGuardService,
   ],
   exports: [
     ...(SweetestComponentsAndDirectives),
@@ -101,16 +104,15 @@ export const Providers = [
     ScModalModule,
     ScValuePickerModule,
     ScIconModule,
-    ScLoadingModule
+    ScLoadingModule,
+    ScRouterModule,
   ],
-  providers: Providers
 })
 export class SweetestComponentsModule {
 
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: SweetestComponentsModule,
-      providers: Providers
     };
   }
 }

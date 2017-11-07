@@ -37,14 +37,6 @@ public class TestCase<C> {
         this.sourceFiles = sourceFiles;
     }
 
-    public List<String> getAssetFiles() {
-        return assetFiles;
-    }
-
-    public void setAssetFiles(List<String> assetFiles) {
-        this.assetFiles = assetFiles;
-    }
-
     public List<String> getConfigurationFiles() {
         return configurationFiles;
     }

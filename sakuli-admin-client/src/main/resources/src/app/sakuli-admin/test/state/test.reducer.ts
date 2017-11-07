@@ -1,20 +1,8 @@
 import {DockerPullInfo, TestState, TestStateInit} from './test.interface';
 import * as Actions from './test.actions';
-import {
-  actionTypeFor,
-  AsyncActionLifecycle
-} from "../../../sweetest-components/services/ngrx-util/action-creator-metadata";
-import {TestService} from "../../../sweetest-components/services/access/test.service";
-import {Action} from "@ngrx/store";
-import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
-import {Type} from "@angular/core";
 
-export function testReducer(state: TestState, action: Actions.AllTypes): TestState {
+export function testReducer(state: TestState = TestStateInit, action: Actions.AllTypes): TestState {
   switch (action.type) {
-    case Actions.SET_TESTSUITE: {
-      const {testSuite} = action;
-      return ({...state, testSuite})
-    }
     case Actions.OPEN_TEST: {
       const {testCase: activeTest} = action;
       const hasTest = state.openTests.indexOf(activeTest) > -1 || activeTest === '';
@@ -108,24 +96,7 @@ export function testReducer(state: TestState, action: Actions.AllTypes): TestSta
       })
     }
     default:
-      return reduceAsync(state || TestStateInit, action as Action);
+      return state
   }
 }
 
-const isAsyncSuccess = <T>(action: Action, type: Type<T>, method: keyof T): action is Action & { payload: T[keyof T] } => {
-  return action.type === actionTypeFor(type, method, AsyncActionLifecycle.Success);
-};
-
-function reduceAsync(state: TestState, action: Action) {
-  if (isAsyncSuccess(action, TestService, "testResults")) {
-
-  }
-
-  switch (action.type) {
-    case actionTypeFor(TestService, 'testResults', AsyncActionLifecycle.Success): {
-      const {payload} = action as Action & { payload: TestSuiteResult[] };
-      return ({...state, testResults: payload})
-    }
-  }
-  return state;
-}

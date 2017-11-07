@@ -7,7 +7,8 @@ import {FileResponse} from "../../../../../../sweetest-components/services/acces
   template: `
       <div class="card"
            style="width: 100%"
-           placement="top" [ngbTooltip]="item"
+           container="body"
+           placement="top" [ngbTooltip]="item | absPath"
       >
         <div class="card-img-top grow d-flex flex-column justify-content-center">
           <div class="text-center">

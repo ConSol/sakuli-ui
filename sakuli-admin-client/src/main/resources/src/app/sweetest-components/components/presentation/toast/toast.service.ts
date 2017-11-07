@@ -4,6 +4,7 @@ import {
   Toast, ToastAppState,
 } from "app/sweetest-components/components/presentation/toast/toast-state.interface";
 import {uniqueName} from "../../../../core/redux.util";
+import {Observable} from "rxjs/Observable";
 
 export const CREATE_TOAST = uniqueName('[sc-toast] CREATE_TOAST');
 export class CreateToast implements Action {
@@ -30,7 +31,7 @@ export class ScToastService {
     private store: Store<ToastAppState>
   ) {}
 
-  get toasts$() {
+  get toasts$(): Observable<Toast[]> {
     return this.store.select(s => s.scToast.toasts);
   }
 
