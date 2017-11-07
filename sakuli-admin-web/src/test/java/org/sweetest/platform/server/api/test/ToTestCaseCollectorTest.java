@@ -81,12 +81,14 @@ public class ToTestCaseCollectorTest {
         SakuliTestCase tc2 = sakuliTestCases.get(1);
 
         assertFalse(tc1.isActive());
-        assertEquals("case1/test.js", tc1.getName());
+        assertEquals("case1", tc1.getName());
+        assertEquals("test.js", tc1.getMainFile());
         assertEquals("http://www.sakuli.org", tc1.getStartUrl());
         assertEquals("this is a comment\nwhich explains an inactive test", tc1.getComment());
 
         assertTrue(tc2.isActive());
-        assertEquals("case2/citrus.js", tc2.getName());
+        assertEquals("case2", tc2.getName());
+        assertEquals("citrus.js", tc2.getMainFile());
         assertEquals("http://www.citrusframework.org", tc2.getStartUrl());
         assertEquals("another comment for an active test", tc2.getComment());
 
