@@ -1,6 +1,5 @@
 import {Component, EventEmitter, HostBinding, Input, OnInit, Output} from '@angular/core';
 import {
-  absPath,
   FileResponse
 } from "../../../../../../sweetest-components/services/access/model/file-response.interface";
 import {AssetItem, AssetItemStyle} from "./asset-item.abstract-class";
@@ -9,6 +8,7 @@ import {AssetItem, AssetItemStyle} from "./asset-item.abstract-class";
   selector: 'asset-item-image',
   template: `  
     <div class="card"
+         container="body"
          placement="top" [ngbTooltip]="item | absPath"
     >
       <div class="card-img-top grow d-flex flex-column justify-content-center">

@@ -1,6 +1,5 @@
 import {Injectable} from "@angular/core";
-import {Http} from "@angular/http";
-import {TestCase, TestSuite} from "./model/test-suite.model";
+import {Headers, Http} from "@angular/http";
 import {Observable} from "rxjs/Observable";
 import {TestRunInfo} from "./model/test-run-info.interface";
 import {StompConnection, StompService} from "./stomp.service";
@@ -9,10 +8,10 @@ import {TestSuiteResult} from "./model/test-result.interface";
 import {FileService} from "./file.service";
 import {ProjectService} from "./project.service";
 import {absPath} from "./model/file-response.interface";
-import * as moment from "moment";
 import {DateUtil} from "../../utils";
+import {SakuliTestSuite} from "./model/sakuli-test-model";
 
-const testUrl = `api/test`;
+const testUrl = `api/testsuite`;
 
 @Injectable()
 export class TestService {
@@ -23,12 +22,20 @@ export class TestService {
               private stomp: StompService) {
   }
 
-  testSuite<S extends TestSuite<{}, TestCase<{}>>>(): Observable<S> {
-    return this.http.get(testUrl)
-      .map(r => r.json() as S);
+  testSuite(path: string): Observable<SakuliTestSuite> {
+    return this.http.get(`${testUrl}?path=${path}`)
+      .map(r => r.json() as SakuliTestSuite);
   }
 
-  run(testSuite: TestSuite): Observable<TestRunInfo> {
+  putTestSuite(testSuite: SakuliTestSuite) {
+    return this.http.put(
+      `${testUrl}`,
+      JSON.stringify(testSuite),
+      { headers: new Headers({'Content-Type': 'application/json'})}
+    ).map(r => r.text());
+  }
+
+  run(testSuite: SakuliTestSuite): Observable<TestRunInfo> {
     return this.http.post(`${testUrl}/run`, testSuite)
       .map(r => r.json());
   }

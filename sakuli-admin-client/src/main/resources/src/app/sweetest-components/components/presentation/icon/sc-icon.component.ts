@@ -5,20 +5,26 @@ import {FontawesomeIcon} from './fontawesome-icon.utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'sc-icon',
   template: `
-    <i [class]="'fa ' + iconClass" [ngClass]="ngClass" [ngStyle]="{transform:iconTransform}"></i>
-    <ng-content></ng-content>
+    <div class="grow flex-row d-flex flex-nowrap align-content-center align-items-center">
+      <i class="fa" [ngClass]="ngClass" [ngStyle]="{transform:iconTransform}"></i>
+      <ng-content></ng-content>
+    </div>
   `,
   styles: [`
+    .grow {
+      flex-grow: 1;
+    }
     .fa {
       margin-right: 3px;
       transition: all .25s ease-out;
-    }`]
+    }
+  `]
 })
 export class ScIconComponent implements OnInit {
 
   @HostBinding('class')
   get hostClass() {
-    return 'flex-row';
+    return 'd-inline-block';
   }
 
   @Input() icon?: FontawesomeIcon;

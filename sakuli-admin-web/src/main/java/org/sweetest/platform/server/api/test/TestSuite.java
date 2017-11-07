@@ -2,6 +2,7 @@ package org.sweetest.platform.server.api.test;
 
 import org.sweetest.platform.server.api.project.ProjectModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,7 +11,7 @@ import java.util.List;
 public class TestSuite<C, T extends TestCase> {
 
     private String name;
-    private List<T> testCases;
+    private List<T> testCases = new ArrayList<>();
     private List<String> configurationFiles;
     private C configuration;
     private String root;

@@ -2,15 +2,9 @@ import {Action} from "@ngrx/store";
 import {FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
 import {Tree, TreeItem} from "../../../sweetest-components/components/presentation/tree/tree.interface";
 import {ProjectModel} from "../../../sweetest-components/services/access/model/project.model";
-import {actionTypeFor} from "../../../sweetest-components/services/ngrx-util/action-creator-metadata";
 import {uniqueName} from "../../../core/redux.util";
 
-export const LOAD_PATH = 'loadpath';
-
-interface TypedAction<T> extends Action {
-  payload: T;
-}
-
+export const LOAD_PATH = '[project] loadpath';
 export class LoadPath implements Action {
   readonly type = LOAD_PATH;
   constructor(
@@ -18,7 +12,7 @@ export class LoadPath implements Action {
   ) {}
 }
 
-export const APPEND_CHILDREN = 'appendchildren';
+export const APPEND_CHILDREN = uniqueName('[project] appendchildren');
 export class AppendChildren implements Action {
   readonly type = APPEND_CHILDREN;
   constructor(
@@ -27,7 +21,7 @@ export class AppendChildren implements Action {
   ) {}
 }
 
-export const TOGGLE_OPEN = 'toggleopen';
+export const TOGGLE_OPEN = uniqueName('[project] toggleopen');
 export class ToggleOpen implements Action {
   readonly type = TOGGLE_OPEN;
   constructor(
@@ -35,23 +29,23 @@ export class ToggleOpen implements Action {
   ) {}
 }
 
-export const SELECT_FILE = 'selectfile';
+export const SELECT_FILE = uniqueName('[project] selectfile');
 export class SelectFile implements Action {
   readonly type = SELECT_FILE;
   constructor(
-    public file?: Tree<FileResponse>
+    readonly file?: Tree<FileResponse>
   ) {}
 }
 
-export const OPEN = 'open';
+export const OPEN = uniqueName('[project] open');
 export class Open implements Action {
   readonly type = OPEN;
   constructor(
-    public file: FileResponse
+    readonly file: FileResponse
   ) {}
 }
 
-export const SET_PROJECT = 'setproject';
+export const SET_PROJECT = uniqueName('[project] setproject');
 export class SetProject implements Action {
   readonly type = SET_PROJECT;
   constructor(

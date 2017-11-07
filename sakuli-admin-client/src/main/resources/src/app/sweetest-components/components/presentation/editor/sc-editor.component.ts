@@ -9,10 +9,11 @@ import 'brace/mode/javascript';
 import 'brace/mode/properties';
 import 'brace/mode/dockerfile';
 import 'brace/mode/yaml';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
+import {ControlContainer, ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {EditorModes} from "./editor-modes.interface";
+import {Deferred} from "../../../utils";
 
-const noop = (_: any) => {};
+const noop = (..._: any[]) => {};
 
 @Component({
   selector: 'sc-editor',
@@ -46,7 +47,7 @@ export class ScEditorComponent implements AfterViewInit, ControlValueAccessor {
   _editor: ace.Editor;
 
   onChange = noop;
-  onTouched = noop
+  onTouched = noop;
 
   @ViewChild('editorEl') editorEl: ElementRef;
 
@@ -54,25 +55,22 @@ export class ScEditorComponent implements AfterViewInit, ControlValueAccessor {
 
   @Input() mode: string = 'javascript';
 
+  deferredEditor = new Deferred<ace.Editor>();
+
+  private hasInitialised = false;
+
+  set editor(editor: ace.Editor) {
+    this._editor = editor;
+    this.deferredEditor.resolve(editor);
+  }
 
   get editor() {
     return this._editor;
   }
 
-  get value() {
-    return this.editor.getValue();
-  }
-
   private static instanceCounter = 0;
 
   id = `sc-editor-instance-${ScEditorComponent.instanceCounter++}`;
-
-  set value(v: any) {
-    if (v !== undefined && this.editor) {
-      this.editor.setValue(v);
-      this.onChange(v);
-    }
-  }
 
   ngOnInit() {
     if(EditorModes.indexOf(this.mode) === -1) {
@@ -81,17 +79,25 @@ export class ScEditorComponent implements AfterViewInit, ControlValueAccessor {
   }
 
   ngAfterViewInit() {
-    this._editor = ace.edit(this.id);
+    this.editor = ace.edit(this.id);
+    this.deferredEditor.resolve(this._editor);
     this.editor.setTheme(`ace/theme/chrome`);
     this.editor.session.setMode(`ace/mode/${this.mode}`);
-    this.editor.$blockScrolling = Infinity;
+    //this.editor.$blockScrolling = Infinity;
     this.editor.setValue("");
-    this.editor.on('change', e => this.change.next(e));
+    this.editor.getSession().on('change', e => this.hasInitialised ? this.change.next(e): noop());
+    this.editor.getSession().on('blur', e => this.onTouched());
     this.change.subscribe(_ => this.onChange(this.editor.getValue()));
   }
 
-  writeValue(value: any): void {
-    this.value = value;
+  async writeValue(value: any = '') {
+    const editor = await this.deferredEditor.getValue();
+    editor.setValue(value);
+    if(!this.hasInitialised) {
+      editor.moveCursorToPosition({row: 0, column: 0});
+      editor.focus();
+    }
+    this.hasInitialised = true;
   }
   registerOnChange(fn: any): void {
     this.onChange = fn;
@@ -101,7 +107,9 @@ export class ScEditorComponent implements AfterViewInit, ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  setDisabledState(isDisabled: boolean): void {
+  async setDisabledState(isDisabled: boolean) {
+    const editor = await this.deferredEditor.getValue();
+    editor.setReadOnly(isDisabled);
   }
 
 

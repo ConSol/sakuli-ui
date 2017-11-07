@@ -1,9 +1,8 @@
 import {Component, Input} from "@angular/core";
-import {TestSuite} from "../../sweetest-components/services/access/model/test-suite.model";
 import {AppState} from "../appstate.interface";
 import {Store} from "@ngrx/store";
 import {RunTest} from "./state/test.actions";
-import {SakuliTestSuite} from "../../sweetest-components/services/access/model/sakuli-test-model";
+import {SakuliTestCase, SakuliTestSuite} from "../../sweetest-components/services/access/model/sakuli-test-model";
 import {animate, style, transition, trigger} from "@angular/animations";
 import {ProjectModel} from "../../sweetest-components/services/access/model/project.model";
 import {
@@ -110,11 +109,10 @@ import {
   `]
 })
 export class RunTestSuiteComponent {
-  @Input() testSuite: TestSuite;
+  @Input() testSuite: SakuliTestSuite;
   @Input() project: ProjectModel;
 
   showConfiguration = false;
-
 
   constructor(
     private store: Store<AppState>,
@@ -128,7 +126,7 @@ export class RunTestSuiteComponent {
   }
 
   runSuite() {
-    this.store.dispatch(new RunTest(this.testSuite as SakuliTestSuite));
+    this.store.dispatch(new RunTest(this.testSuite));
   }
 
   toggleConfiguration() {
@@ -147,7 +145,6 @@ export class RunTestSuiteComponent {
   }
 
   onContainerChange($event: SakuliContainer) {
-    console.log('E', $event);
     this.store.dispatch(new SelectSakuliContainer($event));
   }
 

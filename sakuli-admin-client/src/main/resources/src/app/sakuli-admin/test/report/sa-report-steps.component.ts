@@ -96,7 +96,6 @@ export class SaReportStepsComponent implements OnInit {
   }
 
   toClipBoard(textArea: HTMLTextAreaElement) {
-    console.log(textArea);
     const pd = textArea.disabled;
     textArea.disabled = false;
     textArea.focus();
@@ -104,6 +103,5 @@ export class SaReportStepsComponent implements OnInit {
     const r = document.execCommand('copy');
     textArea.setSelectionRange(0, 0);
     textArea.disabled = pd;
-    console.log(r);
   }
 }

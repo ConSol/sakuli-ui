@@ -50,7 +50,6 @@ export class SaReportContentComponent implements OnInit {
   log(m: string, e: MouseEvent) {
     e.stopPropagation();
     e.preventDefault();
-    console.log(m);
   }
 
   @Input() testResult: TestSuiteResult;

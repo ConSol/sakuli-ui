@@ -42,8 +42,7 @@ public class LocalFileSystemService implements FileSystemService {
     @Override
     public Stream<File> getFiles(String path) {
         File file = normalizePath(path).toFile();
-        return !file.exists() ? Stream.empty() : Arrays.asList(file.list())
-                .stream()
+        return !file.exists() ? Stream.empty() : Arrays.stream(Optional.ofNullable(file.list()).orElse(new String[] {}))
                 .map(cp -> new File(file, cp));
     }
 
@@ -71,10 +70,7 @@ public class LocalFileSystemService implements FileSystemService {
     @Override
     public boolean deleteFile(String path) {
         File file = normalizePath(path).toFile();
-        if(file.exists() && file.isFile()) {
-            return file.delete();
-        }
-        return false;
+        return file.exists() && file.isFile() && file.delete();
     }
 
     @Override

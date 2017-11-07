@@ -9,6 +9,9 @@ import {SakuliProjectGuardService} from "./sakuli-project-guard.service";
 import {FormsModule} from "@angular/forms";
 import {DashboardModule} from "./dashboard/dashboard.module";
 import {SaAppLogModule} from "./app-log/app-log.module";
+import {INITIAL_STATE} from "@ngrx/store";
+import {initStateFactory} from "./appstate.interface";
+import {BrowserModule} from "@angular/platform-browser";
 
 @NgModule({
   imports: [
@@ -21,9 +24,14 @@ import {SaAppLogModule} from "./app-log/app-log.module";
     StoreRouterConnectingModule,
     FormsModule,
     SaAppLogModule,
+    BrowserModule
   ],
   providers: [
-    SakuliProjectGuardService
+    SakuliProjectGuardService,
+    {
+      provide: INITIAL_STATE,
+      useFactory: initStateFactory
+    }
   ],
   exports: [
     SakuliAdminRoutingModule,

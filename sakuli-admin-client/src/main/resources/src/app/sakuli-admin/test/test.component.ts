@@ -1,6 +1,5 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {TestCase} from '../../sweetest-components/services/access/model/test-suite.model';
 import {
   SakuliTestCase, SakuliTestSuite
 } from '../../sweetest-components/services/access/model/sakuli-test-model';
@@ -9,7 +8,9 @@ import {AppState} from "../appstate.interface";
 import {Store} from "@ngrx/store";
 import {project} from "../project/state/project.interface";
 import {ProjectModel} from "../../sweetest-components/services/access/model/project.model";
-import {notNull} from "../../core/redux.util";
+import {log, notNull} from "../../core/redux.util";
+import {LoadTestsuite, testSuiteSelectors} from "./state/testsuite.state";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'sa-project-open',
@@ -31,7 +32,7 @@ import {notNull} from "../../core/redux.util";
   styles: [`
   `]
 })
-export class TestComponent {
+export class TestComponent implements OnInit {
   project$: Observable<ProjectModel>;
 
   testSuite$: Observable<SakuliTestSuite>;
@@ -42,9 +43,12 @@ export class TestComponent {
 
   constructor(
     private store: Store<AppState>,
+    private activatedRoute: ActivatedRoute
   ) {
     this.project$ = this.store.select(project);
-    this.testSuite$ = this.store.select(s => s.test.testSuite as SakuliTestSuite).filter(notNull);
+    this.testSuite$ = this.activatedRoute.params
+      .map(p => p['suite']).filter(notNull)
+      .mergeMap(id => this.store.select(testSuiteSelectors.byId(decodeURIComponent(id))))
     this.title$ = this.testSuite$.map(ts => ts ? ts.configuration.id : '');
     this.subTitle$ = this.testSuite$.map(ts => ts ? ts.configuration.name : '');
     this.testCases$ = this.testSuite$.map(ts => ts.testCases);
@@ -52,15 +56,11 @@ export class TestComponent {
 
   }
 
-  search = (text$: Observable<string>) => text$
-    .debounceTime(200)
-    .mergeMap(term => this
-      .testSuite$
-      .map(ts => ts.testCases)
-      .map(tc => tc.filter(c => c.name.indexOf(term)))
-    );
-
-  formatter = (tc: TestCase) => tc.name;
-
-
+  ngOnInit() {
+    this.activatedRoute.paramMap
+      .map(m => m.get('suite'))
+      .subscribe(suite => {
+        this.store.dispatch(new LoadTestsuite(suite));
+      })
+  }
 }

@@ -27,4 +27,4 @@ export const testCases = createSelector(projectState, s=> nothrow(() => s.projec
 export const projectFileRoot = createSelector(
   project,
   project => nothrow(() =>`api/files/${project.path}`) || 'api/files'
-)
+);

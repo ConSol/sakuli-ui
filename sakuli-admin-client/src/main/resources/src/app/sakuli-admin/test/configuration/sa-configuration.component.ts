@@ -1,10 +1,12 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, HostListener, Input, OnInit} from '@angular/core';
 import {FileService} from "../../../sweetest-components/services/access/file.service";
 import {AppState} from "../../appstate.interface";
 import {Store} from "@ngrx/store";
-import {project} from "../../project/state/project.interface";
 import {ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
-import {RefreshProject} from "../../project/state/project.actions";
+import {ActivatedRoute} from "@angular/router";
+import {LoadTestsuite} from "../state/testsuite.state";
+import {FormBaseComponent} from "../../../sweetest-components/components/forms/form-base-component.interface";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   moduleId: module.id,
@@ -16,43 +18,90 @@ import {RefreshProject} from "../../project/state/project.actions";
         [subTitle]=""
         icon="fa-wrench"
       >
-        <!--<sc-icon icon="fa-question-circle"></sc-icon>-->
+        <a
+          href="https://github.com/ConSol/sakuli/blob/master/src/common/src/main/resources/org/sakuli/common/config/sakuli-default.properties"
+          target="_blank">
+          <sc-icon
+            icon="fa-question-circle"
+            ngbTooltip="Show default properties"
+            placement="left"
+            container="body"
+          ></sc-icon>
+        </a>
       </sc-heading>
       <article class="no-gutter d-flex">
-        <sc-editor *ngIf="currentFile" [(ngModel)]="currentFile" mode="properties">
-          <nav class="navbar bottom d-flex flex-row justify-content-end">
-            <button class="btn btn-success" (click)="onSave()">Save</button>
-          </nav>
-        </sc-editor>
+        <ng-template #loading>
+          <ngb-progressbar class="d-flex"></ngb-progressbar>
+        </ng-template>
+        <form *ngIf="form; else loading" [formGroup]="form" class="d-flex" style="flex-grow: 1">
+          <sc-editor formControlName="source" mode="properties">
+            <nav class="navbar bottom d-flex flex-row justify-content-end">
+              <button 
+                class="btn btn-success"
+                [disabled]="isSaveDisabled"
+                (click)="onSave()">Save</button>
+            </nav>
+          </sc-editor>
+        </form>
       </article>
     </sc-content>
   `
 })
 
-export class SaConfigurationComponent implements OnInit {
+export class SaConfigurationComponent implements OnInit, FormBaseComponent {
+  getForm(): FormGroup {
+    return this.form;
+  }
 
   @Input() currentFile;
 
-  constructor(
-    private readonly fileService: FileService,
-    private readonly store: Store<AppState>,
-    private readonly toastService: ScToastService
-  ) {
+  form:FormGroup;
+
+  @HostListener('document:keydown', ['$event'])
+  onHostKeydown($event: KeyboardEvent) {
+    if (($event.key == 's' || $event.key == 'S' ) && ($event.ctrlKey || $event.metaKey)) {
+      $event.preventDefault();
+      this.onSave();
+      return false;
+    }
+    return true;
+  }
+
+  constructor(readonly fileService: FileService,
+              readonly store: Store<AppState>,
+              readonly toastService: ScToastService,
+              readonly route: ActivatedRoute) {
+  }
+
+  initForm(value: string) {
+    console.log('INIT');
+    this.form = new FormGroup({
+      'source': new FormControl(value),
+      'test': new FormControl('JUHU')
+    });
+  }
+
+  get isSaveDisabled() {
+    return this.form.pristine;
   }
 
   ngOnInit() {
     this.refresh();
   }
 
-  get project$ () {
-    return this.store.select(project).first();
+  get path$() {
+    return this.route.paramMap.map(m => {
+      return m.has('suite') ? decodeURIComponent(m.get('suite')) : '';
+    })
   }
 
   refresh() {
-      this.project$
-      .mergeMap(p => this.fileService.read(`${p.path}/testsuite.properties`))
+    this.path$
+      .mergeMap(p => this.fileService.read(`${p}/testsuite.properties`))
       .subscribe(r => {
-        this.currentFile = r;
+        this.initForm(r);
+        this.form.get('source').markAsPristine();
+        this.form.markAsPristine();
       }, e => {
         this.toastService.create({
           type: 'danger',
@@ -62,29 +111,31 @@ export class SaConfigurationComponent implements OnInit {
   }
 
   onSave() {
-    this.project$.mergeMap(p => {
+    this.path$.mergeMap(p => {
       return this.fileService.write(
-        p.path,
-        new File([this.currentFile], 'testsuite.properties'));
+        p,
+        new File([this.form.get('source').value], 'testsuite.properties')
+      )
+        .mapTo(p);
     })
-    .subscribe(_ => {
-      this.toastService.create({
-        type: 'success',
-        message: 'Successfully saved configuration'
-      });
-      this.store.dispatch(new RefreshProject());
-      this.refresh();
-    }, e => {
-      this.toastService.create({
-        type: 'danger',
-        icon: 'fa-warning',
-        message: 'Error while saving configuration',
-        more: {
-          name: e.name,
-          message: e.message,
-          stack : e.stack.split('\n')
-        }
+      .subscribe(path => {
+        this.toastService.create({
+          type: 'success',
+          message: `Successfully saved configuration ${path}`
+        });
+        this.store.dispatch(new LoadTestsuite(path));
+        this.refresh();
+      }, e => {
+        this.toastService.create({
+          type: 'danger',
+          icon: 'fa-warning',
+          message: 'Error while saving configuration',
+          more: {
+            name: e.name,
+            message: e.message,
+            stack: e.stack.split('\n')
+          }
+        })
       })
-    })
   }
 }

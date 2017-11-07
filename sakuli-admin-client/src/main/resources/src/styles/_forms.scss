@@ -1,0 +1,13 @@
+input.ng-invalid {
+  @extend .is-invalid
+}
+
+.input-group.is-invalid {
+
+  .input-group-addon {
+    @extend .text-danger;
+    @extend .border-danger;
+  }
+
+}
+

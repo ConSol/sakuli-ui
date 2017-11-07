@@ -1,4 +1,4 @@
-import {FileResponse} from '../../../services/access/model/file-response.interface';
+import {absPath, FileResponse} from '../../../services/access/model/file-response.interface';
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {Tree} from './tree.interface';
@@ -23,6 +23,7 @@ import {Tree} from './tree.interface';
         <sc-tree-item [file]="file"
                       (click)="onOpen(file, $event)"
                       [ident]="depth"
+                      [selected]="isSelected(file)"
         >
         </sc-tree-item>
         <sc-tree
@@ -31,6 +32,7 @@ import {Tree} from './tree.interface';
           [depth]="depth + 1"
           *ngIf="file.open"
           [@show]
+          [selected]="selected"
         >
         </sc-tree>
       </ng-container>
@@ -44,11 +46,11 @@ import {Tree} from './tree.interface';
 })
 export class ScTreeComponent {
   @Input() files: Tree<FileResponse>[];
+  @Input() selected: Tree<FileResponse>;
   @Input() depth = 0;
   @Output() open = new EventEmitter<Tree<FileResponse>>();
 
   onOpen(e: Tree<FileResponse>, $event: MouseEvent) {
-    console.log(e, $event);
     if ($event && $event.stopPropagation) {
       $event.stopPropagation();
       if (e.directory) {
@@ -56,5 +58,13 @@ export class ScTreeComponent {
       }
     }
     this.open.next(e);
+  }
+
+  isSelected(file: Tree<FileResponse>) {
+    if(this.selected) {
+      return absPath(file) === absPath(this.selected);
+    } else {
+      return false;
+    }
   }
 }

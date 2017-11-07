@@ -5,7 +5,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
     selector: 'sc-link',
     template: `
       <li class="nav-item" [ngClass]="{active: active}">
-        <a class="nav-link" (click)="onClick($event)">
+        <a class="nav-link d-flex flex-column" (click)="onClick($event)">
           <sc-icon [icon]="icon"  [fixedWidth]="fixedIconWidth" >
             <ng-content></ng-content>
           </sc-icon>
@@ -19,9 +19,17 @@ import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
       li {
         display: flex;
         justify-content: flex-start;
+        flex-wrap: nowrap;
+        flex: 1;
       }
       li a {
         align-self: center;
+        flex-grow: 1;
+      }
+      li, li > * {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     `]
 })

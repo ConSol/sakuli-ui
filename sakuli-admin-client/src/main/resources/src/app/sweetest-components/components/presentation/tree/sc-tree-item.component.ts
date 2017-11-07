@@ -12,19 +12,28 @@ import {Tree} from './tree.interface';
     <sc-icon icon="fa-chevron-right" [fixedWidth]="true" [rotate]="rotate" *ngIf="file.directory"></sc-icon>
     <sc-icon icon="" [fixedWidth]="true" [rotate]="rotate" *ngIf="!file.directory"></sc-icon>
     <sc-icon [icon]="icon" *ngIf="!file.busy; else busy">
-      {{file.name}}
+      <span class="item-text" [ngClass]="{'active': selected}">{{file.name}}</span>
       <ng-content></ng-content>
     </sc-icon>
   `,
-  styles: [`:host {
-    cursor: pointer;
-    display:block;
-    width: 100%;
-  }`]
+  styles: [`
+    :host {
+        cursor: pointer;
+        display:block;
+        width: 100%;
+    }
+    .item-text:hover {
+      text-decoration: underline;
+    }
+    .item-text.active {
+      font-weight: bold;
+    }
+  `]
 })
 export class ScTreeItemComponent implements OnInit {
   @Input() file: Tree<FileResponse>;
   @Input() ident: number;
+  @Input() selected: boolean;
   icon: FontawesomeIcon;
 
   padding = 20;

@@ -1,7 +1,8 @@
-import {SimpleTestSuite, TestSuite} from './test-suite.model';
 
-export interface ProjectModel<S extends TestSuite = SimpleTestSuite>{
+import {SakuliTestSuite} from "./sakuli-test-model";
+
+export interface ProjectModel{
   path: string;
-  testSuite: S;
+  testSuite: SakuliTestSuite;
   name: string;
 }

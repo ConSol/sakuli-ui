@@ -5,11 +5,14 @@ import {Observable} from "rxjs/Observable";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SaImageModal} from "./sa-image-modal.component";
 import {Store} from "@ngrx/store";
-import {TestCase} from "../../../../../sweetest-components/services/access/model/test-suite.model";
 import {FileService} from "../../../../../sweetest-components/services/access/file.service";
 import {AppState} from "../../../../appstate.interface";
-import {notNull} from "../../../../../core/redux.util";
+import {log, notNull} from "../../../../../core/redux.util";
 import {absPath, FileResponse} from "../../../../../sweetest-components/services/access/model/file-response.interface";
+import {
+  SakuliTestCase,
+} from "../../../../../sweetest-components/services/access/model/sakuli-test-model";
+import {ActivatedRoute} from "@angular/router";
 
 export interface UploadEvent {
   files: FileList,
@@ -30,12 +33,12 @@ export interface UploadEvent {
               <sc-icon icon="fa-folder"></sc-icon>
             </div>
             <div class="form-control d-flex flex-row justify-content-start">
-              <a [routerLink]="['/test','assets']">
+              <a [routerLink]="['/testsuite', testSuitePath ,'assets']">
                 ~
               </a>
               <ng-container *ngFor="let part of currentFolderParts; let i = index">
                 /
-                <a [routerLink]="['/test','assets']|concat:(currentFolderParts|slice:0:i+1)">
+                <a [routerLink]="['/testsuite', testSuitePath, 'assets']|concat:(currentFolderParts|slice:0:i+1)">
                   {{part}}
                 </a>
               </ng-container>
@@ -55,7 +58,6 @@ export interface UploadEvent {
       </header>
       <article #articleElement>
         <div *ngIf="dragOver" class="overlay border-success">
-
         </div>
         <sa-assest-items
           [items]="targetFolders"
@@ -118,21 +120,11 @@ export class SaAssetsComponent implements OnInit {
     return 'd-flex flex-column'
   }
 
-  get filteredAssetFiles() {
-    return this
-      .targetFolders
-      .filter(f => (
-        ['jpg', 'jpeg', 'png', 'gif'].includes(f.name.split('.').pop())
-        || f.directory
-      ))
-      .map(absPath)
-  };
-
   fileUploadId = 'sa-assets-item-upload';
 
   @Input() basePath = 'api/files';
 
-  @Input() testCase: TestCase = null;
+  @Input() testCase: SakuliTestCase = null;
 
   @Input() targetFolders: FileResponse[] = [];
   @Input() currentFolder: string = null;
@@ -140,7 +132,10 @@ export class SaAssetsComponent implements OnInit {
   @Input() uploading: string[] = [];
 
   get currentFolderParts() {
-    return (this.currentFolder || '').split('/').filter(p => p && p.length);
+    return (this.currentFolder || '')
+      .replace(this.testSuitePath, '')
+      .split('/')
+      .filter(p => p && p.length);
   }
 
   @Output() upload = new EventEmitter<UploadEvent>();
@@ -160,7 +155,6 @@ export class SaAssetsComponent implements OnInit {
   preventDragBehaviour($event: Event) {
     $event.preventDefault();
     $event.stopPropagation();
-    //$event.cancelBubble = true;
   }
 
   @HostListener('document:paste', ['$event'])
@@ -186,7 +180,6 @@ export class SaAssetsComponent implements OnInit {
   @HostListener('dragleave', ['$event'])
   onDragleave($event: DragEvent) {
     this.preventDragBehaviour($event);
-    console.log('Leave', $event);
     const {clientX, clientY} = $event;
     const {left, top, right, bottom} = (this.articleElement.nativeElement as HTMLElement).getBoundingClientRect();
     if(
@@ -205,25 +198,27 @@ export class SaAssetsComponent implements OnInit {
     if ($event.dataTransfer.files) {
       this.handleUpload($event.dataTransfer.files);
     }
-    //return false;
   }
 
   constructor(private filesService: FileService,
-              private store: Store<AppState>,
-              private modalService: NgbModal
+              private modalService: NgbModal,
+              readonly route: ActivatedRoute
   ) {
   }
 
+  get testSuitePath() {
+    const suite = this.route.snapshot.paramMap.get('suite') || '';
+    return suite;
+  }
+
   onDelete(file: FileResponse) {
-    console.log('will delte')
     this.delete.next(file);
   }
 
   handleUpload(files: FileList) {
-    console.log('U2', this.currentFolder)
     this.upload.next({files, targetFolder: this.currentFolder})
   }
-
+/*
   onImageClick(file: string) {
     const modalRef = this.modalService.open(SaImageModal);
     const component = modalRef.componentInstance as SaImageModal;
@@ -231,20 +226,10 @@ export class SaAssetsComponent implements OnInit {
     component.basePath = this.basePath;
     component.selected = file;
   }
-
+*/
 
   ngOnInit() {
-    console.log(this.articleElement);
-    if (this.testCase) {
-      this.testCase
-        .assetFiles
-        .filter(f => ['jpg', 'jpeg', 'png', 'gif'].includes(f.split('.').pop()))
-        .map(f => `${f}`);
-
-      this.targetFolders$ = this.store.select(s => s.project.project.testSuite)
-        .filter(notNull)
-        .first()
-        .mergeMap(ts => this.filesService.files(ts.root))
+      this.targetFolders$ = this.filesService.files(this.basePath)
         .mergeMap(files => Observable.from(files))
         .expand(file => file.directory ? this.filesService
           .files(absPath(file))
@@ -255,6 +240,5 @@ export class SaAssetsComponent implements OnInit {
         .map(folders => folders.sort((f1, f2) => absPath(f1).localeCompare(absPath(f2))))
       ;
       this.targetFolders$.first().subscribe(tf => this.targetFolder = tf[0])
-    }
   }
 }

@@ -26,10 +26,9 @@ export class SakuliProjectGuardService implements CanActivate {
     })
 
     hasActiveProject$.filter(has => !has)
-      .do(log('ActiveProject?XX')).subscribe(_ => {
+      .subscribe(_ => {
       this.modal.open(ProjectOpenComponent).result.then(r => this.router.navigate(route.url));
     });
-    hasActiveProject$.do(log('ActiveProject?'))
     return hasActiveProject$;
   }
 }

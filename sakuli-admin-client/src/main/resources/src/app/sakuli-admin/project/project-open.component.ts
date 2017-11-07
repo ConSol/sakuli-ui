@@ -1,14 +1,12 @@
-import {Component, EventEmitter, HostBinding, HostListener, Input, OnInit, Output} from '@angular/core';
-import {ProjectService} from '../../sweetest-components/services/access/project.service';
+import {Component, HostListener} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {FileResponse} from '../../sweetest-components/services/access/model/file-response.interface';
 import {Tree} from '../../sweetest-components/components/presentation/tree/tree.interface';
-import {animate, state, style, transition, trigger} from "@angular/animations";
+import {animate, style, transition, trigger} from "@angular/animations";
 import {Store} from "@ngrx/store";
 import {ProjectState} from "./state/project.interface";
 import {LoadPath, Open, SelectFile, ToggleOpen} from "./state/project.actions";
-import {Router} from "@angular/router";
-import {NgbActiveModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 
 @Component({
@@ -22,17 +20,18 @@ import {NgbActiveModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
     ])
   ],
   template: `
-      <div class="modal-header"
-      >
+      <div class="modal-header">
         <span>Open Project</span>
-        <a (click)="close()">&times;</a>
+        <a (click)="close()" class="cursor-pointer">
+          <sc-icon icon="fa-times"></sc-icon>
+        </a>
       </div>
       <div class="modal-body">
-        <sc-tree [files]="files$ | async" (open)="onOpen($event)"></sc-tree>
+        <sc-tree [files]="files$ | async" (open)="onOpen($event)" [selected]="selectedFile$ | async"></sc-tree>
       </div>
       <div class="modal-footer d-flex justify-content-between" >
         <span>
-          <pre>{{(selectedFile$ | async)?.path}}</pre>
+          <span>{{(selectedFile$ | async)?.path}}</span>
         </span>
         <button [disabled]="!(projectRootSelected$ | async)"
                 class="btn btn-primary"
@@ -63,7 +62,6 @@ export class ProjectOpenComponent {
   constructor(
     private modal: NgbActiveModal,
     private store: Store<{ project: ProjectState }>,
-    private router: Router,
   ) {
 
     const isTestSuite = (f: Tree<FileResponse>) => !f.directory && f.name === 'testsuite.suite';
@@ -93,7 +91,6 @@ export class ProjectOpenComponent {
       .subscribe(f => {
         this.store.dispatch(new Open(f));
         this.modal.close(f);
-        this.router.navigate(['test'])
       });
   }
 

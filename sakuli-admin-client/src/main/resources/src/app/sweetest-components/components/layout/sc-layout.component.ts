@@ -1,7 +1,8 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from "@angular/core";
-import {MenuItem} from "./menu-item.interface";
-import {LayoutMenuService} from "./layout-menu.service";
 import {Observable} from "rxjs/Observable";
+import {IMenuItem} from "./menu/menu-item.interface";
+import {LayoutMenuService} from "./menu/layout-menu.service";
+import {log} from "../../../core/redux.util";
 
 @Component({
   selector: 'sc-layout',
@@ -48,23 +49,22 @@ export class ScLayoutComponent implements OnInit {
   @Input() brandName: string;
   @Input() brandLogo: string;
 
-  @Output() menuItemSelected = new EventEmitter<MenuItem>();
+  @Output() menuItemSelected = new EventEmitter<IMenuItem>();
 
-  primaryMenuItems$: Observable<MenuItem[]>;
-  secondaryMenuItems$: Observable<MenuItem[]>;
-  sidebarMenuItems$: Observable<MenuItem[]>;
+  primaryMenuItems$: Observable<IMenuItem[]>;
+  secondaryMenuItems$: Observable<IMenuItem[]>;
+  sidebarMenuItems$: Observable<IMenuItem[]>;
 
   constructor(private menuService: LayoutMenuService) {
   }
 
   ngOnInit() {
-    this.primaryMenuItems$ = this.menuService.get(LayoutMenuService.Menus.PRIMARY)
-    this.secondaryMenuItems$ = this.menuService.get(LayoutMenuService.Menus.SECONDARY)
-    this.sidebarMenuItems$ = this.menuService.get(LayoutMenuService.Menus.SIDEBAR)
-
+    this.primaryMenuItems$ = this.menuService.get(LayoutMenuService.Menus.PRIMARY);
+    this.secondaryMenuItems$ = this.menuService.get(LayoutMenuService.Menus.SECONDARY);
+    this.sidebarMenuItems$ = this.menuService.get(LayoutMenuService.Menus.SIDEBAR);
   }
 
-  onMenuItemSelected(menuItem: MenuItem) {
+  onMenuItemSelected(menuItem: IMenuItem) {
     this.menuItemSelected.next(menuItem);
   }
 
