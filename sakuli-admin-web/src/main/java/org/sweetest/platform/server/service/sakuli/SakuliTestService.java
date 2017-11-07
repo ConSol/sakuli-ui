@@ -101,7 +101,8 @@ public class SakuliTestService implements TestService {
         String testSuiteFileContent = getTestsuiteFileContents(testSuite);
         testSuite.getTestCases().forEach(tc -> {
             boolean exists = fileSystemService.getFileFromPath(
-                    Paths.get(testSuite.getRoot(), tc.getName()).toString(), tc.getMainFile()).isPresent();
+                    Paths.get(testSuite.getRoot(), tc.getName()).toString(), tc.getMainFile())
+                    .isPresent();
             if(!exists) {
                 fileSystemService.writeFile(
                         Paths.get(testSuite.getRoot(), tc.getName(), tc.getMainFile()).toString(),

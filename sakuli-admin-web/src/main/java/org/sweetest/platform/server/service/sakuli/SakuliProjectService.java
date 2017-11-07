@@ -66,7 +66,6 @@ public class SakuliProjectService implements ProjectService {
     @Override
     public boolean isValidProjectRoot(String path) {
         Optional<File> of = fileSystemService.getFileFromPath(path, TESTSUITE_FILENAME);
-        System.out.println(String.format("%s", of.map(f -> f.getPath()).orElse("No File")));
         return of.isPresent();
     }
 

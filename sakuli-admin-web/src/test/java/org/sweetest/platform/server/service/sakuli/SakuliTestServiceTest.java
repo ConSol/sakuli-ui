@@ -11,10 +11,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.sweetest.platform.server.api.file.FileSystemService;
 import org.sweetest.platform.server.api.project.ProjectModel;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +31,6 @@ public class SakuliTestServiceTest {
     @MockBean
     private FileSystemService fileSystemService;
 
-
     ProjectModel projectModel;
 
     @Before
@@ -40,24 +42,31 @@ public class SakuliTestServiceTest {
 
     @Test
     public void getTestSuite() throws Exception {
+        Optional<File> testSuiteFileOptional = Optional.of(Paths.get(projectModel.getPath(), SakuliProjectService.TESTSUITE_FILENAME).toFile());
         when(fileSystemService.getFileFromPath("",
                 Paths.get(projectModel.getPath(),
                         SakuliProjectService.TESTSUITE_FILENAME).toString()
         ))
 
-                .thenReturn(Optional.of(Paths.get(projectModel.getPath(), SakuliProjectService.TESTSUITE_FILENAME).toFile()));
+                .thenReturn(testSuiteFileOptional);
 
+        when(fileSystemService.getFileFromPath(
+                projectModel.getPath(),
+                SakuliProjectService.TESTSUITE_FILENAME)
+        )
+                .thenReturn(testSuiteFileOptional);
+
+        Optional<File> testPropertiesFileOptional = Optional.of(Paths.get(projectModel.getPath(), SakuliProjectService.TESTPROPERTIES_FILENAME).toFile());
         when(fileSystemService.getFileFromPath("",
                 Paths.get(projectModel.getPath(),
                         SakuliProjectService.TESTPROPERTIES_FILENAME).toString()
         ))
-                .thenReturn(Optional.of(Paths.get(projectModel.getPath(), SakuliProjectService.TESTPROPERTIES_FILENAME).toFile()));
+                .thenReturn(testPropertiesFileOptional);
 
         when(fileSystemService.getFileLines(Paths.get(projectModel.getPath(),
                 SakuliProjectService.TESTSUITE_FILENAME).toString())
         )
-                .thenReturn(Optional.of(FileUtils.readLines(Paths.get(projectModel.getPath(),
-                        SakuliProjectService.TESTSUITE_FILENAME).toFile()).stream()));
+                .thenReturn(Optional.of(FileUtils.readLines(testSuiteFileOptional.get()).stream()));
 
         SakuliTestSuite testSuite = (SakuliTestSuite) sakuliTestService.getTestSuite(projectModel);
         assertEquals(2, testSuite.getConfigurationFiles().size());
@@ -69,6 +78,8 @@ public class SakuliTestServiceTest {
 
     @Test
     public void saveTestSuite() throws Exception {
+
+
         SakuliTestSuite testSuite = new SakuliTestSuite();
         testSuite.setRoot("somewhere/in/files");
         SakuliTestCase testCase1 = new SakuliTestCase();
@@ -76,17 +87,23 @@ public class SakuliTestServiceTest {
 
         testCase1.setComment("My comment");
         testCase1.setActive(false);
-        testCase1.setName("case1/test.js");
+        testCase1.setName("case1");
+        testCase1.setMainFile("test.js");
         testCase1.setStartUrl("http://www.sakuli.org");
         testSuite.getTestCases().add(testCase1);
 
         testCase2.setComment("My comment\non the second tc");
         testCase2.setActive(true);
-        testCase2.setName("case2/test.js");
+        testCase2.setName("case2");
+        testCase2.setMainFile("test.js");
         testCase2.setStartUrl("http://www.sakuli.org");
         testSuite.getTestCases().add(testCase2);
 
-        sakuliTestService.saveTestSuite(projectModel, testSuite);
+        when(fileSystemService.getFileFromPath(Paths.get(testSuite.getRoot(),"case1").toString(), "test.js"))
+                .thenReturn(Optional.of(Paths.get(projectModel.getPath(), "dummy.js").toFile()));
+
+        when(fileSystemService.getFileFromPath(Paths.get(testSuite.getRoot(),"case2").toString(), "test.js"))
+                .thenReturn(Optional.empty());
 
         String fc = (
                 "// My comment\n" +
@@ -95,11 +112,24 @@ public class SakuliTestServiceTest {
                         "// on the second tc\n" +
                         "case2/test.js http://www.sakuli.org\n"
         );
-        System.out.println("Expect:\n" + fc);
-        verify(fileSystemService).writeFile(
+
+        when(fileSystemService.writeFile(anyString(), any(byte[].class))).thenReturn(true);
+
+        when(fileSystemService.writeFile(
                 "somewhere/in/files/testsuite.suite",
                 fc.getBytes()
+        )).thenReturn(true);
+
+        boolean success = sakuliTestService.saveTestSuite(projectModel, testSuite);
+        assertTrue(success);
+
+        verify(fileSystemService).writeFile(
+                Paths.get(testSuite.getRoot(),"case2/test.js").toString(),
+                "".getBytes()
         );
+
+        verify(fileSystemService, atLeast(2)).writeFile(anyString(), (byte[]) notNull());
+
     }
 
 }
