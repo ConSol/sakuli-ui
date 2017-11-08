@@ -34,7 +34,18 @@ import {FontawesomeIcons} from "../presentation/icon/fontawesome-icon.utils";
                  (click)="onMenuItemSelected(menuItem)"
                  [ngStyle]="{order: menuItem.order}"
         >
-          <span class="hidden-md-down link-text">{{menuItem.label}}</span>
+          <span class="actions">
+            <sc-icon
+              [ngbTooltip]="'Run ' + menuItem.label"
+              placement="right"
+              iconClass="text-success"
+              icon="fa-play"
+              (click)="onMenuItemSelected(menuItem, {autorun:'1'})"
+            ></sc-icon>
+          </span>
+          <span class="hidden-md-down link-text">
+          {{menuItem.label}}
+          </span>
         </sc-link>
         <ul *ngIf="isActive(menuItem)" [ngStyle]="{order: menuItem.order}">
           <sc-link *ngFor="let childItem of childrenFor$(menuItem.id) | async"
@@ -107,8 +118,8 @@ export class ScSidebarComponent {
     return this.store.select(menuSelectors.byParent(parent));
   }
 
-  onMenuItemSelected(menuItem: IMenuItem) {
-    this.menuItemSelected.next(menuItem)
+  onMenuItemSelected(menuItem: IMenuItem, queryParams: {[key:string]:string} = {}) {
+    this.menuItemSelected.next({...menuItem, queryParams})
   }
 
   isActive(item: IMenuItem) {

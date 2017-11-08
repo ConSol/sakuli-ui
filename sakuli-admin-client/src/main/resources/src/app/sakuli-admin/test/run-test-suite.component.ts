@@ -54,7 +54,7 @@ import {
     <div class="card margin-y">
       <div class="card-block d-flex justify-content-between align-items-center">
         <div>
-          <button [disabled]="!testSuite" class="btn btn-success" (click)="runSuite()">
+          <button [disabled]="!testSuite" class="btn btn-success" (click)="runSuite(testSuite)">
             <sc-icon icon="fa-play-circle">Run {{runWithText | async}}</sc-icon>
           </button>
           <sc-loading for="runTest" displayAs="spinner">
@@ -125,8 +125,8 @@ export class RunTestSuiteComponent {
     this.actions$.ofType(SAVE_RUN_CONFIGURATION_SUCCESS).subscribe(_ => this.showConfiguration = false);
   }
 
-  runSuite() {
-    this.store.dispatch(new RunTest(this.testSuite));
+  runSuite(testSuite: SakuliTestSuite) {
+    this.store.dispatch(new RunTest(testSuite));
   }
 
   toggleConfiguration() {

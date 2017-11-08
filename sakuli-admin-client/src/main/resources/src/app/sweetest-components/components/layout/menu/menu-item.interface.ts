@@ -6,11 +6,13 @@ export interface IMenuItem extends ITreeItem {
   label: string,
   link: string[],
   order: number;
+  queryParams: {[key:string]:string}
 }
 
 export class MenuItem implements IMenuItem{
   readonly parent: string;
   readonly link: string[];
+  readonly queryParams: {};
   constructor(
     readonly id: string,
     readonly label: string,

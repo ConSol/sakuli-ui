@@ -6,7 +6,7 @@ import {FontawesomeIcon} from './fontawesome-icon.utils';
   selector: 'sc-icon',
   template: `
     <div class="grow flex-row d-flex flex-nowrap align-content-center align-items-center">
-      <i class="fa" [ngClass]="ngClass" [ngStyle]="{transform:iconTransform}"></i>
+      <i [class]="'fa ' + iconClass" [ngClass]="ngClass" [ngStyle]="{transform:iconTransform}"></i>
       <ng-content></ng-content>
     </div>
   `,

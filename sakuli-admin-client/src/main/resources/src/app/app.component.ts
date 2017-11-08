@@ -37,12 +37,6 @@ export class AppComponent {
 
     this.menuService.addMenuItems(
       [
-
-      ]
-    );
-
-    this.menuService.addMenuItems(
-      [
         new MenuItem('secondary.log', 'Log', 'app-log', FontawesomeIcons.plus, LayoutMenuService.Menus.SECONDARY),
         new MenuItem('secondary.help', '', '', FontawesomeIcons.questionCircle, LayoutMenuService.Menus.SECONDARY),
       ]
@@ -74,7 +68,7 @@ export class AppComponent {
     if (item.link[0] === 'project/open') {
       this.modal.open(ProjectOpenComponent);
     } else {
-      this.store.dispatch(new RouterGo({path: item.link}));
+      this.store.dispatch(new RouterGo({path: item.link, extras: {queryParams: item.queryParams || {}}}));
     }
   }
 }

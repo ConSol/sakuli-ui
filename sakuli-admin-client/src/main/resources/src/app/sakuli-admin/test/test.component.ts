@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {
   SakuliTestCase, SakuliTestSuite
@@ -11,6 +11,7 @@ import {ProjectModel} from "../../sweetest-components/services/access/model/proj
 import {log, notNull} from "../../core/redux.util";
 import {LoadTestsuite, testSuiteSelectors} from "./state/testsuite.state";
 import {ActivatedRoute} from "@angular/router";
+import {RunTestSuiteComponent} from "./run-test-suite.component";
 
 @Component({
   selector: 'sa-project-open',
@@ -25,6 +26,7 @@ import {ActivatedRoute} from "@angular/router";
         <run-test-suite 
           [testSuite]="testSuite$ | async"
           [project]="project$ | async"
+          #runTestSuiteComponent
         ></run-test-suite>
       </article>
     </sc-content>
@@ -33,6 +35,10 @@ import {ActivatedRoute} from "@angular/router";
   `]
 })
 export class TestComponent implements OnInit {
+
+  @ViewChild(RunTestSuiteComponent)
+  runTestSuiteComponent: RunTestSuiteComponent;
+
   project$: Observable<ProjectModel>;
 
   testSuite$: Observable<SakuliTestSuite>;
@@ -61,6 +67,11 @@ export class TestComponent implements OnInit {
       .map(m => m.get('suite'))
       .subscribe(suite => {
         this.store.dispatch(new LoadTestsuite(suite));
-      })
+      });
+    this.activatedRoute.queryParamMap.map(m => m.has('autorun'))
+      .filter(x => x)
+      .combineLatest(this.testSuite$.filter(notNull))
+      .first()
+      .subscribe(([_, ts]) => this.runTestSuiteComponent.runSuite(ts));
   }
 }
