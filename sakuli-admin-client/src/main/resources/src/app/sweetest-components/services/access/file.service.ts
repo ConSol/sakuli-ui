@@ -5,6 +5,8 @@ import {FileResponse, FileWithContent} from "./model/file-response.interface";
 
 const projectUrl = '/api/files';
 
+export const rmHeadSlash = (p: string) => p.slice(p.startsWith("/") ? 1 : 0);
+
 @Injectable()
 export class FileService {
 
@@ -14,7 +16,7 @@ export class FileService {
 
   files(path: string = ''): Observable<FileResponse[]> {
     return this.http
-      .get(`${projectUrl}/ls?path=${path}`)
+      .get(`${projectUrl}/ls?path=${rmHeadSlash(path)}`)
       .map(r => r.json() as FileResponse[])
       .map(fr => fr
         .sort((a, b) => (a.name.toLowerCase() === b.name.toLowerCase()) ? 0 : (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1)
@@ -30,7 +32,7 @@ export class FileService {
 
   read(path: string): Observable<string> {
     return this.http
-      .get(`${projectUrl}?path=${path}`)
+      .get(`${projectUrl}?path=${rmHeadSlash(path)}`)
       .map(r => r.text())
   }
 
@@ -38,7 +40,7 @@ export class FileService {
     const formData = new FormData();
     formData.append('file', file);
     return this.http
-      .post(`${projectUrl}?path=${path}/${file.name}`, formData)
+      .post(`${projectUrl}?path=${rmHeadSlash(path)}/${file.name}`, formData)
       .map(r => r.toString())
   }
 

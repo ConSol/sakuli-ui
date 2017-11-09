@@ -18,7 +18,7 @@ import {FontawesomeIcon} from './fontawesome-icon.utils';
     }
     .fa {
       margin-right: 3px;
-      transition: all .25s ease-out;
+      transition: all .15s ease-out;
     }
   `]
 })

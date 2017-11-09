@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostBinding, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, HostBinding, HostListener, Input, OnInit, Output} from '@angular/core';
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
 import {resultStateMap} from "./result-state-map.const";
 
@@ -7,7 +7,7 @@ import {resultStateMap} from "./result-state-map.const";
   template: `
     <div [class]="cardClass" *ngIf="testResult">
       <div [class]="'d-flex flex-row justify-content-between align-items-center ' + stateClass">
-        <button class="btn btn-link" (click)="prev.next()">
+        <button class="btn btn-link cursor-pointer" (click)="prev()">
           <sc-icon icon="fa-chevron-left"></sc-icon>
         </button>
         <div style="flex-grow: 1" class="text-center">
@@ -17,25 +17,32 @@ import {resultStateMap} from "./result-state-map.const";
           <span><sc-icon icon="fa-clock-o">
             {{((testResult.stopDate|dateDiff:testResult.startDate) / 1000)|number}} sec
           </sc-icon></span> |
-          {{testResult.id}} 
+          {{testResult.id}} |
+          {{testResult.state}}
         </div>
-        <button class="btn btn-link" (click)="next.next()">
+        <button class="btn btn-link cursor-pointer" (click)="next()">
           <sc-icon icon="fa-chevron-right"></sc-icon>
         </button>
-      </div>
-      <div class="card-body">
-        {{testResult.state}}
       </div>
     </div>
   `
 })
 
-export class SaReportNavigationComponent implements OnInit {
-
+export class SaReportNavigationComponent {
   @Input() testResult: TestSuiteResult;
 
-  @Output() next = new EventEmitter();
-  @Output() prev = new EventEmitter();
+  @Output("next") _next = new EventEmitter();
+  @Output("prev") _prev = new EventEmitter();
+
+  @HostListener('document:keyup', ['$event'])
+  handleKeyUp($event: KeyboardEvent) {
+    if($event.which === 39) {
+      this.next();
+    }
+    if($event.which === 37) {
+      this.prev();
+    }
+  }
 
   get stateClass() {
     const {state = ''} = this.testResult;
@@ -46,11 +53,15 @@ export class SaReportNavigationComponent implements OnInit {
     return `card d-block`;
   }
 
-  constructor() {
-  }
+ next() {
+    this._next.next();
+ }
 
-  ngOnInit() {
-  }
+ prev() {
+    this._prev.next();
+ }
+
+
 
 
 }

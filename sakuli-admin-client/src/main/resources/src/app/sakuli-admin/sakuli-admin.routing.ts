@@ -12,9 +12,25 @@ import {AppLogComponent} from "./app-log/app-log.component";
 import {PreventRoutingGuardService} from "../sweetest-components/components/forms/prevent-routing-guard.service";
 
 export const routes: Routes = [
-  {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
-  {path: 'reports', component: SaReportComponent},
-  {path: 'dashboard', component: DashboardComponent},
+  {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full'
+  },
+  {
+    path: 'reports',
+    component: SaReportComponent,
+    canActivate: [
+      SakuliProjectGuardService
+    ]
+  },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [
+      SakuliProjectGuardService
+    ]
+  },
   {
     path: 'testsuite',
     canActivate: [

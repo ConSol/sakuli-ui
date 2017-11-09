@@ -3,12 +3,14 @@ export interface BaseResult {
   state: string;
   resultCode: string;
   dbPrimaryKey: string;
-  duration: number;
+  /**
+   * @deprecated
+   */
+  duration?: number;
   warningTime: number;
   criticalTime: number;
   startDate: string;
   stopDate: string;
-  creationDate: string;
   id: string;
 }
 

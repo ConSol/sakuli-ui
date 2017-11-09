@@ -9,10 +9,13 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {SweetestComponentsModule} from "../../../sweetest-components/index";
 import {CommonModule} from "@angular/common";
 import {SaReportStepsComponent} from "./sa-report-steps.component";
+import {SaReportTestcaseComponent} from "./sa-report-testcase.component";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 @NgModule({
   imports: [
     CommonModule,
+    BrowserAnimationsModule,
     SweetestComponentsModule,
     NgbModule,
   ],
@@ -23,7 +26,8 @@ import {SaReportStepsComponent} from "./sa-report-steps.component";
     SaReportContentComponent,
     SaReportNavigationComponent,
     SaReportStepsTimingComponent,
-    SaReportStepsComponent
+    SaReportStepsComponent,
+    SaReportTestcaseComponent
   ],
   providers: [],
 })

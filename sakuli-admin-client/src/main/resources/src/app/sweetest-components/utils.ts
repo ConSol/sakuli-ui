@@ -81,6 +81,12 @@ export class DateUtil {
       }
   }
 
+  /**
+   * Calculates the diffenrence between t1 - t2
+   * @param {string} t1
+   * @param {string} t2
+   * @returns {number}
+   */
   static diff(t1: string, t2: string) {
     const m1 = DateUtil.createMoment(t1);
     const m2 = DateUtil.createMoment(t2);

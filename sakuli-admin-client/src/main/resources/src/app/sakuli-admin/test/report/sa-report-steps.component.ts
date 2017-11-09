@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {TestCaseStepResult} from "../../../sweetest-components/services/access/model/test-result.interface";
+import {rmHeadSlash} from "../../../sweetest-components/services/access/file.service";
 
 @Component({
   selector: 'sa-report-steps',
@@ -22,12 +23,16 @@ import {TestCaseStepResult} from "../../../sweetest-components/services/access/m
           <div class="exception-title text-danger pl-1">{{step.exception.detailMessage}}</div>
         </ng-container>
       </li>
+      <li class="list-group-item m-0 p-0 border-0 d-flex flex-row bg-light" style="height: 3px; background-color: silver">
+        <div [ngStyle]="{'flex-grow': durationOffsetPercent}"></div>
+        <div [ngStyle]="{'flex-grow': durationPercent}" class="bg-success"></div>
+      </li>
       <sc-collapse [show]="collapsed">
         <ng-container *ngIf="step.exception; else actions">
           <li class="list-group-item d-flex flex-column">
             <strong>{{step.exception.detailMessage}}</strong>
-            <a [href]="'api/files' + step.exception.screenshot" target="_blank" class="text-center mt-1 mb-1">
-              <img [src]="'api/files' + step.exception.screenshot" width="250"/>
+            <a [href]="'api/files?path=' + rmHeadSlash(step.exception.screenshot)" target="_blank" class="text-center mt-1 mb-1">
+              <img [src]="'api/files?path=' + rmHeadSlash(step.exception.screenshot)" width="250"/>
             </a>
             <div>
               <button class="btn btn-link" (click)="showStacktrace = !showStacktrace">Show Stacktrace</button>
@@ -79,7 +84,11 @@ import {TestCaseStepResult} from "../../../sweetest-components/services/access/m
 
 export class SaReportStepsComponent implements OnInit {
 
+  rmHeadSlash = rmHeadSlash;
+
   @Input() step: TestCaseStepResult;
+  @Input() durationPercent: number;
+  @Input() durationOffsetPercent: number;
 
   collapsed = false;
 
