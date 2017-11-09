@@ -52,25 +52,25 @@ export class TestService {
       })
   }
 
-  testResultsFromLogs(): Observable<TestSuiteResult[]> {
-    return this.http.get(`${testUrl}/results`)
+  testResultsFromLogs(testSuitePath: string): Observable<TestSuiteResult[]> {
+    return this.http.get(`${testUrl}/results?path=${testSuitePath}`)
       .map(r => r.json())
   }
 
-  testResultsFromJson(): Observable<TestSuiteResult[]> {
+  testResultsFromJson(testSuitePath: string): Observable<TestSuiteResult[]> {
     return this.project
       .activeProject()
-      .mergeMap(p => this.files.files(`${p.path}/_logs/_json`))
+      .mergeMap(p => this.files.files(`${testSuitePath}/_logs/_json`))
       .mergeMap(files => Observable
         .forkJoin(...files.map(file => this.files.read(absPath(file)))))
       .map(raw => raw.map(JSON.parse.bind(JSON)))
 
   }
 
-  testResults(): Observable<TestSuiteResult[]> {
+  testResults(testSuitePath: string): Observable<TestSuiteResult[]> {
     return Observable.combineLatest(
-      this.testResultsFromLogs(),
-      this.testResultsFromJson()
+      this.testResultsFromLogs(testSuitePath),
+      this.testResultsFromJson(testSuitePath)
     ).map(([fromLogs, fromJson]) => ([
         //...fromLogs,
         ...fromJson])

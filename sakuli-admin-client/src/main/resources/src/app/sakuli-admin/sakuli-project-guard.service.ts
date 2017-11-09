@@ -1,34 +1,30 @@
 import {Injectable} from "@angular/core";
-import {ActivatedRouteSnapshot, CanActivate, Router} from "@angular/router";
-import {ProjectService} from "../sweetest-components/services/access/project.service";
-import {log, notNull} from "../core/redux.util";
+import {ActivatedRouteSnapshot, CanActivate} from "@angular/router";
 import {Store} from "@ngrx/store";
 import {AppState} from "./appstate.interface";
-import {SetProject} from "./project/state/project.actions";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ProjectOpenComponent} from "./project/project-open.component";
+import {testSuiteSelectors} from "./test/state/testsuite.state";
+import {ScModalService} from "../sweetest-components/components/presentation/modal/sc-modal.service";
+import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class SakuliProjectGuardService implements CanActivate {
 
-  constructor(private projectService: ProjectService,
+  constructor(
               private store: Store<AppState>,
-              private modal: NgbModal,
-              private router: Router
+              private modal: ScModalService
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot) {
-    const project$ = this.projectService
-      .activeProject();
-    const hasActiveProject$ = project$.map(notNull);
-    project$.filter(notNull).subscribe(p => {
-      this.store.dispatch(new SetProject(p))
-    })
-
-    hasActiveProject$.filter(has => !has)
-      .subscribe(_ => {
-      this.modal.open(ProjectOpenComponent).result.then(r => this.router.navigate(route.url));
-    });
-    return hasActiveProject$;
+    const hasTestSuits = this.store.select(testSuiteSelectors.selectTotal)
+      .mergeMap(total => {
+        if(total > 0) {
+          return Observable.of(true);
+        } else {
+          const projectModal = this.modal.open(ProjectOpenComponent, {});
+          return Observable.fromPromise(projectModal);
+        }
+      });
+    return hasTestSuits;
   }
 }

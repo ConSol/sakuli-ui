@@ -34,7 +34,7 @@ import {Store} from "@ngrx/store";
 import {SelectionState} from "../../../sweetest-components/model/tree";
 import {
   LOAD_TESTSUITE, LOAD_TESTSUITE_SUCCESS, LoadTestsuite, LoadTestsuiteSuccess,
-  testSuiteSelectId
+  testSuiteSelectId, testSuiteSelectors
 } from "./testsuite.state";
 
 @Injectable()
@@ -137,7 +137,11 @@ export class TestEffects {
     .map((sp: SetProject) => new LoadTestsuiteSuccess(sp.project.testSuite));
 
   @Effect() loadTestResults = this.actions$.ofType(LOAD_TESTRESULTS)
-    .mergeMap(_ => this.testService.testResults())
+    .withLatestFrom(this.store.select(testSuiteSelectors.selectAll))
+    .mergeMap(([_, testSuites]) => Observable.forkJoin(
+        ...testSuites.map(ts => this.testService.testResults(ts.root))
+      ))
+    .map(r => r.reduce((flat, tsa) => [...flat, ...tsa]), [])
     .map(r => new LoadTestResultsSuccess(r))
     .catch(ErrorMessage('Unable to load test results'))
   ;
