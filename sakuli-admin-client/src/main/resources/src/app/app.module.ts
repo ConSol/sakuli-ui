@@ -6,6 +6,7 @@ import {SweetestComponentsModule} from "./sweetest-components/index";
 import {StoreModule} from "@ngrx/store";
 import {StoreDevtoolsModule} from "@ngrx/store-devtools";
 import {ProjectOpenComponent} from "./sakuli-admin/project/project-open.component";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -13,6 +14,7 @@ import {ProjectOpenComponent} from "./sakuli-admin/project/project-open.componen
   ],
   imports: [
     BrowserModule,
+    FormsModule,
     SakuliAdminModule,
     SweetestComponentsModule.forRoot(),
     StoreModule.forRoot({}),

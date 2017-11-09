@@ -2,7 +2,7 @@ import {Action, createFeatureSelector, createSelector} from "@ngrx/store";
 import {createEntityAdapter, EntityState} from "@ngrx/entity";
 import {IMenuItem} from "./menu-item.interface";
 import {SelectionState} from "../../../model/tree";
-import {mapEntities, uniqueName} from "../../../../core/redux.util";
+import {castStringArray, mapEntities, uniqueName} from "../../../../core/redux.util";
 
 export const menuSelectId = (menuItem: IMenuItem) => menuItem.id;
 
@@ -55,8 +55,8 @@ export type MenuActions = AddMenuItem | AddAllMenuItems | SelectMenuItem;
 export function menuReducer(state: MenuState, action: MenuActions) {
 
   function addOrUpdateOne(state: MenuState, item:IMenuItem) {
-    const id = menuSelectId(item);
-    return state.ids.includes(id)
+    const id: string = menuSelectId(item);
+    return castStringArray(state.ids).includes(id)
       ? menuEntityAdapter.updateOne({id, changes: item}, state)
       : menuEntityAdapter.addOne(item, state)
   }

@@ -4,7 +4,7 @@ import {DashboardComponent} from './dashboard/dasboard.component';
 import {LocationStrategy, PathLocationStrategy} from "@angular/common";
 import {TestComponent} from "./test/test.component";
 import {SakuliProjectGuardService} from "./sakuli-project-guard.service";
-import {SaAssetsConnectedComponent} from "./test/test-detail/tabs/sa-assets/sa-assests-connected.component";
+import {SaAssetsConnectedComponent} from "./test/sa-assets/sa-assests-connected.component";
 import {TestDetailConnectedComponent} from "./test/test-detail/test-detail-connected.component";
 import {SaConfigurationComponent} from "./test/configuration/sa-configuration.component";
 import {SaReportComponent} from "./test/report/sa-report.component";

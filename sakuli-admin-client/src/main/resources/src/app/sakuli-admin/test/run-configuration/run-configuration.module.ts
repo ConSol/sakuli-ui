@@ -1,11 +1,9 @@
 import {NgModule} from '@angular/core';
-
 import {RunConfigurationComponent} from './run-configuration.component';
 import {StoreModule} from "@ngrx/store";
 import {RunConfigurationFeatureName} from "./run-configuration.interface";
 import {runConfigurationReducer} from "./run-configuration.reducer";
 import {CommonModule} from "@angular/common";
-import {InplaceFileEditorComponent} from "./inplace-file-editor.component";
 import {SweetestComponentsModule} from "../../../sweetest-components/index";
 import {EffectsModule} from "@ngrx/effects";
 import {RunConfigurationEffects} from "./run-configuration.effects";
@@ -14,7 +12,6 @@ import {HttpModule} from "@angular/http";
 
 const declareAndExports = [
   RunConfigurationComponent,
-  InplaceFileEditorComponent
 ]
 
 @NgModule({

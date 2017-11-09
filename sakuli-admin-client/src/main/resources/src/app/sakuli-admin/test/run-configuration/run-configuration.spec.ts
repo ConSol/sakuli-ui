@@ -28,9 +28,6 @@ import {
 import {RouterModule} from "@angular/router";
 import {APP_BASE_HREF} from "@angular/common";
 import Mocked = jest.Mocked;
-import {createMock} from "../../../sweetest-components/utils";
-
-Error.stackTraceLimit = 1;
 
 describe(RunConfigurationEffects.name, () => {
 

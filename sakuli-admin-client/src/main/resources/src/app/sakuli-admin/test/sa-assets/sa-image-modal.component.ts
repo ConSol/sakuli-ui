@@ -1,15 +1,11 @@
 import {ChangeDetectionStrategy, Component, HostListener, Input, OnInit, Optional} from "@angular/core";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
-import {Observable} from "rxjs/Observable";
-import {log} from "../../../../../core/redux.util";
 
 interface ImageModalState {
   images: string[],
   index: number;
   image: { name: string, link: string, path: string }
 }
-
 
 @Component({
   selector: 'sa-image-modal',
@@ -54,14 +50,12 @@ interface ImageModalState {
     }
   `]
 })
-export class SaImageModal implements OnInit {
+export class SaImageModalComponent implements OnInit {
   @Input() images: string[];
   @Input() selected: string;
   @Input() basePath: string;
 
-  state$: Observable<ImageModalState>;
   state: ImageModalState;
-  actions$ = new BehaviorSubject<number>(0);
 
   @HostListener('document:keyup', ['$event'])
   handleKeyUp($event: KeyboardEvent) {

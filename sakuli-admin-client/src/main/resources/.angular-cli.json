@@ -8,8 +8,9 @@
       "root": "src",
       "outDir": "static",
       "assets": [
-        "assets",
-        "favicon.ico"
+        { "glob": "**/*", "input": "./assets/", "output": "./assets/" },
+        { "glob": "favicon.ico", "input": "./", "output": "./" },
+        { "glob": "**/*", "input": "../node_modules/ace-builds/src-noconflict", "output": "./ace"}
       ],
       "index": "index.html",
       "main": "main.ts",

@@ -10,12 +10,13 @@ import {TestService} from "../../../../sweetest-components/services/access/test.
 import {AppState} from "../../../appstate.interface";
 import {Store} from "@ngrx/store";
 import {UpdateTestsuite} from "../../state/testsuite.state";
+import {getModeForPath} from "../../../../sweetest-components/components/forms/editor/modelist";
 
 @Component({
   selector: 'sa-source',
   template: `
     <form [formGroup]="sourceForm" *ngIf="sourceForm" class="d-flex flex-column">
-      <sc-editor formControlName="source">
+      <sc-editor formControlName="source" [mode]="mode">
         <nav class="navbar bottom d-flex flex-row justify-content-end mx-0 px-0">
           <div class="input-group-wrapper mr-3">
             <div class="input-group"
@@ -60,6 +61,8 @@ import {UpdateTestsuite} from "../../state/testsuite.state";
 export class SaSourceComponent implements OnInit, FormBaseComponent {
   @Input() testCase: SakuliTestCase;
   @Input() testSuite: SakuliTestSuite;
+
+  mode: string = 'javascript';
 
   file$: Observable<{ file: string, content: string }>;
   currentFile: { file: string, content: string };
@@ -111,6 +114,7 @@ export class SaSourceComponent implements OnInit, FormBaseComponent {
 
   ngOnInit() {
     const file = `${this.testSuite.root}/${this.testCase.name}/${this.testCase.mainFile}`;
+    this.mode = getModeForPath(this.testCase.mainFile).name;
     this.file$ = this.fileService.read(file).map(content => ({file, content}));
     this.file$.subscribe(file => {
       this.currentFile = file;

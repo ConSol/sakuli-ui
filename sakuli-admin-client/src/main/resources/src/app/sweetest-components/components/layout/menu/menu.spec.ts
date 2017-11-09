@@ -5,16 +5,18 @@ import {
 import {IMenuItem, MenuItem} from "./menu-item.interface";
 import {SelectionState} from "../../../model/tree";
 import {TestBed} from "@angular/core/testing";
-import {Store, StoreModule} from "@ngrx/store";
+import {INITIAL_STATE, Store, StoreModule} from "@ngrx/store";
 import {EffectsModule} from "@ngrx/effects";
 import {LayoutMenuService} from "./layout-menu.service";
 import {provideMockActions} from "@ngrx/effects/testing";
 import {Observable} from "rxjs/Observable";
-import Mocked = jest.Mocked;
 import {ScMenuModule} from "./menu.module";
 import {AppState} from "../../../../sakuli-admin/appstate.interface";
 import {marbles} from "rxjs-marbles";
 import {ROUTER_NAVIGATION} from "@ngrx/router-store";
+import {RouterModule} from "@angular/router";
+import {APP_BASE_HREF} from "@angular/common";
+import Mocked = jest.Mocked;
 
 
 describe('Menu', () => {
@@ -57,29 +59,36 @@ describe('Menu', () => {
 
   describe('Effects', () => {
     let mockActions: Observable<any>;
-    let store: Store<AppState>;
+    let store: Mocked<Partial<Store<AppState>>> = {
+      select: jest.fn()
+    };
     let effects: LayoutMenuService;
 
-    beforeEach(async () => {
+    beforeEach(async (done) => {
       await TestBed.configureTestingModule({
         imports: [
           StoreModule.forRoot({}),
+          EffectsModule.forRoot([]),
           ScMenuModule,
-          EffectsModule.forRoot([])
+          RouterModule.forRoot([])
         ],
         providers: [
           LayoutMenuService,
           provideMockActions(() => mockActions),
+          {provide: APP_BASE_HREF, useValue: ''},
+          {provide: INITIAL_STATE, useValue: {
+            scMenu: menuReducer(menuEntityAdapter.getInitialState(), addAllItemsAction)
+          }}
         ]
       });
-      store = TestBed.get(Store);
+
       effects = TestBed.get(LayoutMenuService);
+      done();
     });
 
     it('should select on Navigation', marbles(m => {
-      store.dispatch(addAllItemsAction);
       mockActions = m.hot('---a-', {
-        a: { type: ROUTER_NAVIGATION, payload: {routerState: {url: 'p1/c11'} }}
+        a: { type: ROUTER_NAVIGATION, payload: {routerState: {url: '/p1/c11'} }}
       });
       const expected = m.cold('---a-', {
         a: new SelectMenuItem('p1.c11')

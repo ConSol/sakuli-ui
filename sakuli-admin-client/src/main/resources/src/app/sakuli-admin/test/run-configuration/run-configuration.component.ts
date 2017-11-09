@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {RunConfigurationTypes} from "./run-configuration-types.enum";
 import {ContainerTag, RunConfiguration, SakuliContainer} from "./run-configuration.interface";
 import {ProjectModel} from "../../../sweetest-components/services/access/model/project.model";
-import {InplaceFileEditorComponent} from "./inplace-file-editor.component";
+import {InplaceFileEditorComponent} from "../../../sweetest-components/components/forms/inplace-file-editor.component";
 
 @Component({
   moduleId: module.id,
@@ -48,7 +48,7 @@ import {InplaceFileEditorComponent} from "./inplace-file-editor.component";
           </label>
           <div *ngIf="config.type === types[types.DockerCompose]" class="config-area margin-y">
             <inplace-file-editor
-              [project]="project"
+              [root]="project.path"
               file="docker-compose.yml"
               mode="yaml"
               [defaultFile]="defaultDockerComposeFile"
@@ -64,8 +64,8 @@ import {InplaceFileEditorComponent} from "./inplace-file-editor.component";
           </label>
           <div *ngIf="config.type === types[types.Dockerfile]" class="config-area margin-y">
             <inplace-file-editor
-              [project]="project"
-              file="dockerfile"
+              [root]="project.path"
+              file="Dockerfile"
               mode="dockerfile"
               [defaultFile]="defaultDockerFile"
               #dockerFileEditor
@@ -101,7 +101,6 @@ export class RunConfigurationComponent {
   @Input() containerTags: ContainerTag[];
 
   selectedContainer: SakuliContainer;
-
 
   defaultDockerComposeFile = new File([`version: '2'
 services:

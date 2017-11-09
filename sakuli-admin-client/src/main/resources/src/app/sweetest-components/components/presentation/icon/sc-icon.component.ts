@@ -5,9 +5,11 @@ import {FontawesomeIcon} from './fontawesome-icon.utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'sc-icon',
   template: `
-    <div class="grow flex-row d-flex flex-nowrap align-content-center align-items-center">
-      <i [class]="'fa ' + iconClass" [ngClass]="ngClass" [ngStyle]="{transform:iconTransform}"></i>
-      <ng-content></ng-content>
+    <div class="w-100 flex-row d-flex flex-nowrap align-content-center align-items-center">
+      <i class="fa" [ngClass]="ngClass" [ngStyle]="{transform:iconTransform}"></i>
+      <div class="d-flex w-100 justify-content-between align-items-center">
+        <ng-content></ng-content>
+      </div>
     </div>
   `,
   styles: [`
@@ -22,9 +24,12 @@ import {FontawesomeIcon} from './fontawesome-icon.utils';
 })
 export class ScIconComponent implements OnInit {
 
+  @Input()
+  class: string;
+
   @HostBinding('class')
   get hostClass() {
-    return 'd-inline-block';
+    return ['d-inline-block', this.class].join(' ');
   }
 
   @Input() icon?: FontawesomeIcon;
@@ -59,7 +64,8 @@ export class ScIconComponent implements OnInit {
       'fa-4x': this.size === 4,
       'fa-5x': this.size === 5,
       'fa-lg': this.lg,
-      [this.icon]: this.icon != null
+      [this.icon]: this.icon != null,
+      [this.iconClass]: !!this.iconClass,
     });
   }
 }

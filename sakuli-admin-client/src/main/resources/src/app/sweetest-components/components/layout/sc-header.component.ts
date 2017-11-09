@@ -5,12 +5,13 @@ import {IMenuItem} from "./menu/menu-item.interface";
 @Component({
   selector: 'sc-header',
   template: `
-    <button class="navbar-toggler"
+    <button class="cursor-pointer navbar-toggler text-light"
             type="button"
-            >
+            (click)="toggleNavVisible()"
+    >
       <sc-icon icon="fa-bars"></sc-icon>
     </button>
-    <div class="navbar-collapse" id="navbarTogglerDemo01">
+    <div class="navbar-collapse d-sm-block" [ngClass]="{'d-none': !isNavVisibleOnSm}">
       <a class="navbar-brand" href="#">
         <img *ngIf="brandLogo" [src]="brandLogo"/>
         <span *ngIf="brandName">{{brandName}}</span>
@@ -53,8 +54,13 @@ export class ScHeaderComponent {
   @Input() secondaryMenuItems: IMenuItem[];
 
   @Output() menuItemSelected = new EventEmitter<IMenuItem>();
+  isNavVisibleOnSm: boolean = false;
 
   onLinkClick(item: IMenuItem) {
     this.menuItemSelected.next(item);
+  }
+
+  toggleNavVisible() {
+    this.isNavVisibleOnSm = !this.isNavVisibleOnSm;
   }
 }

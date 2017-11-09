@@ -1,37 +1,38 @@
 import {Injectable} from "@angular/core";
-import {Actions, Effect, toPayload} from "@ngrx/effects";
+import {Actions, Effect} from "@ngrx/effects";
 import {ROUTER_NAVIGATION, RouterNavigationAction, RouterNavigationPayload} from "@ngrx/router-store";
-import {FileService} from "../../../../../sweetest-components/services/access/file.service";
 import {createSelector, Store} from "@ngrx/store";
 import {
   AssetLoadFolder, AssetLoadFolderSuccess, ASSETS_DELETE, ASSETS_DELETE_SUCCESS, ASSETS_LOAD_FOLDER, ASSETS_OPEN_FILE,
   ASSETS_SET_CURRENT_FOLDER, ASSETS_UPLOAD, ASSETS_UPLOAD_SUCCESS, AssetsCloseFile, AssetsDelete, AssetsDeleteError,
-  AssetsDeleteSuccess, AssetsOpenFile, AssetsSetCurrentFolder,
-  AssetsUpload,
-  AssetsUploadError, AssetsUploadSuccess
+  AssetsDeleteSuccess, AssetsOpenFile, AssetsSetCurrentFolder, AssetsUpload, AssetsUploadError, AssetsUploadSuccess
 } from "./sa-assets.action";
-import {AppState} from "../../../../appstate.interface";
-import {project, projectFileRoot} from "../../../../project/state/project.interface";
-import {log, notNull} from "../../../../../core/redux.util";
 import {Observable} from "rxjs/Observable";
-import {ActivatedRoute, NavigationEnd, Router, RouterState, RouterStateSnapshot} from "@angular/router";
-import {absPath} from "../../../../../sweetest-components/services/access/model/file-response.interface";
-import {ProjectModel} from "../../../../../sweetest-components/services/access/model/project.model";
+import {NavigationEnd, Router, RouterStateSnapshot} from "@angular/router";
 import {
-  currentChildren, currentChildrenBy, currentChildrenImages, currentFolderWithProjectPath,
+  currentChildrenImages, currentFolderWithProjectPath,
   selectedFile
 } from "./sa-assets.interface";
-import {SaImageModal} from "./sa-image-modal.component";
-import {ScModalService} from "../../../../../sweetest-components/components/presentation/modal/sc-modal.service";
-
-import {RouterGo} from "../../../../../sweetest-components/services/router/router.actions";
+import {SaImageModalComponent} from "./sa-image-modal.component";
+import {FileService} from "../../../sweetest-components/services/access/file.service";
+import {AppState} from "../../appstate.interface";
+import {ScModalService} from "../../../sweetest-components/components/presentation/modal/sc-modal.service";
+import {log, notNull} from "../../../core/redux.util";
+import {RouterGo} from "../../../sweetest-components/services/router/router.actions";
+import {project} from "../../project/state/project.interface";
+import {ProjectModel} from "../../../sweetest-components/services/access/model/project.model";
+import {
+  absPath, FileResponse,
+  fileResponseFromPath
+} from "../../../sweetest-components/services/access/model/file-response.interface";
+import {AssetItemType, getItemType} from "./asset-item-type.enum";
+import {SaTextModalComponent} from "./sa-text-modal.component";
 
 @Injectable()
 export class SaAssetsEffects {
   constructor(private action$: Actions,
               private fileService: FileService,
               private store: Store<AppState>,
-              private route: ActivatedRoute,
               private router: Router,
               private modal: ScModalService,) {
   }
@@ -44,7 +45,7 @@ export class SaAssetsEffects {
     return route;
   }
 
-  routeParamMap(pl: RouterNavigationPayload<RouterStateSnapshot>) {
+  routeParamMap(pl: RouterNavigationPayload) {
     return this.router.events
       .filter(e => e instanceof NavigationEnd)
       .filter((e: NavigationEnd) => e.id === pl.event.id)
@@ -53,12 +54,12 @@ export class SaAssetsEffects {
 
   @Effect() routeInit$ = this.action$.ofType(ROUTER_NAVIGATION)
     .map((a: RouterNavigationAction) => a.payload)
-    .filter((pl: RouterNavigationPayload<RouterStateSnapshot>) => {
+    .filter((pl: RouterNavigationPayload) => {
       const  {url} = pl.event;
-      const regEx = /testsuite\/(.*)\/assets.*/
+      const regEx = /testsuite\/(.*)\/assets.*/;
       return regEx.test(url);
     })
-    .mergeMap((pl: RouterNavigationPayload<RouterStateSnapshot>) => {
+    .mergeMap((pl: RouterNavigationPayload) => {
       return Observable.combineLatest(
         this.routeParamMap(pl).map(m => m.has('suite') ? decodeURIComponent(m.get('suite')) : ''),
         this.routeParamMap(pl).map(m => m.has('file') ? decodeURIComponent(m.get('file')) : '')
@@ -118,20 +119,34 @@ export class SaAssetsEffects {
 
   @Effect({dispatch: false}) $openFile = this.action$
     .ofType(ASSETS_OPEN_FILE)
-    .mergeMap((a: AssetsOpenFile) => Observable.combineLatest(
-      Observable.of(`api/files?path=${a.base}`),
-      this.store.select(createSelector(
-        currentChildrenImages,
-        children => children.map(c => absPath(c)))),
-      this.store.select(selectedFile),
-    ).first())
-    .mergeMap(([basePath, images, selected]) => {
-      const p = this.modal.open(SaImageModal, {
-        basePath,
-        images,
-        selected
+    .map((a: AssetsOpenFile): [AssetsOpenFile, FileResponse] => ([a, fileResponseFromPath(a.file, true)]))
+    .groupBy(([a, fr]) => getItemType(fr))
+    .do(log('File'))
+    .mergeMap((ga) => {
+      console.log(ga.key, AssetItemType);
+      const r = ({
+        [AssetItemType.Image]: ga.mergeMap(([a, fr]: [AssetsOpenFile, FileResponse]) => Observable.combineLatest(
+          Observable.of(`api/files?path=${a.base}`),
+          this.store.select(createSelector(
+            currentChildrenImages,
+            children => children.map(c => absPath(c)))),
+          this.store.select(selectedFile),
+        ).first())
+          .mergeMap(([basePath, images, selected]) => {
+            const p = this.modal.open(SaImageModalComponent, {
+              basePath,
+              images,
+              selected
+            });
+            return Observable.fromPromise(p.catch(e => null));
+          }),
+        [AssetItemType.Text]: ga.mergeMap(([a, fr]: [AssetsOpenFile, FileResponse]) => {
+          const file = {...fr, path: `${a.base}/${fr.path}`};
+          const p = this.modal.open(SaTextModalComponent, {file});
+          return Observable.fromPromise(p.catch(e => null));
+        })
       });
-      return Observable.fromPromise(p.catch(e => null));
+      return r[ga.key] || Observable.empty();
     })
     .map(_ => new AssetsCloseFile())
 }

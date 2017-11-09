@@ -5,13 +5,10 @@ import {
 import * as ace from 'brace';
 import 'brace';
 import 'brace/theme/chrome';
-import 'brace/mode/javascript';
-import 'brace/mode/properties';
-import 'brace/mode/dockerfile';
-import 'brace/mode/yaml';
-import {ControlContainer, ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {EditorModes} from "./editor-modes.interface";
 import {Deferred} from "../../../utils";
+import {getModeForPath} from "./modelist";
 
 const noop = (..._: any[]) => {};
 
@@ -53,7 +50,7 @@ export class ScEditorComponent implements AfterViewInit, ControlValueAccessor {
 
   @Output() change = new EventEmitter<any>();
 
-  @Input() mode: string = 'javascript';
+  @Input() mode: string;
 
   deferredEditor = new Deferred<ace.Editor>();
 
@@ -73,26 +70,25 @@ export class ScEditorComponent implements AfterViewInit, ControlValueAccessor {
   id = `sc-editor-instance-${ScEditorComponent.instanceCounter++}`;
 
   ngOnInit() {
-    if(EditorModes.indexOf(this.mode) === -1) {
-      throw Error(`Invalid mode ${this.mode} please check if the mode is defined in ${module.id}`)
-    }
   }
 
   ngAfterViewInit() {
+    const config = (ace as any).config;
+    config.set('basePath', '/ace/');
     this.editor = ace.edit(this.id);
     this.deferredEditor.resolve(this._editor);
     this.editor.setTheme(`ace/theme/chrome`);
     this.editor.session.setMode(`ace/mode/${this.mode}`);
-    //this.editor.$blockScrolling = Infinity;
+    this.editor.$blockScrolling = Infinity;
     this.editor.setValue("");
     this.editor.getSession().on('change', e => this.hasInitialised ? this.change.next(e): noop());
     this.editor.getSession().on('blur', e => this.onTouched());
     this.change.subscribe(_ => this.onChange(this.editor.getValue()));
   }
 
-  async writeValue(value: any = '') {
+  async writeValue(value: string = '') {
     const editor = await this.deferredEditor.getValue();
-    editor.setValue(value);
+    editor.setValue(value || '');
     if(!this.hasInitialised) {
       editor.moveCursorToPosition({row: 0, column: 0});
       editor.focus();

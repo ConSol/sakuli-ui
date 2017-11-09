@@ -1,6 +1,6 @@
-import {uniqueName} from "../../../../../core/redux.util";
 import {Action} from "@ngrx/store";
-import {FileResponse} from "../../../../../sweetest-components/services/access/model/file-response.interface";
+import {uniqueName} from "../../../core/redux.util";
+import {FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
 
 export const ASSETS_LOAD_FOLDER = uniqueName('[asset] LOAD_FOLDER');
 export class AssetLoadFolder implements Action {
@@ -13,7 +13,7 @@ export class AssetLoadFolder implements Action {
 
 export const ASSETS_LOAD_FOLDER_SUCCESS = '[asset] ASSETS_LOAD_FOLDER_SUCCESS';
 export class AssetLoadFolderSuccess implements Action {
-  readonly type = ASSETS_LOAD_FOLDER_SUCCESS
+  readonly type = ASSETS_LOAD_FOLDER_SUCCESS;
   constructor(
     readonly parent: string,
     readonly children: FileResponse[]
@@ -44,7 +44,7 @@ export class AssetsUpload implements Action {
 
 export const ASSETS_UPLOAD_SUCCESS = '[asset] ASSETS_UPLOAD_SUCCESS';
 export class AssetsUploadSuccess implements Action {
-  readonly type = ASSETS_UPLOAD_SUCCESS
+  readonly type = ASSETS_UPLOAD_SUCCESS;
   constructor(
     readonly file: File,
   ) {}
@@ -52,7 +52,7 @@ export class AssetsUploadSuccess implements Action {
 
 export const ASSETS_UPLOAD_ERROR = '[asset] ASSETS_UPLOAD_ERROR';
 export class AssetsUploadError implements Action {
-  readonly type = ASSETS_UPLOAD_ERROR
+  readonly type = ASSETS_UPLOAD_ERROR;
   constructor(
     readonly file: File,
     readonly message: string,
@@ -61,7 +61,7 @@ export class AssetsUploadError implements Action {
 
 export const ASSETS_DELETE = '[asset] ASSETS_DELETE';
 export class AssetsDelete implements Action {
-  readonly type = ASSETS_DELETE
+  readonly type = ASSETS_DELETE;
   constructor(
     readonly file: FileResponse
   ) {}
@@ -69,7 +69,7 @@ export class AssetsDelete implements Action {
 
 export const ASSETS_DELETE_SUCCESS = '[assets] ASSETS_DELETE_SUCCESS';
 export class AssetsDeleteSuccess implements Action {
-  readonly type = ASSETS_DELETE_SUCCESS
+  readonly type = ASSETS_DELETE_SUCCESS;
   constructor(
     readonly file: FileResponse
   ) {}
@@ -77,7 +77,7 @@ export class AssetsDeleteSuccess implements Action {
 
 export const ASSETS_DELETE_ERROR = '[asset] ASSETS_DELETE_ERROR';
 export class AssetsDeleteError implements Action {
-  readonly type = ASSETS_DELETE_ERROR
+  readonly type = ASSETS_DELETE_ERROR;
   constructor(
     readonly file: FileResponse
   ) {}
@@ -94,7 +94,7 @@ export class AssetsOpenFile implements Action {
 
 export const ASSETS_CLOSE_FILE = '[asset] ASSETS_CLOSE_FILE';
 export class AssetsCloseFile implements Action {
-  readonly type = ASSETS_CLOSE_FILE
+  readonly type = ASSETS_CLOSE_FILE;
   constructor() {}
 }
 

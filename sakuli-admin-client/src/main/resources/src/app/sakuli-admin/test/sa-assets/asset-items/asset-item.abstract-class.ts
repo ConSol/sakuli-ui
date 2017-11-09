@@ -1,5 +1,5 @@
-import {FileResponse} from "../../../../../../sweetest-components/services/access/model/file-response.interface";
 import {EventEmitter, HostBinding, Input, Output} from "@angular/core";
+import {FileResponse} from "../../../../sweetest-components/services/access/model/file-response.interface";
 
 export const AssetItemStyle = `
     .card {
@@ -42,5 +42,25 @@ export interface AssetItem {
   onClick(file: FileResponse):void;
   onDelete(file: FileResponse):void;
 
+}
 
+export class AbstractAssetItem {
+  @Input() item: FileResponse;
+  @Input() basePath;
+  @Output() delete = new EventEmitter<FileResponse>();
+  @Output() click = new EventEmitter<FileResponse>();
+
+  @HostBinding('class')
+  get hostBindingClass() {
+    return 'card-wrapper col-12 col-md-4 col-lg-3 col-xl-2 d-flex flex-column';
+  }
+
+
+  onClick(file :FileResponse) {
+    this.click.next(file);
+  }
+
+  onDelete(file: FileResponse) {
+    this.delete.next(file);
+  }
 }

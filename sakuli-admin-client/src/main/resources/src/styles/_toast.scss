@@ -1,0 +1,8 @@
+sc-toast-container {
+  bottom: 0;
+  overflow: hidden;
+  sc-toast {
+    width: 50%;
+    transition: all .35s ease-out;
+  }
+}
