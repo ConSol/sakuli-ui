@@ -1,13 +1,12 @@
-import {AppState} from "../../../../appstate.interface";
 import {UploadEvent} from "./sa-assets.component";
-import {testCase} from "../../../state/test.interface";
 import {currentChildren, currentFolder, uploading} from "./sa-assets.interface";
-import {projectFileRoot} from "../../../../project/state/project.interface";
-import {absPath, FileResponse} from "../../../../../sweetest-components/services/access/model/file-response.interface";
 import {AssetsDelete, AssetsOpenFile, AssetsSetCurrentFolder, AssetsUpload} from "./sa-assets.action";
 import {Component, OnInit} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {ActivatedRoute} from "@angular/router";
+import {AppState} from "../../appstate.interface";
+import {testCase} from "../state/test.interface";
+import {absPath, FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
 
 @Component({
   selector: 'sa-assests-connected',

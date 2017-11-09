@@ -4,5 +4,6 @@ export const EditorModes = [
   'javascript',
   'properties',
   'dockerfile',
-  'yaml'
+  'yaml',
+  'json'
 ]

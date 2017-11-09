@@ -37,7 +37,7 @@ export class AppComponent {
 
     this.menuService.addMenuItems(
       [
-        new MenuItem('secondary.log', 'Log', 'app-log', FontawesomeIcons.plus, LayoutMenuService.Menus.SECONDARY),
+        new MenuItem('secondary.log', 'Log', 'app-log', FontawesomeIcons.commentingO, LayoutMenuService.Menus.SECONDARY),
         new MenuItem('secondary.help', '', '', FontawesomeIcons.questionCircle, LayoutMenuService.Menus.SECONDARY),
       ]
     );

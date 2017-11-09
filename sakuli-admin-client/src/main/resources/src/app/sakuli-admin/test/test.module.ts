@@ -11,7 +11,7 @@ import {TestDetailComponent} from "./test-detail/test-detail.component";
 import {SaSourceComponent} from "./test-detail/tabs/source.component";
 import {RunTestSuiteComponent} from "./run-test-suite.component";
 import {LogModalComponent} from "./test-detail/log-modal.component";
-import {SaAssetsModule} from "./test-detail/tabs/sa-assets/sa-assets.module";
+import {SaAssetsModule} from "./sa-assets/sa-assets.module";
 import {NgbModule, NgbTooltip, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {TestDetailConnectedComponent} from "app/sakuli-admin/test/test-detail/test-detail-connected.component";
 import {SaConfigurationComponent} from "./configuration/sa-configuration.component";

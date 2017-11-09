@@ -6,8 +6,8 @@ import {
   ASSETS_UPLOAD_SUCCESS,
   AssetsActions
 } from "./sa-assets.action";
-import {uniq} from "../../../../../core/utils";
-import {absPath} from "../../../../../sweetest-components/services/access/model/file-response.interface";
+import {uniq} from "../../../core/utils";
+import {absPath} from "../../../sweetest-components/services/access/model/file-response.interface";
 
 export function assetReducer(state:AssetsState = AssetsStateInit, action:AssetsActions) {
   switch (action.type) {

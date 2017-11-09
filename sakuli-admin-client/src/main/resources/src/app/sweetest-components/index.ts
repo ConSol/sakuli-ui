@@ -15,7 +15,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ScTreeComponent} from './components/presentation/tree/sc-tree.component';
 import {ScTreeItemComponent} from './components/presentation/tree/sc-tree-item.component';
 import {ScTableComponent} from "./components/presentation/table/table.component";
-import {ScEditorComponent} from "./components/presentation/editor/sc-editor.component";
+import {ScEditorComponent} from "./components/forms/editor/sc-editor.component";
 import {FormsModule} from "@angular/forms";
 import {ScToastModule} from "./components/presentation/toast/toast.module";
 import {AbsPathPipe, FileNamePipe, PathPipe} from "./components/common/file.pipes";
@@ -34,6 +34,7 @@ import {DateDiffPipe, MomentPipe} from "./components/common/date-util.pipes";
 import {ScMenuModule} from "./components/layout/menu/menu.module";
 import {ScRouterModule} from "./services/router/router.module";
 import {PreventRoutingGuardService} from "./components/forms/prevent-routing-guard.service";
+import {ScFormsModule} from "./components/forms/sc-forms.module";
 
 
 export const SweetestComponentsAndDirectives  = [
@@ -51,8 +52,6 @@ export const SweetestComponentsAndDirectives  = [
   ScTreeItemComponent,
 
   ScTableComponent,
-
-  ScEditorComponent,
 
   FileNamePipe,
   PathPipe,
@@ -88,6 +87,7 @@ export const SweetestComponentsAndDirectives  = [
     ScLoadingModule,
     ScMenuModule,
     ScRouterModule,
+    ScFormsModule
   ],
   declarations: [
     ...(SweetestComponentsAndDirectives)
@@ -106,6 +106,7 @@ export const SweetestComponentsAndDirectives  = [
     ScIconModule,
     ScLoadingModule,
     ScRouterModule,
+    ScFormsModule
   ],
 })
 export class SweetestComponentsModule {

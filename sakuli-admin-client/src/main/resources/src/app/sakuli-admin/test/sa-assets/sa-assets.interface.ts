@@ -1,8 +1,8 @@
-import {absPath, FileResponse} from "../../../../../sweetest-components/services/access/model/file-response.interface";
 import {createFeatureSelector, createSelector} from "@ngrx/store";
-import {project} from "../../../../project/state/project.interface";
 import {nothrow} from "nothrow";
 import {AssetItemType, getItemType} from "./asset-item-type.enum";
+import {FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
+import {project} from "../../project/state/project.interface";
 
 export const ASSETS_FEATURE_NAME = 'assets';
 

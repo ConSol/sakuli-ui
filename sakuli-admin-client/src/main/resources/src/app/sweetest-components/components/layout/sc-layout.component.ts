@@ -20,10 +20,10 @@ import {log} from "../../../core/redux.util";
         (menuItemSelected)="onMenuItemSelected($event)"
         ></sc-sidebar>
         <div class="content-outlet">
-          <sc-toast-container></sc-toast-container>
           <ng-content></ng-content>
         </div>
       </div>
+      <sc-toast-container></sc-toast-container>
     </main>
   `,
   styles: [`

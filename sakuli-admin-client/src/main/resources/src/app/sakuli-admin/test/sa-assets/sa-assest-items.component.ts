@@ -1,14 +1,13 @@
 import {
   Component, EventEmitter, HostBinding, Input, Output} from '@angular/core';
-import {FileResponse} from "../../../../../sweetest-components/services/access/model/file-response.interface";
 import {AssetItemType, getItemType} from "./asset-item-type.enum";
+import {FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
 
 
 @Component({
   selector: 'sa-assest-items',
 
-  template: `
-    
+  template: `    
     <ng-container 
       *ngFor="let file of items" 
       [ngSwitch]="getItemType(file)">
@@ -18,7 +17,6 @@ import {AssetItemType, getItemType} from "./asset-item-type.enum";
         (click)="onSelect(file)"
         (delete)="onDelete(file)"
       ></asset-item-folder>
-      
       <asset-item-image 
         *ngSwitchCase="itemTypes.Image"
         [item]="file"
@@ -26,6 +24,13 @@ import {AssetItemType, getItemType} from "./asset-item-type.enum";
         (click)="onSelect(file)"
         (delete)="onDelete(file)"
       ></asset-item-image>
+      <asset-item-text
+        *ngSwitchCase="itemTypes.Text"
+        [item]="file"
+        [basePath]="basePath"
+        (click)="onSelect(file)"
+        (delete)="onDelete(file)"
+      ></asset-item-text>
       <div *ngSwitchDefault="">
         <br />
       </div>

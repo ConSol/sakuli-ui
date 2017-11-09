@@ -1,8 +1,5 @@
-import {Component, EventEmitter, HostBinding, Input, OnInit, Output} from '@angular/core';
-import {
-  FileResponse
-} from "../../../../../../sweetest-components/services/access/model/file-response.interface";
-import {AssetItem, AssetItemStyle} from "./asset-item.abstract-class";
+import {Component} from '@angular/core';
+import {AbstractAssetItem, AssetItemStyle} from "./asset-item.abstract-class";
 
 @Component({
   selector: 'asset-item-image',
@@ -33,25 +30,6 @@ import {AssetItem, AssetItemStyle} from "./asset-item.abstract-class";
   ]
 })
 
-export class AssetItemImageComponent implements AssetItem {
-  @Input() item: FileResponse;
-  @Input() basePath;
-  @Output() delete = new EventEmitter<FileResponse>();
-  @Output() click = new EventEmitter<FileResponse>();
-
-  @HostBinding('class')
-  get hostBindingClass() {
-    return 'card-wrapper col-12 col-md-4 col-lg-3 col-xl-2 d-flex flex-column';
-  }
-
-
-  onClick(file :FileResponse) {
-    this.click.next(file);
-  }
-
-  onDelete(file: FileResponse) {
-    this.delete.next(file);
-  }
-
+export class AssetItemImageComponent extends AbstractAssetItem {
 
 }

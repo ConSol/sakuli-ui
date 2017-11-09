@@ -3,16 +3,10 @@ import {
 } from '@angular/core';
 import {Observable} from "rxjs/Observable";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {SaImageModal} from "./sa-image-modal.component";
-import {Store} from "@ngrx/store";
-import {FileService} from "../../../../../sweetest-components/services/access/file.service";
-import {AppState} from "../../../../appstate.interface";
-import {log, notNull} from "../../../../../core/redux.util";
-import {absPath, FileResponse} from "../../../../../sweetest-components/services/access/model/file-response.interface";
-import {
-  SakuliTestCase,
-} from "../../../../../sweetest-components/services/access/model/sakuli-test-model";
 import {ActivatedRoute} from "@angular/router";
+import {SakuliTestCase} from "../../../sweetest-components/services/access/model/sakuli-test-model";
+import {absPath, FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
+import {FileService} from "../../../sweetest-components/services/access/file.service";
 
 export interface UploadEvent {
   files: FileList,
@@ -218,15 +212,6 @@ export class SaAssetsComponent implements OnInit {
   handleUpload(files: FileList) {
     this.upload.next({files, targetFolder: this.currentFolder})
   }
-/*
-  onImageClick(file: string) {
-    const modalRef = this.modalService.open(SaImageModal);
-    const component = modalRef.componentInstance as SaImageModal;
-    component.images = this.filteredAssetFiles;
-    component.basePath = this.basePath;
-    component.selected = file;
-  }
-*/
 
   ngOnInit() {
       this.targetFolders$ = this.filesService.files(this.basePath)

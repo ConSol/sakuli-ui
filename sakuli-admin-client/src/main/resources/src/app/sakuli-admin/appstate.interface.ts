@@ -4,7 +4,7 @@ import {
   ToastAppState,
   ToastStateInit
 } from "../sweetest-components/components/presentation/toast/toast-state.interface";
-import {AssetsState, AssetsStateInit} from "./test/test-detail/tabs/sa-assets/sa-assets.interface";
+import {AssetsState, AssetsStateInit} from "./test/sa-assets/sa-assets.interface";
 
 export interface AppStateBase {
   project: ProjectState,
