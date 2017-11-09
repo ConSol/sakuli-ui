@@ -4,23 +4,25 @@ import {Store} from "@ngrx/store";
 import {testResults} from "../state/test.interface";
 import {LoadTestResults} from "../state/test.actions";
 import {BoundIndexIterator} from "../../../sweetest-components/utils";
-import {notNull} from "../../../core/redux.util";
 
 @Component({
   selector: 'sa-report',
   template: `
     <sc-content>
+      <!--
       <sc-heading
         icon="fa-tasks"
         title="Reports"
       ></sc-heading>
+      -->
       <article class="d-flex flex-column">
         <sc-loading displayAs="progressbar" for="loadingTestResults"></sc-loading>
         <sa-report-navigation [testResult]="currentResult$ | async"
-          (next)="next()"
-          (prev)="prev()"
+                              (next)="next()"
+                              (prev)="prev()"
         ></sa-report-navigation>
-        <sa-report-content [testResult]="currentResult$ | async"
+        <sa-report-content
+          [testResult]="currentResult$ | async"
         ></sa-report-content>
       </article>
     </sc-content>
@@ -28,7 +30,7 @@ import {notNull} from "../../../core/redux.util";
 })
 export class SaReportComponent implements OnInit {
 
-  indexIterator: BoundIndexIterator = new BoundIndexIterator(0,0);
+  indexIterator: BoundIndexIterator = new BoundIndexIterator(0, 0);
 
   index = 0;
 
@@ -61,4 +63,5 @@ export class SaReportComponent implements OnInit {
       .first()
       .subscribe(tr => this.store.dispatch(new LoadTestResults()));
   }
+
 }
