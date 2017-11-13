@@ -1,67 +1,48 @@
-import {FontawesomeIcon} from "../icon/fontawesome-icon.utils";
-import {Observable} from "rxjs/Observable";
-import {CreateToast} from "./toast.service";
+import {createFeatureSelector, createSelector} from "@ngrx/store";
+import {createEntityAdapter, EntityState} from "@ngrx/entity";
+import {DangerToast, IToast, ToastConfig} from "./toast.model";
 
 export const NGRX_TOAST_FEATURE_NAME = 'scToast';
 
-export interface ToastConfig {
-  ttl: number;
-}
-
-export interface ToastState {
-  toasts: Toast[],
-  history: Toast[]
+export interface ToastState extends EntityState<IToast> {
+  history: IToast<any>[]
   configuration: ToastConfig
 }
 
+export const selectToastId = (toast: IToast) => toast.id;
+export const sortToasts = (t1: IToast, t2: IToast) => t1.timestamp.getDate() - t2.timestamp.getDate();
+export const toastEntityAdapter = createEntityAdapter({
+  selectId: selectToastId,
+  sortComparer: sortToasts
+});
+
 export const ToastStateInit: ToastState = {
-  toasts: [],
-  history: [],
+  ...toastEntityAdapter.getInitialState(),
+  history: [
+    new DangerToast("This was an error", Error('nothin good happend')),
+    new DangerToast("This was an error", Error('nothin good happend'))
+  ],
   configuration: {
     ttl: 30000
   }
-}
+};
 
-export type ToastTypes = "success" | "info" | "warning" | "danger";
 
-export interface Toast {
-  type: ToastTypes;
-  message: string;
-  icon?: FontawesomeIcon
-  more?: any
-}
-
-export class SuccessToast implements Toast {
-  icon: FontawesomeIcon = 'fa-check';
-  type: ToastTypes = 'success';
-
-  constructor(readonly message: string) {
-  }
-}
-
-export class DangerToast implements Toast {
-  icon: FontawesomeIcon = 'fa-warning';
-  type: ToastTypes = 'danger';
-  more: any;
-
-  constructor(readonly message: string,
-              readonly error: Error | any) {
-    if (error instanceof Error) {
-      this.more = {
-        name: error.name,
-        message: error.message || '',
-        stack: (error.stack || '').split('\n')
-      }
-    } else {
-      this.more = error;
-    }
-  }
-}
 
 export interface ToastAppState {
   scToast: ToastState
 }
 
-export const ErrorMessage = (message: string) => (e: Error) => {
-  return Observable.of(new CreateToast(new DangerToast(message, e)));
+
+
+const state = createFeatureSelector<ToastState>(NGRX_TOAST_FEATURE_NAME);
+const selectors = toastEntityAdapter.getSelectors(state);
+const configuration = createSelector(state, s => s.configuration);
+const history = createSelector(state, s => s.history);
+const ttl = createSelector(configuration, c => c.ttl);
+export const toastSelectors = {
+  configuration,
+  history,
+  ttl,
+  ...selectors
 };

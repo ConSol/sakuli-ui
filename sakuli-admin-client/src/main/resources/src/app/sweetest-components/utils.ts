@@ -126,3 +126,31 @@ export class Deferred<T> {
   }
 
 }
+
+class Counter {
+  constructor(
+    private _value: number
+  ) {}
+
+  get value() {
+    return this._value;
+  }
+
+  dec() {
+    return this._value--;
+  }
+
+  inc() {
+    return this._value++
+  }
+}
+
+const _ids = new Map<string,Counter>();
+export function* idGenerator(prefix: string, init = 0) {
+  if(!_ids.has(prefix)) {
+    _ids.set(prefix, new Counter(init));
+  }
+  while(true) {
+    yield `${prefix}-${_ids.get(prefix).inc()}`;
+  }
+}

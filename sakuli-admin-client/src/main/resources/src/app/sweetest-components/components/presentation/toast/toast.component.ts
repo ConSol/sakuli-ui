@@ -1,5 +1,5 @@
 import {Component, EventEmitter, HostBinding, Input, Output} from "@angular/core";
-import {ToastTypes} from "./toast-state.interface";
+import {ToastTypes} from "./toast.model";
 
 @Component({
   selector: 'sc-toast',

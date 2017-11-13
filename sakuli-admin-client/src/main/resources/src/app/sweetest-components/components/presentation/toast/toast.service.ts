@@ -1,52 +1,41 @@
 import {Injectable} from "@angular/core";
-import {Action, Store} from "@ngrx/store";
-import {
-  Toast, ToastAppState,
-} from "app/sweetest-components/components/presentation/toast/toast-state.interface";
-import {uniqueName} from "../../../../core/redux.util";
+import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
+import {Actions, Effect} from "@ngrx/effects";
+import {IToast, ToastConfig} from "./toast.model";
+import {selectToastId, ToastAppState, toastSelectors} from "./toast-state.interface";
+import {CREATE_TOAST, CreateToast, RemoveToast} from "./toast.actions";
 
-export const CREATE_TOAST = uniqueName('[sc-toast] CREATE_TOAST');
-export class CreateToast implements Action {
-  readonly type = CREATE_TOAST;
-  constructor(
-    readonly toast: Toast
-  ) {}
-}
-
-export const REMOVE_TOAST = uniqueName('[sc-toast] REMOVE_TOAST');
-export class RemoveToast implements Action {
-  readonly type = REMOVE_TOAST;
-  constructor(
-    readonly index: number
-  ) {}
-}
-
-export type ToastActions = CreateToast | RemoveToast;
 
 @Injectable()
 export class ScToastService {
 
   constructor(
-    private store: Store<ToastAppState>
+    private store: Store<ToastAppState>,
+    readonly actions$: Actions
   ) {}
 
-  get toasts$(): Observable<Toast[]> {
-    return this.store.select(s => s.scToast.toasts);
+  get toasts$(): Observable<IToast[]> {
+    return this.store.select(toastSelectors.selectAll);
   }
 
   get toastCount$() {
-    return this.toasts$.map(t => t.length);
+    return this.toasts$.map(toastSelectors.selectTotal);
   }
 
-  create(toast: Toast) {
+  create<T>(toast: IToast<T>) {
     this.store.dispatch(new CreateToast(toast))
   }
 
-  remove(index: number) {
-    this.store.dispatch(new RemoveToast(index))
+  remove(id: string) {
+    this.store.dispatch(new RemoveToast(id))
   }
 
-
-
+  @Effect() autoDelete$ = this.actions$
+    .ofType(CREATE_TOAST)
+    .withLatestFrom(this.store.select(toastSelectors.configuration))
+    .delayWhen(([a, config]: [CreateToast, ToastConfig]) => {
+      return config.ttl ?  Observable.interval(config.ttl) : Observable.empty();
+    })
+    .map(([a, config]: [CreateToast, ToastConfig]) => new RemoveToast(selectToastId(a.toast)))
 }

@@ -1,8 +1,8 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FileService} from "../../services/access/file.service";
 import {ScToastService} from "../presentation/toast/toast.service";
-import {DangerToast, SuccessToast} from "../presentation/toast/toast-state.interface";
 import {getModeForPath} from "./editor/modelist";
+import {DangerToast, SuccessToast} from "../presentation/toast/toast.model";
 
 @Component({
   selector: 'inplace-file-editor',

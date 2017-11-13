@@ -8,7 +8,7 @@ import {
 import {of} from 'rxjs/observable/of';
 import {absPath} from "../../../sweetest-components/services/access/model/file-response.interface";
 import {FileService} from "../../../sweetest-components/services/access/file.service";
-import {ErrorMessage} from "../../../sweetest-components/components/presentation/toast/toast-state.interface";
+import {ErrorMessage} from "../../../sweetest-components/components/presentation/toast/toast.actions";
 import {LoadTestsuite} from "../../test/state/testsuite.state";
 
 @Injectable()

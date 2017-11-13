@@ -19,7 +19,7 @@ import {RunConfiguration} from "./run-configuration.interface";
 import {RunConfigurationTypes} from "./run-configuration-types.enum";
 import {
   DangerToast,
-  SuccessToast, Toast
+  SuccessToast, IToast
 } from "../../../sweetest-components/components/presentation/toast/toast-state.interface";
 import {
   LoadingSetBusy,

@@ -12,16 +12,12 @@ import {
   TEST_EXECUTION_COMPLETED, TestExecutionCompleted, TestExecutionStarted
 } from "./test.actions";
 import {SET_PROJECT, SetProject} from "../../project/state/project.actions";
-import {
-  CreateToast,
-} from "../../../sweetest-components/components/presentation/toast/toast.service";
 
 import {Observable} from "rxjs/Observable";
 import {ScLoadingService} from "../../../sweetest-components/components/presentation/loading/sc-loading.service";
 import {
   ErrorMessage,
-  SuccessToast
-} from "../../../sweetest-components/components/presentation/toast/toast-state.interface";
+} from "../../../sweetest-components/components/presentation/toast/toast.actions";
 import {IMenuItem, MenuItem} from "../../../sweetest-components/components/layout/menu/menu-item.interface";
 import {FontawesomeIcons} from "../../../sweetest-components/components/presentation/icon/fontawesome-icon.utils";
 import {LayoutMenuService} from "../../../sweetest-components/components/layout/menu/layout-menu.service";
@@ -36,6 +32,8 @@ import {
   LOAD_TESTSUITE, LOAD_TESTSUITE_SUCCESS, LoadTestsuite, LoadTestsuiteSuccess,
   testSuiteSelectId, testSuiteSelectors
 } from "./testsuite.state";
+import {SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
+import {CreateToast} from "../../../sweetest-components/components/presentation/toast/toast.actions";
 
 @Injectable()
 export class TestEffects {

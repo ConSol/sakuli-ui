@@ -4,7 +4,6 @@ import {
   LOAD_RUN_CONFIGURATION, LOAD_RUN_CONFIGURATION_SUCCESS, LOAD_SAKULI_CONTAINER, LOAD_SAKULI_CONTAINER_SUCCESS,
   LOAD_SAKULI_CONTAINER_TAGS,
   LOAD_SAKULI_CONTAINER_TAGS_SUCCESS,
-  LoadRunConfiguration,
   LoadRunConfigurationSuccess, LoadSakuliContainerSuccess, LoadSakuliContainerTags, LoadSakuliContainerTagsSuccess,
   SAVE_RUN_CONFIGURATION,
   SAVE_RUN_CONFIGURATION_SUCCESS,
@@ -14,13 +13,14 @@ import {
 import {RunConfigurationService} from "../../../sweetest-components/services/access/run-configuration.service";
 import {AppState} from "../../appstate.interface";
 import {Store} from "@ngrx/store";
-import {ContainerTag, RunConfiguration, RunConfigurationSelect, SakuliContainer} from "./run-configuration.interface";
-import {CreateToast, ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
+import {ContainerTag, RunConfiguration, SakuliContainer} from "./run-configuration.interface";
+import {ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
 import {
   ErrorMessage,
-  SuccessToast
-} from "../../../sweetest-components/components/presentation/toast/toast-state.interface";
+} from "../../../sweetest-components/components/presentation/toast/toast.actions";
 import {ScLoadingService} from "../../../sweetest-components/components/presentation/loading/sc-loading.service";
+import {SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
+import {CreateToast} from "../../../sweetest-components/components/presentation/toast/toast.actions";
 
 @Injectable()
 export class RunConfigurationEffects {

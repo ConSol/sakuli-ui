@@ -7,6 +7,7 @@ import {ActivatedRoute} from "@angular/router";
 import {LoadTestsuite} from "../state/testsuite.state";
 import {FormBaseComponent} from "../../../sweetest-components/components/forms/form-base-component.interface";
 import {FormControl, FormGroup} from "@angular/forms";
+import {DangerToast, SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
 
 @Component({
   moduleId: module.id,
@@ -103,10 +104,7 @@ export class SaConfigurationComponent implements OnInit, FormBaseComponent {
         this.form.get('source').markAsPristine();
         this.form.markAsPristine();
       }, e => {
-        this.toastService.create({
-          type: 'danger',
-          message: 'Error while loading'
-        })
+        this.toastService.create(new DangerToast('Error while loading', e))
       })
   }
 
@@ -119,23 +117,11 @@ export class SaConfigurationComponent implements OnInit, FormBaseComponent {
         .mapTo(p);
     })
       .subscribe(path => {
-        this.toastService.create({
-          type: 'success',
-          message: `Successfully saved configuration ${path}`
-        });
+        this.toastService.create(new SuccessToast(`Successfully saved configuration ${path}`));
         this.store.dispatch(new LoadTestsuite(path));
         this.refresh();
       }, e => {
-        this.toastService.create({
-          type: 'danger',
-          icon: 'fa-warning',
-          message: 'Error while saving configuration',
-          more: {
-            name: e.name,
-            message: e.message,
-            stack: e.stack.split('\n')
-          }
-        })
+        this.toastService.create(new DangerToast('Error while saving configuration', e))
       })
   }
 }

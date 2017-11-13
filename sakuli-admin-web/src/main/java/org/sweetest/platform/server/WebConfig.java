@@ -27,7 +27,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Bean
     public ErrorViewResolver supportPathBasedLocationStrategyWithoutHashes() {
         return (HttpServletRequest req, HttpStatus status, Map<String, Object> model) -> status == HttpStatus.NOT_FOUND
-                ? new ModelAndView("classpath:/index.html", Collections.emptyMap(), HttpStatus.OK)
+                ? new ModelAndView("classpath:/id.html", Collections.emptyMap(), HttpStatus.OK)
                 : null;
     }
 
@@ -37,7 +37,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         registry.setOrder(-1);
         registry.addResourceHandler("/styles.css").addResourceLocations("/styles.css").setCachePeriod(CACHE_PERIOD_ONE_YEAR);
         registry.addResourceHandler("/app/**").addResourceLocations("/app/").setCachePeriod(CACHE_PERIOD_NO_CACHE);
-        registry.addResourceHandler("/").addResourceLocations("/index.html").setCachePeriod(CACHE_PERIOD_NO_CACHE);
+        registry.addResourceHandler("/").addResourceLocations("/id.html").setCachePeriod(CACHE_PERIOD_NO_CACHE);
         registry.addResourceHandler("/**").addResourceLocations("/", "classpath:/");
     }
         */

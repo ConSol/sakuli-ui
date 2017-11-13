@@ -5,7 +5,7 @@ import {
   LoadTestsuite, LoadTestsuiteSuccess, UPDATE_TESTSUITE, UPDATE_TESTSUITE_SUCCESS, UpdateTestsuite,
   UpdateTestsuiteSuccess
 } from "./testsuite.state";
-import {ErrorMessage} from "../../../sweetest-components/components/presentation/toast/toast-state.interface";
+import {ErrorMessage} from "../../../sweetest-components/components/presentation/toast/toast.actions";
 
 @Injectable()
 export class TestsuiteEffects {

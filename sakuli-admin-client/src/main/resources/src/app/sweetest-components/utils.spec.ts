@@ -1,4 +1,4 @@
-import {BoundIndexIterator,  Deferred} from "./utils";
+import {BoundIndexIterator, Deferred, idGenerator} from "./utils";
 
 describe('utils', () => {
 
@@ -22,6 +22,21 @@ describe('utils', () => {
       expect(iterator.prev()).toEqual(0);
       expect(iterator.prev()).toEqual(2)
     })
+  });
+
+  describe("idGenerator", () => {
+
+    it('should increment with diffrent prefixes', () => {
+      const gen1 = idGenerator('gen1', 1);
+      const gen2 = idGenerator('gen2' );
+
+      expect(gen1.next()).toEqual(expect.objectContaining({value: 'gen1-1'}));
+      expect(gen1.next()).toEqual(expect.objectContaining({value: 'gen1-2'}));
+      expect(gen2.next()).toEqual(expect.objectContaining({value: 'gen2-0'}));
+      expect(gen1.next()).toEqual(expect.objectContaining({value: 'gen1-3'}));
+      expect(gen2.next()).toEqual(expect.objectContaining({value: 'gen2-1'}));
+    });
+
   });
 
   describe(Deferred.name, () => {

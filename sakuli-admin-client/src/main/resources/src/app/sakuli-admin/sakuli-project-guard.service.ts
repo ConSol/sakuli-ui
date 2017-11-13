@@ -16,15 +16,14 @@ export class SakuliProjectGuardService implements CanActivate {
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot) {
-    const hasTestSuits = this.store.select(testSuiteSelectors.selectTotal)
+    return this.store.select(testSuiteSelectors.selectTotal)
       .mergeMap(total => {
-        if(total > 0) {
+        if (total > 0) {
           return Observable.of(true);
         } else {
           const projectModal = this.modal.open(ProjectOpenComponent, {});
           return Observable.fromPromise(projectModal);
         }
       });
-    return hasTestSuits;
   }
 }
