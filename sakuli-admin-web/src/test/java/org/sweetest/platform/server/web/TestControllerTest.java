@@ -37,11 +37,11 @@ public class TestControllerTest extends AbstractControllerTestWithFileSystem{
 
     @Test
     public void getTestSuite() throws Exception {
-        mvc.perform(get("/api/testsuite?path=project"))
+        mvc.perform(get("/api/testsuite?path=testSuite"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.testCases", hasSize(1)))
-                .andExpect(jsonPath("$.name", is("project")))
-                .andExpect(jsonPath("$.configuration.testSuiteFile", is("project/testsuite.suite")))
+                .andExpect(jsonPath("$.name", is("testSuite")))
+                .andExpect(jsonPath("$.configuration.testSuiteFile", is("testSuite/testsuite.suite")))
                 .andExpect(jsonPath("$.testCases[0].name", is("case1")))
                 .andExpect(jsonPath("$.testCases[0].mainFile", is("sakuli_demo.js")))
         ;
@@ -65,10 +65,10 @@ public class TestControllerTest extends AbstractControllerTestWithFileSystem{
         testSuiteConfiguration.setId("demo");
         SakuliTestSuite testSuite = new SakuliTestSuite();
         testSuite.setConfiguration(testSuiteConfiguration);
-        testSuite.setRoot("project");
-        testSuite.setName("project");
-        testSuite.setTestSuiteFile("project/testsuite.suite");
-        testSuite.setConfigurationFile("project/testsuite.properties");
+        testSuite.setRoot("testSuite");
+        testSuite.setName("testSuite");
+        testSuite.setTestSuiteFile("testSuite/testsuite.suite");
+        testSuite.setConfigurationFile("testSuite/testsuite.properties");
         testSuite.setTestCases(Arrays.asList(
                 buildTestCase("case1", "test.js", "http://sakuli.org", true, ""),
                 buildTestCase("case2", "test.js", "http://sakuli.org", false, ""),
@@ -81,14 +81,14 @@ public class TestControllerTest extends AbstractControllerTestWithFileSystem{
         )
                 .andExpect(status().isOk());
 
-        mvc.perform(get("/api/testsuite?path=project"))
+        mvc.perform(get("/api/testsuite?path=testSuite"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.testCases", hasSize(3)))
         ;
 
 
 
-        int dirCount = Paths.get(rootDirectory, "project").toFile().list().length;
+        int dirCount = Paths.get(rootDirectory, "testSuite").toFile().list().length;
         assertEquals(7, dirCount);
     }
 

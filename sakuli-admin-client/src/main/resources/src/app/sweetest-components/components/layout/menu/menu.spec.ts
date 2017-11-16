@@ -4,20 +4,17 @@ import {
 } from "./menu.state";
 import {IMenuItem, MenuItem} from "./menu-item.interface";
 import {SelectionState} from "../../../model/tree";
-import {TestBed} from "@angular/core/testing";
+import {async, TestBed} from "@angular/core/testing";
 import {INITIAL_STATE, Store, StoreModule} from "@ngrx/store";
-import {EffectsModule} from "@ngrx/effects";
+import {Actions, EffectsModule} from "@ngrx/effects";
 import {LayoutMenuService} from "./layout-menu.service";
 import {provideMockActions} from "@ngrx/effects/testing";
 import {Observable} from "rxjs/Observable";
 import {ScMenuModule} from "./menu.module";
-import {AppState} from "../../../../sakuli-admin/appstate.interface";
 import {marbles} from "rxjs-marbles";
 import {ROUTER_NAVIGATION} from "@ngrx/router-store";
 import {RouterModule} from "@angular/router";
 import {APP_BASE_HREF} from "@angular/common";
-import Mocked = jest.Mocked;
-
 
 describe('Menu', () => {
   const icon = 'fa-code';
@@ -59,31 +56,35 @@ describe('Menu', () => {
 
   describe('Effects', () => {
     let mockActions: Observable<any>;
-    let store: Mocked<Partial<Store<AppState>>> = {
-      select: jest.fn()
-    };
     let effects: LayoutMenuService;
 
-    beforeEach(async (done) => {
-      await TestBed.configureTestingModule({
+    beforeEach(() => {
+
+      TestBed.configureTestingModule({
         imports: [
           StoreModule.forRoot({}),
-          EffectsModule.forRoot([]),
-          ScMenuModule,
-          RouterModule.forRoot([])
+          RouterModule.forRoot([]),
+          ScMenuModule
         ],
         providers: [
-          LayoutMenuService,
           provideMockActions(() => mockActions),
+          LayoutMenuService,
           {provide: APP_BASE_HREF, useValue: ''},
           {provide: INITIAL_STATE, useValue: {
             scMenu: menuReducer(menuEntityAdapter.getInitialState(), addAllItemsAction)
           }}
         ]
       });
-
-      effects = TestBed.get(LayoutMenuService);
-      done();
+      try {
+        effects = TestBed.get(LayoutMenuService);
+        console.log('Dep!!!!!!!!!!!!!',
+          TestBed.get(Store),
+          TestBed.get(Actions)
+        );
+      } catch(e) {
+        console.warn(e);
+      }
+      console.log('Setup', provideMockActions(() => mockActions),);
     });
 
     it('should select on Navigation', marbles(m => {

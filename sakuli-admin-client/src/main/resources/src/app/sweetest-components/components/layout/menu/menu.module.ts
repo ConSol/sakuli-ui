@@ -3,16 +3,17 @@ import {LayoutMenuService} from "./layout-menu.service";
 import {StoreModule} from "@ngrx/store";
 import {menuReducer} from "./menu.state";
 import {EffectsModule} from "@ngrx/effects";
+import {RouterModule} from "@angular/router";
 
 @NgModule({
   imports: [
     StoreModule.forFeature("scMenu", menuReducer),
-    EffectsModule.forFeature([LayoutMenuService])
+    EffectsModule.forFeature([LayoutMenuService]),
+    RouterModule.forChild([])
   ],
-  exports: [],
-  declarations: [],
   providers: [
-    LayoutMenuService
+    LayoutMenuService,
+    RouterModule
   ],
 })
 export class ScMenuModule {

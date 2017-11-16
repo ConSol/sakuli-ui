@@ -3,7 +3,7 @@ import {Http} from "@angular/http";
 import {Observable} from "rxjs/Observable";
 import {ProjectModel} from "./model/project.model";
 
-const projectUrl = '/api/project';
+const projectUrl = '/api/testSuite';
 
 /**
  * @Deprecated

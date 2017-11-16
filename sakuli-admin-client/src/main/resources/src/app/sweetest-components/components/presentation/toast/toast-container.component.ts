@@ -1,8 +1,9 @@
 import {Component, Input} from "@angular/core";
 import {Observable} from "rxjs/Observable";
-import {Toast, ToastState} from "./toast-state.interface";
+import {selectToastId, ToastState} from "./toast-state.interface";
 import {ScToastService} from "./toast.service";
 import {animate, style, transition, trigger} from "@angular/animations";
+import {IToast} from "./toast.model";
 
 @Component({
   animations: [
@@ -29,7 +30,7 @@ import {animate, style, transition, trigger} from "@angular/animations";
       *ngFor="let toast of toasts$ | async;let i = index"
       [toast-type]="toast.type"
       [closeable]="true"
-      (close)="closeToast(i)"
+      (close)="closeToast(toast)"
     >
       <span class="toast-main-content d-flex flex-row justify-content-between">
         <span>
@@ -60,7 +61,7 @@ import {animate, style, transition, trigger} from "@angular/animations";
   `]
 })
 export class ScToastContainerComponent {
-  toasts$: Observable<Toast[]>;
+  toasts$: Observable<IToast[]>;
 
   isShowMore = false;
   constructor(
@@ -69,8 +70,8 @@ export class ScToastContainerComponent {
     this.toasts$ = this.toastService.toasts$;
   }
 
-  closeToast(i) {
-    this.toastService.remove(i);
+  closeToast(toast: IToast) {
+    this.toastService.remove(selectToastId(toast));
   }
 
   toggleShowMore() {

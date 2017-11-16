@@ -1,16 +1,15 @@
-import {Component, HostListener, Input, OnInit, Type} from "@angular/core";
-import {NgbTab} from "@ng-bootstrap/ng-bootstrap";
+import {Component, HostListener, Input, OnInit} from "@angular/core";
 import {Observable} from "rxjs/Observable";
 import {FileService} from "../../../../sweetest-components/services/access/file.service";
 import {SakuliTestCase, SakuliTestSuite} from "../../../../sweetest-components/services/access/model/sakuli-test-model";
 import {ScToastService} from "../../../../sweetest-components/components/presentation/toast/toast.service";
 import {SourceForm} from "./source-form.class";
 import {FormBaseComponent} from "../../../../sweetest-components/components/forms/form-base-component.interface";
-import {TestService} from "../../../../sweetest-components/services/access/test.service";
 import {AppState} from "../../../appstate.interface";
 import {Store} from "@ngrx/store";
 import {UpdateTestsuite} from "../../state/testsuite.state";
 import {getModeForPath} from "../../../../sweetest-components/components/forms/editor/modelist";
+import {DangerToast, SuccessToast} from "../../../../sweetest-components/components/presentation/toast/toast.model";
 
 @Component({
   selector: 'sa-source',
@@ -88,6 +87,8 @@ export class SaSourceComponent implements OnInit, FormBaseComponent {
   }
 
   onSave() {
+
+
     this.fileService
       .write(
         this.currentFile.file.split('/').slice(0, -1).join('/'),
@@ -97,15 +98,9 @@ export class SaSourceComponent implements OnInit, FormBaseComponent {
         )
       )
       .subscribe(r => {
-        this.toastsService.create({
-          type: 'success',
-          message: `Successfully saved ${this.currentFile.file}`
-        })
+        this.toastsService.create(new SuccessToast(`Successfully saved ${this.currentFile.file}`))
       }, e => {
-        this.toastsService.create({
-          type: 'danger',
-          message: 'Error during saving the file please try again'
-        })
+        this.toastsService.create(new DangerToast('Error during saving the file please try again', e))
       });
     const tcIdx = this.testSuite.testCases.findIndex(tc => tc.name + tc.mainFile === this.testCase.name + this.testCase.mainFile);
     this.testSuite.testCases[tcIdx].startUrl = this.sourceForm.startUrl;

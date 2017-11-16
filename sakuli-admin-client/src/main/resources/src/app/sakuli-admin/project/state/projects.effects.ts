@@ -8,7 +8,7 @@ import {
 import {of} from 'rxjs/observable/of';
 import {absPath} from "../../../sweetest-components/services/access/model/file-response.interface";
 import {FileService} from "../../../sweetest-components/services/access/file.service";
-import {ErrorMessage} from "../../../sweetest-components/components/presentation/toast/toast-state.interface";
+import {ErrorMessage} from "../../../sweetest-components/components/presentation/toast/toast.actions";
 import {LoadTestsuite} from "../../test/state/testsuite.state";
 
 @Injectable()
@@ -17,7 +17,7 @@ export class ProjectEffects {
   @Effect() refresh$ = this.actions$.ofType(REFRESH_PROJECT)
     .mergeMap(a => this.projectService.activeProject())
     .map(p => new SetProject(p))
-    .catch(ErrorMessage('Error while fetching current project'));
+    .catch(ErrorMessage('Error while fetching current testSuite'));
 
 
   @Effect() open$ = this.actions$.ofType(LOAD_PATH)

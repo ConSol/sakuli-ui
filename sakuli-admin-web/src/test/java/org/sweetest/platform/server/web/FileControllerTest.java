@@ -46,13 +46,13 @@ public class FileControllerTest extends AbstractControllerTestWithFileSystem {
 
     @Test
     public void getFiles() throws Exception {
-        mvc.perform(get("/api/files/ls?path=project")
+        mvc.perform(get("/api/files/ls?path=testSuite")
             .contentType(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(4)));
 
-        mvc.perform(get("/api/files/ls?path=project/case1")
+        mvc.perform(get("/api/files/ls?path=testSuite/case1")
                 .contentType(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
@@ -61,7 +61,7 @@ public class FileControllerTest extends AbstractControllerTestWithFileSystem {
 
     @Test
     public void getFilesWithFilter() throws Exception {
-        mvc.perform(get("/api/files/ls?path=project/case1/centos&filter=(.*.jpg|.*.md)")
+        mvc.perform(get("/api/files/ls?path=testSuite/case1/centos&filter=(.*.jpg|.*.md)")
                 .contentType(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
@@ -71,7 +71,7 @@ public class FileControllerTest extends AbstractControllerTestWithFileSystem {
 
     @Test
     public void readFile() throws Exception {
-        mvc.perform(get("/api/files?path=project/case1/README.md"))
+        mvc.perform(get("/api/files?path=testSuite/case1/README.md"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Hello World")));
     }
@@ -79,7 +79,7 @@ public class FileControllerTest extends AbstractControllerTestWithFileSystem {
     @Test
     public void writeFile() throws Exception {
         File expectedFile = Paths.get(
-                rootDirectory, "project/case1", "new_file.txt")
+                rootDirectory, "testSuite/case1", "new_file.txt")
         .toFile();
         assertFalse(expectedFile.exists());
         MockMultipartFile multipartFile = new MockMultipartFile(
@@ -89,7 +89,7 @@ public class FileControllerTest extends AbstractControllerTestWithFileSystem {
                 "I'm the new one".getBytes()
         );
         mvc.perform(
-                fileUpload("/api/files?path=project/case1/new_file.txt")
+                fileUpload("/api/files?path=testSuite/case1/new_file.txt")
                 .file(multipartFile)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
         )

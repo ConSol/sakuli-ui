@@ -3,10 +3,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
 import {InplaceFileEditorComponent} from "../../../sweetest-components/components/forms/inplace-file-editor.component";
 import {ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
-import {
-  DangerToast,
-  SuccessToast
-} from "../../../sweetest-components/components/presentation/toast/toast-state.interface";
+import {DangerToast, SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
 
 @Component({
   selector: 'sa-text-modal',

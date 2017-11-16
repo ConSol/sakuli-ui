@@ -6,8 +6,7 @@ import {FormBaseComponent} from "./form-base-component.interface";
 export class PreventRoutingGuardService implements CanDeactivate<FormBaseComponent> {
 
   canDeactivate(target: FormBaseComponent,  currentRoute: ActivatedRouteSnapshot) {
-    console.log(currentRoute.url);
-    if('getForm' in target && target.getForm().dirty) {
+    if(target && 'getForm' in target && target.getForm().dirty) {
       return confirm("You have unsaved changes, would you like to proceed without saving them?")
     }
     return true;

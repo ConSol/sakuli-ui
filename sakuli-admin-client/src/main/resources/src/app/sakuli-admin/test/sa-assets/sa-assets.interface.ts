@@ -26,18 +26,18 @@ export const currentFolderWithProjectPath = createSelector(assets, a => nothrow(
 export const currentFolder = createSelector(
   assets,
   project,
-  (assets, project) => nothrow(() => assets.currentFolder.replace(project.path, '')) || AssetsStateInit.currentFolder);
+  (assets, project) => nothrow(() => assets.currentFolder || AssetsStateInit.currentFolder));
 
 export const files = createSelector(assets, s => s ? s.files : AssetsStateInit.files);
 
 export const currentChildren = createSelector(
   currentFolder,
   files,
-  project,
-  (cf, fl, project) => {
+  (cf, fl) => {
+    console.log(cf, fl);
     return fl
-      .filter(f => `${project.path}${cf || ''}` === f.path)
-      .map(f => ({...f, path: f.path.replace(project.path, '')}));
+      .filter(f => `${cf || ''}` === f.path)
+      //.map(f => ({...f, path: f.path.replace(cf, '')}))
   }
 );
 

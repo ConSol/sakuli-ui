@@ -67,7 +67,7 @@ import {
       </div>
       <div class="card-block" *ngIf="showConfiguration" [@openConfig]="showConfiguration">
         <run-configuration
-          [project]="project"
+          [testSuite]="testSuite"
           [config]="runConfiguration$ | async"
           [containerTags]="containerTags$ | async"
           [sakuliContainers]="sakuliContainer$ | async"
@@ -78,18 +78,20 @@ import {
       </div>
       <div class="card-block" *ngIf="isDockerPullStream$ | async" [@openConfig]="isDockerPullStream$ | async">
         <h4>Building Docker image</h4>
-        <sc-logs><ng-container *ngFor="let stream of dockerPullStream$ | async">{{stream}}</ng-container></sc-logs>
+        <sc-logs>
+          <ng-container *ngFor="let stream of dockerPullStream$ | async">{{stream}}</ng-container>
+        </sc-logs>
       </div>
       <div class="card-block" *ngIf="isDockerPull$ | async" [@openConfig]="isDockerPull$ | async">
-          <h4>Pulling Docker image</h4>
-          <ng-container
-            *ngFor="let dockerPullInfo of dockerPullInfo$ | async "
+        <h4>Pulling Docker image</h4>
+        <ng-container
+          *ngFor="let dockerPullInfo of dockerPullInfo$ | async "
+        >
+          <docker-pull-info-component
+            [dockerPullInfo]="dockerPullInfo"
           >
-            <docker-pull-info-component
-              [dockerPullInfo]="dockerPullInfo"
-            >
-            </docker-pull-info-component>
-          </ng-container>
+          </docker-pull-info-component>
+        </ng-container>
       </div>
     </div>
     <div class="row" *ngIf="hasLogs$ | async">

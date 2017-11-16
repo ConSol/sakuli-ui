@@ -3,6 +3,7 @@ import {RunConfigurationTypes} from "./run-configuration-types.enum";
 import {ContainerTag, RunConfiguration, SakuliContainer} from "./run-configuration.interface";
 import {ProjectModel} from "../../../sweetest-components/services/access/model/project.model";
 import {InplaceFileEditorComponent} from "../../../sweetest-components/components/forms/inplace-file-editor.component";
+import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
 
 @Component({
   moduleId: module.id,
@@ -48,7 +49,7 @@ import {InplaceFileEditorComponent} from "../../../sweetest-components/component
           </label>
           <div *ngIf="config.type === types[types.DockerCompose]" class="config-area margin-y">
             <inplace-file-editor
-              [root]="project.path"
+              [root]="testSuite.root"
               file="docker-compose.yml"
               mode="yaml"
               [defaultFile]="defaultDockerComposeFile"
@@ -64,7 +65,7 @@ import {InplaceFileEditorComponent} from "../../../sweetest-components/component
           </label>
           <div *ngIf="config.type === types[types.Dockerfile]" class="config-area margin-y">
             <inplace-file-editor
-              [root]="project.path"
+              [root]="testSuite.root"
               file="Dockerfile"
               mode="dockerfile"
               [defaultFile]="defaultDockerFile"
@@ -95,7 +96,7 @@ export class RunConfigurationComponent {
   @Output() save = new EventEmitter<RunConfiguration>();
   @Output() containerChange = new EventEmitter<SakuliContainer>();
 
-  @Input() project: ProjectModel;
+  @Input() testSuite: SakuliTestSuite;
 
   @Input() sakuliContainers: SakuliContainer[];
   @Input() containerTags: ContainerTag[];

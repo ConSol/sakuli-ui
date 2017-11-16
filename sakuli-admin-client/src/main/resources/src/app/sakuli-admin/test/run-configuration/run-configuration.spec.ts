@@ -11,16 +11,12 @@ import {
   SelectSakuliContainer
 } from "./run-configuration.actions";
 import {RunConfigurationService} from "../../../sweetest-components/services/access/run-configuration.service";
-import {Store, StoreModule} from "@ngrx/store";
+import { StoreModule} from "@ngrx/store";
 import {RunConfigurationModule} from "./run-configuration.module";
-import {CreateToast, ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
+import {ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
 import {EffectsModule} from "@ngrx/effects";
 import {RunConfiguration} from "./run-configuration.interface";
 import {RunConfigurationTypes} from "./run-configuration-types.enum";
-import {
-  DangerToast,
-  SuccessToast, Toast
-} from "../../../sweetest-components/components/presentation/toast/toast-state.interface";
 import {
   LoadingSetBusy,
   LoadingSetIdle
@@ -28,6 +24,8 @@ import {
 import {RouterModule} from "@angular/router";
 import {APP_BASE_HREF} from "@angular/common";
 import Mocked = jest.Mocked;
+import {DangerToast, SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
+import {CreateToast} from "../../../sweetest-components/components/presentation/toast/toast.actions";
 
 describe(RunConfigurationEffects.name, () => {
 
