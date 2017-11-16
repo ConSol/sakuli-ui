@@ -84,7 +84,7 @@ export class SaAssetItemsComponent {
   get hasDisplayableItems() {
     return this.items
       .map(f => this.getItemType(f))
-      .map(t => (t === AssetItemType.Image || t === AssetItemType.Folder) ? 1 : 0)
+      .map(t => (t === AssetItemType.Image || t === AssetItemType.Folder || t === AssetItemType.Text) ? 1 : 0)
       .reduce((sum, i) => sum + i, 0) > 0;
   }
 

@@ -14,7 +14,7 @@ public class ApplicationConfig {
     public static final String ROOT_DIRECTORY = SAKULI_ADMIN_PREFIX + "root.directory";
     public static final String ROOT_DIRECTORY_ENV = SAKULI_ADMIN_ENV_PREFIX + "ROOT_DIRECTORY";
 
-    public static final String PROJECT_DEFAULT = SAKULI_ADMIN_PREFIX + "project.default";
+    public static final String PROJECT_DEFAULT = SAKULI_ADMIN_PREFIX + "testSuite.default";
     public static final String PROJECT_DEFAULT_ENV = SAKULI_ADMIN_ENV_PREFIX + "PROJECT_DEFAULT";
 
     @Bean(name = "rootDirectory")

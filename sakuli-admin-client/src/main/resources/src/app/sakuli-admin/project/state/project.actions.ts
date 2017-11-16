@@ -4,7 +4,7 @@ import {Tree, TreeItem} from "../../../sweetest-components/components/presentati
 import {ProjectModel} from "../../../sweetest-components/services/access/model/project.model";
 import {uniqueName} from "../../../core/redux.util";
 
-export const LOAD_PATH = '[project] loadpath';
+export const LOAD_PATH = '[testSuite] loadpath';
 export class LoadPath implements Action {
   readonly type = LOAD_PATH;
   constructor(
@@ -12,7 +12,7 @@ export class LoadPath implements Action {
   ) {}
 }
 
-export const APPEND_CHILDREN = uniqueName('[project] appendchildren');
+export const APPEND_CHILDREN = uniqueName('[testSuite] appendchildren');
 export class AppendChildren implements Action {
   readonly type = APPEND_CHILDREN;
   constructor(
@@ -21,7 +21,7 @@ export class AppendChildren implements Action {
   ) {}
 }
 
-export const TOGGLE_OPEN = uniqueName('[project] toggleopen');
+export const TOGGLE_OPEN = uniqueName('[testSuite] toggleopen');
 export class ToggleOpen implements Action {
   readonly type = TOGGLE_OPEN;
   constructor(
@@ -29,7 +29,7 @@ export class ToggleOpen implements Action {
   ) {}
 }
 
-export const SELECT_FILE = uniqueName('[project] selectfile');
+export const SELECT_FILE = uniqueName('[testSuite] selectfile');
 export class SelectFile implements Action {
   readonly type = SELECT_FILE;
   constructor(
@@ -37,7 +37,7 @@ export class SelectFile implements Action {
   ) {}
 }
 
-export const OPEN = uniqueName('[project] open');
+export const OPEN = uniqueName('[testSuite] open');
 export class Open implements Action {
   readonly type = OPEN;
   constructor(
@@ -45,7 +45,7 @@ export class Open implements Action {
   ) {}
 }
 
-export const SET_PROJECT = uniqueName('[project] setproject');
+export const SET_PROJECT = uniqueName('[testSuite] setproject');
 export class SetProject implements Action {
   readonly type = SET_PROJECT;
   constructor(
@@ -53,7 +53,7 @@ export class SetProject implements Action {
   ) {}
 }
 
-export const REFRESH_PROJECT = uniqueName('[project] REFRESH_PROJECT');
+export const REFRESH_PROJECT = uniqueName('[testSuite] REFRESH_PROJECT');
 export class RefreshProject implements Action {
   readonly type = REFRESH_PROJECT;
   constructor() {}

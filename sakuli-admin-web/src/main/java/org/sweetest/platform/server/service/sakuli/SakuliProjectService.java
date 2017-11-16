@@ -49,7 +49,7 @@ public class SakuliProjectService implements ProjectService {
                 log.info(String.format("Using Project at '%s'", defaultProject));
             });
         } else {
-            log.info(String.format("Cannot find any valid project at '%s'", defaultProject));
+            log.info(String.format("Cannot find any valid testSuite at '%s'", defaultProject));
         }
     }
 

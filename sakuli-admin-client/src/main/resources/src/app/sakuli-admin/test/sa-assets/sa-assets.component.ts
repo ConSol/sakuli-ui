@@ -32,7 +32,7 @@ export interface UploadEvent {
               </a>
               <ng-container *ngFor="let part of currentFolderParts; let i = index">
                 /
-                <a [routerLink]="['/testsuite', testSuitePath, 'assets']|concat:(currentFolderParts|slice:0:i+1)">
+                <a [routerLink]="['/testsuite', testSuitePath, 'assets']|concat:(currentFolderParts|slice:0:i+1).join('/')">
                   {{part}}
                 </a>
               </ng-container>

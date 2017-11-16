@@ -45,7 +45,7 @@ export class AppComponent {
     this.menuService.addMenuItems(
       [
         new MenuItem('primary.new', 'New', 'new', FontawesomeIcons.plus, LayoutMenuService.Menus.PRIMARY),
-        new MenuItem('primary.open', 'Open', 'project/open', FontawesomeIcons.folderO, LayoutMenuService.Menus.PRIMARY),
+        new MenuItem('primary.open', 'Open', 'testSuite/open', FontawesomeIcons.folderO, LayoutMenuService.Menus.PRIMARY),
         new MenuItem('sidebar.dashboard',
           'Dashboard', '',
           FontawesomeIcons.dashboard,
@@ -65,7 +65,7 @@ export class AppComponent {
 
   onLink(item: IMenuItem) {
     this.store.dispatch(new SelectMenuItem(item.id));
-    if (item.link[0] === 'project/open') {
+    if (item.link[0] === 'testSuite/open') {
       this.modal.open(ProjectOpenComponent);
     } else {
       this.store.dispatch(new RouterGo({path: item.link, extras: {queryParams: item.queryParams || {}}}));

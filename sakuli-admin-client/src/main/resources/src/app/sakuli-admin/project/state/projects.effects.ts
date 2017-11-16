@@ -17,7 +17,7 @@ export class ProjectEffects {
   @Effect() refresh$ = this.actions$.ofType(REFRESH_PROJECT)
     .mergeMap(a => this.projectService.activeProject())
     .map(p => new SetProject(p))
-    .catch(ErrorMessage('Error while fetching current project'));
+    .catch(ErrorMessage('Error while fetching current testSuite'));
 
 
   @Effect() open$ = this.actions$.ofType(LOAD_PATH)
