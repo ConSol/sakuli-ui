@@ -27,6 +27,10 @@ export class AssetsSetCurrentFolder implements Action {
     readonly folder: string,
     readonly basePath: string
   ) {}
+
+  get fullPath() {
+    return `${this.basePath}/${this.folder}`;
+  }
 }
 
 export const ASSETS_UPLOAD = '[asset] ASSETS_UPLOAD';

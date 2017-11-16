@@ -9,10 +9,10 @@ import {testCase} from "../state/test.interface";
 import {absPath, FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
 
 @Component({
-  selector: 'sa-assests-connected',
+  selector: 'sa-assets-connected',
   template: `
     <sa-assets
-      [basePath]="basePath$ | async"
+      [basePath]="suiteParam$ | async"
       [currentFolder]="currentFolder$ | async"
       [targetFolders]="targetFolder$ | async"
       [testCase]="testCase$ | async"
@@ -34,7 +34,6 @@ export class SaAssetsConnectedComponent implements OnInit {
   testCase$ = this.store.select(testCase);
   targetFolder$ = this.store.select(currentChildren);
   currentFolder$ = this.store.select(currentFolder);
-  basePath$ = this.suiteParam$.map(p => `api/files?path=${p}`);
   uploading$ = this.store.select(uploading);
 
   ngOnInit() {

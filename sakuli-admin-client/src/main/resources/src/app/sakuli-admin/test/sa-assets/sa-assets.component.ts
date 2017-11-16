@@ -3,7 +3,6 @@ import {
 } from '@angular/core';
 import {Observable} from "rxjs/Observable";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {ActivatedRoute} from "@angular/router";
 import {SakuliTestCase} from "../../../sweetest-components/services/access/model/sakuli-test-model";
 import {absPath, FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
 import {FileService} from "../../../sweetest-components/services/access/file.service";
@@ -117,7 +116,6 @@ export class SaAssetsComponent implements OnInit {
   fileUploadId = 'sa-assets-item-upload';
 
   @Input() basePath = 'api/files';
-
   @Input() testCase: SakuliTestCase = null;
 
   @Input() targetFolders: FileResponse[] = [];
@@ -160,8 +158,8 @@ export class SaAssetsComponent implements OnInit {
 
   @HostListener('dragOver', ['$event'])
   onDragover($event: DragEvent) {
-    this.preventDragBehaviour($event)
-    $event.dataTransfer.dropEffect = 'copy'
+    this.preventDragBehaviour($event);
+    $event.dataTransfer.dropEffect = 'copy';
     this.dragOver = true;
   }
 
@@ -196,13 +194,11 @@ export class SaAssetsComponent implements OnInit {
 
   constructor(private filesService: FileService,
               private modalService: NgbModal,
-              readonly route: ActivatedRoute
   ) {
   }
 
   get testSuitePath() {
-    const suite = this.route.snapshot.paramMap.get('suite') || '';
-    return suite;
+    return this.basePath
   }
 
   onDelete(file: FileResponse) {

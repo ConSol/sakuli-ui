@@ -2,6 +2,7 @@ import {
   Component, EventEmitter, HostBinding, Input, Output} from '@angular/core';
 import {AssetItemType, getItemType} from "./asset-item-type.enum";
 import {FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
+import {Router} from "@angular/router";
 
 
 @Component({
@@ -14,7 +15,7 @@ import {FileResponse} from "../../../sweetest-components/services/access/model/f
       <asset-item-folder 
         *ngSwitchCase="itemTypes.Folder"
         [item]="file"
-        (click)="onSelect(file)"
+        (click)="onSelectFolder(file)"
         (delete)="onDelete(file)"
       ></asset-item-folder>
       <asset-item-image 
@@ -73,6 +74,10 @@ export class SaAssetItemsComponent {
 
   itemTypes = AssetItemType;
 
+  constructor(
+    readonly router: Router
+  ) {}
+
   onSelect(file: FileResponse) {
     this.select.next(file);
   }
@@ -90,5 +95,10 @@ export class SaAssetItemsComponent {
 
   getItemType(file: FileResponse): AssetItemType {
     return getItemType(file)
+  }
+
+  async onSelectFolder(file: FileResponse) {
+    console.log('file', file);
+    await this.router.navigate(['/testsuite', this.basePath, 'assets', [file.path, file.name].filter(f => !!f).join('/')])
   }
 }

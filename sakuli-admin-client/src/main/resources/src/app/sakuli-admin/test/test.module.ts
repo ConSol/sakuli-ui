@@ -19,7 +19,7 @@ import {RunConfigurationModule} from "./run-configuration/run-configuration.modu
 import {SaDockerPullInfoComponent} from "./sa-docker-pull-info.component";
 import {SaReportModule} from "./report/sa-report.module";
 import {ReactiveFormsModule} from "@angular/forms";
-import {testsuiteReducer} from "./state/testsuite.state";
+import {TestSuiteFeatureName, testsuiteReducer} from "./state/testsuite.state";
 import {TestsuiteEffects} from "./state/testsuite.effects";
 
 export const DeclareAndExport = [
@@ -42,7 +42,7 @@ export const DeclareAndExport = [
       TestEffects,
       TestsuiteEffects
     ]),
-    StoreModule.forFeature('testsuite', testsuiteReducer),
+    StoreModule.forFeature(TestSuiteFeatureName, testsuiteReducer),
     StoreModule.forFeature('test', testReducer),
     RouterModule,
     SaAssetsModule,

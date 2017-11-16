@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {AbstractAssetItem, AssetItemStyle} from "./asset-item.abstract-class";
+import {FileResponse} from "../../../../sweetest-components/services/access/model/file-response.interface";
 
 @Component({
   selector: 'asset-item-folder',
@@ -26,4 +27,5 @@ import {AbstractAssetItem, AssetItemStyle} from "./asset-item.abstract-class";
 })
 
 export class AssetItemFolderComponent extends AbstractAssetItem {
+
 }

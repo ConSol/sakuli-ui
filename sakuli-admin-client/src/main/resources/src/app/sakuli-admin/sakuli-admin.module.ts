@@ -28,10 +28,6 @@ import {BrowserModule} from "@angular/platform-browser";
   ],
   providers: [
     SakuliProjectGuardService,
-    {
-      provide: INITIAL_STATE,
-      useFactory: initStateFactory
-    }
   ],
   exports: [
     SakuliAdminRoutingModule,
