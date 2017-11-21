@@ -2,7 +2,6 @@ import {createFeatureSelector, createSelector} from "@ngrx/store";
 import {nothrow} from "nothrow";
 import {AssetItemType, getItemType} from "./asset-item-type.enum";
 import {FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
-import {project} from "../../workspace/state/project.interface";
 
 export const ASSETS_FEATURE_NAME = 'assets';
 
