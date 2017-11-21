@@ -9,7 +9,13 @@ import {of} from 'rxjs/observable/of';
 import {absPath} from "../../../sweetest-components/services/access/model/file-response.interface";
 import {FileService} from "../../../sweetest-components/services/access/file.service";
 import {ErrorMessage} from "../../../sweetest-components/components/presentation/toast/toast.actions";
+import {Observable} from "rxjs/Observable";
 import {LoadTestsuite} from "../../test/state/testsuite.state";
+import {AddMenuItem} from "../../../sweetest-components/components/layout/menu/menu.state";
+import {MenuItem} from "../../../sweetest-components/components/layout/menu/menu-item.interface";
+import {LayoutMenuService} from "../../../sweetest-components/components/layout/menu/layout-menu.service";
+import {FontawesomeIcons} from "../../../sweetest-components/components/presentation/icon/fontawesome-icon.utils";
+import {SelectionState} from "../../../sweetest-components/model/tree";
 
 @Injectable()
 export class ProjectEffects {
@@ -34,9 +40,21 @@ export class ProjectEffects {
     })
     .catch(ErrorMessage(`Error while opening path`));
 
+
   @Effect() open = this.actions$.ofType(OPEN)
-    .map((open: Open) => new LoadTestsuite(
-      open.file.directory ? absPath(open.file) : open.file.path));
+    .map((open: Open) => open.file)
+    .expand((fr) => {
+      if(fr.directory) {
+        return this
+          .fileService.files(absPath(fr))
+          .mergeMap(f => Observable.from(f))
+          .filter(fr => fr.directory || fr.name === 'testsuite.suite')
+      } else {
+        return Observable.empty();
+      }
+    })
+    .filter(fr => fr.name === 'testsuite.suite')
+    .map(fr => new LoadTestsuite(fr.path));
 
   constructor(
     private projectService: ProjectService,

@@ -14,7 +14,7 @@ export const TestSuiteFeatureName = 'testsuite';
 export const testSuiteSelectId = ts => ts.root;
 
 export const testSuiteEntityAdapter = createEntityAdapter<SakuliTestSuite>({
-  selectId: testSuiteSelectId
+  selectId: testSuiteSelectId,
 });
 
 export const testSuiteStateInitial = {

@@ -3,7 +3,6 @@ import {
 } from '@angular/core';
 import {Observable} from "rxjs/Observable";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {SakuliTestCase} from "../../../sweetest-components/services/access/model/sakuli-test-model";
 import {absPath, FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
 import {FileService} from "../../../sweetest-components/services/access/file.service";
 
@@ -116,7 +115,6 @@ export class SaAssetsComponent implements OnInit {
   fileUploadId = 'sa-assets-item-upload';
 
   @Input() basePath = 'api/files';
-  @Input() testCase: SakuliTestCase = null;
 
   @Input() targetFolders: FileResponse[] = [];
   @Input() currentFolder: string = null;

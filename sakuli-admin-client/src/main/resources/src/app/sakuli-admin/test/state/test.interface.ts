@@ -1,7 +1,6 @@
 import {TestRunInfo} from "../../../sweetest-components/services/access/model/test-run-info.interface";
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
 import {createFeatureSelector, createSelector} from "@ngrx/store";
-import {project} from "../../project/state/project.interface";
 import {nothrow} from "nothrow";
 import {nothrowFn} from "../../../core/utils";
 import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
@@ -50,20 +49,6 @@ export const testState = createFeatureSelector<TestState>('test');
 
 export const openTests = createSelector(testState, s => s ? s.openTests : []);
 export const activeTest = createSelector(testState, s => nothrow(() => s.activeTest) || null);
-
-export const testCase = createSelector(
-  activeTest,
-  project,
-  (at, p) => nothrow(() => p.testSuite.testCases.filter(t => t.name === at).find((_, i) => i === 0)) || null
-);
-
-export const allTestCases = createSelector(
-  project,
-  p => {
-    const {path} = p;
-    return nothrow(() => p.testSuite.testCases.reduce((cases, tc) => [...tc.sourceFiles.map(src => src.replace(`${path}/`, ''))], []));
-  }
-);
 
 export const runInfo = createSelector(testState, nothrowFn((s) => s.testRunInfo));
 

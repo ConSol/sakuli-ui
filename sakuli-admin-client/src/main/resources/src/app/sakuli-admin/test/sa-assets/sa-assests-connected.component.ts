@@ -5,7 +5,6 @@ import {Component, OnInit} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {ActivatedRoute} from "@angular/router";
 import {AppState} from "../../appstate.interface";
-import {testCase} from "../state/test.interface";
 import {absPath, FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
 
 @Component({
@@ -15,7 +14,6 @@ import {absPath, FileResponse} from "../../../sweetest-components/services/acces
       [basePath]="suiteParam$ | async"
       [currentFolder]="currentFolder$ | async"
       [targetFolders]="targetFolder$ | async"
-      [testCase]="testCase$ | async"
       [uploading]="uploading$ | async"
       (delete)="onDelete($event)"
       (fileSelected)="onFileSelected($event)"
@@ -31,7 +29,6 @@ export class SaAssetsConnectedComponent implements OnInit {
   ) {}
 
   suiteParam$ = this.route.params.map(p => decodeURIComponent(p['suite']));
-  testCase$ = this.store.select(testCase);
   targetFolder$ = this.store.select(currentChildren);
   currentFolder$ = this.store.select(currentFolder);
   uploading$ = this.store.select(uploading);

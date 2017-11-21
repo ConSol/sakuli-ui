@@ -5,7 +5,7 @@ import {SakuliAdminModule} from './sakuli-admin/sakuli-admin.module';
 import {SweetestComponentsModule} from "./sweetest-components/index";
 import {INITIAL_STATE, StoreModule} from "@ngrx/store";
 import {StoreDevtoolsModule} from "@ngrx/store-devtools";
-import {ProjectOpenComponent} from "./sakuli-admin/project/project-open.component";
+import {ProjectOpenComponent} from "./sakuli-admin/workspace/project-open.component";
 import {FormsModule} from "@angular/forms";
 import {initStateFactory} from "./sakuli-admin/appstate.interface";
 

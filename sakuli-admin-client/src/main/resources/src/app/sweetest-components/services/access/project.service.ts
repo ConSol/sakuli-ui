@@ -20,6 +20,10 @@ export class ProjectService {
       .mergeMap(r => this.activeProject())
   }
 
+  /**
+   * @deprecated
+   * @returns {Observable<ProjectModel>}
+   */
   activeProject(): Observable<ProjectModel> {
     return this.http.get(`${projectUrl}/active-project`)
       .map(r => r

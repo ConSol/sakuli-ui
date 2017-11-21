@@ -59,4 +59,4 @@ export class RefreshProject implements Action {
   constructor() {}
 }
 
-export type All = LoadPath | AppendChildren | ToggleOpen | SelectFile | SetProject;
+export type All = LoadPath | AppendChildren | ToggleOpen | SelectFile | SetProject | Open;

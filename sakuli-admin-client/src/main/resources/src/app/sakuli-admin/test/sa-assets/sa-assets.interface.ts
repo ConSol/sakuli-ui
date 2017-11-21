@@ -2,7 +2,7 @@ import {createFeatureSelector, createSelector} from "@ngrx/store";
 import {nothrow} from "nothrow";
 import {AssetItemType, getItemType} from "./asset-item-type.enum";
 import {FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
-import {project} from "../../project/state/project.interface";
+import {project} from "../../workspace/state/project.interface";
 
 export const ASSETS_FEATURE_NAME = 'assets';
 
@@ -33,7 +33,6 @@ export const assetBasePath = createSelector(
 export const currentFolder = createSelector(
   assets,
   (s) => nothrow(() => {
-    console.log('currentFolder ', s.basePath, "'''''",  s.currentFolder);
     return [s.basePath, s.currentFolder].filter(p => !!p).map((s, i) => {
       const leading = (i != 0) ? `^[/]+|` : ``;
       const trailing = `[/]+$`;
@@ -49,7 +48,6 @@ export const currentChildren = createSelector(
   files,
   assetBasePath,
   (cf, fl, bp) => {
-    console.log(cf, fl);
     const res = fl
       .filter(f => `${cf || ''}` === f.path)
       .map(f => ({...f, path: f.path.replace(bp, '')}));

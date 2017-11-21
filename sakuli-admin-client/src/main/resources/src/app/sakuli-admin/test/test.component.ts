@@ -6,7 +6,6 @@ import {
 import {TestRunInfo} from "../../sweetest-components/services/access/model/test-run-info.interface";
 import {AppState} from "../appstate.interface";
 import {Store} from "@ngrx/store";
-import {project} from "../project/state/project.interface";
 import {ProjectModel} from "../../sweetest-components/services/access/model/project.model";
 import {log, notNull} from "../../core/redux.util";
 import {LoadTestsuite, testSuiteSelectors} from "./state/testsuite.state";
@@ -25,7 +24,6 @@ import {RunTestSuiteComponent} from "./run-test-suite.component";
       <article class="no-gutter">
         <run-test-suite 
           [testSuite]="testSuite$ | async"
-          [project]="project$ | async"
           #runTestSuiteComponent
         ></run-test-suite>
       </article>
@@ -39,8 +37,6 @@ export class TestComponent implements OnInit {
   @ViewChild(RunTestSuiteComponent)
   runTestSuiteComponent: RunTestSuiteComponent;
 
-  project$: Observable<ProjectModel>;
-
   testSuite$: Observable<SakuliTestSuite>;
   testRunInfo$: Observable<TestRunInfo>;
   subTitle$: Observable<string>;
@@ -51,7 +47,6 @@ export class TestComponent implements OnInit {
     private store: Store<AppState>,
     private activatedRoute: ActivatedRoute
   ) {
-    this.project$ = this.store.select(project);
     this.testSuite$ = this.activatedRoute.params
       .map(p => p['suite']).filter(notNull)
       .mergeMap(id => this.store.select(testSuiteSelectors.byId(decodeURIComponent(id))))

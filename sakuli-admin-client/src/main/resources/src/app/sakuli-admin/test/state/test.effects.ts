@@ -11,7 +11,7 @@ import {
   SetTestRunInfo,
   TEST_EXECUTION_COMPLETED, TestExecutionCompleted, TestExecutionStarted
 } from "./test.actions";
-import {SET_PROJECT, SetProject} from "../../project/state/project.actions";
+import {SET_PROJECT, SetProject} from "../../workspace/state/project.actions";
 
 import {Observable} from "rxjs/Observable";
 import {ScLoadingService} from "../../../sweetest-components/components/presentation/loading/sc-loading.service";
@@ -77,9 +77,9 @@ export class TestEffects {
       ));
       const assetsMenuItem = new MenuItem(
         `${parentId}.assets`,
-        'Assets',
+        'Files',
         [...basePath, 'assets'],
-        FontawesomeIcons.image,
+        FontawesomeIcons.filesO,
         parentId,
         selectionState(`${parentId}.assets`),
         order + ((testsuite.testCases.length + 1) * 10)

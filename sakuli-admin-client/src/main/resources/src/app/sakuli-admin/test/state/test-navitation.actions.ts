@@ -15,3 +15,18 @@ export class NavigateToTestSuiteSource extends RouterGo {
     ]})
   }
 }
+
+
+export class NavigateToTestSuiteAssets extends RouterGo {
+  constructor(
+    readonly suite: SakuliTestSuite | string,
+    readonly asset?: string
+  ) {
+    super({path: [
+      '/testsuite',
+      (typeof suite === 'string') ? suite : testSuiteSelectId(suite),
+      'assets',
+      ...((asset) ? [asset] : [])
+    ]})
+  }
+}

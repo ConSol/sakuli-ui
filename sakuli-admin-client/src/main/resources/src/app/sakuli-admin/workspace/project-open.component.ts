@@ -4,7 +4,7 @@ import {FileResponse} from '../../sweetest-components/services/access/model/file
 import {Tree} from '../../sweetest-components/components/presentation/tree/tree.interface';
 import {animate, style, transition, trigger} from "@angular/animations";
 import {Store} from "@ngrx/store";
-import {ProjectState} from "./state/project.interface";
+import {WorkspaceState} from "./state/project.interface";
 import {LoadPath, Open, SelectFile, ToggleOpen} from "./state/project.actions";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
@@ -33,7 +33,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
         <span>
           <span>{{(selectedFile$ | async)?.path}}</span>
         </span>
-        <button [disabled]="!(projectRootSelected$ | async)"
+        <button 
                 class="btn btn-primary"
                 (click)="openProject()"
         >
@@ -61,17 +61,11 @@ export class ProjectOpenComponent {
 
   constructor(
     private modal: NgbActiveModal,
-    private store: Store<{ project: ProjectState }>,
+    private store: Store<{ project: WorkspaceState }>,
   ) {
-
-    const isTestSuite = (f: Tree<FileResponse>) => !f.directory && f.name === 'testsuite.suite';
-    const atLeastOne = (a: boolean, c: boolean) => a || c;
     this.store.dispatch(new LoadPath(''));
     this.files$ = this.store.select(s => s.project.fileTree);
     this.selectedFile$ = this.store.select(s => s.project.selectedFile);
-    this.projectRootSelected$ = this.selectedFile$
-      .combineLatest(this.files$)
-      .map(([f]) => f && (isTestSuite(f) || f.children.map(isTestSuite).reduce(atLeastOne, false)))
   }
 
   onOpen(event: Tree<FileResponse>) {

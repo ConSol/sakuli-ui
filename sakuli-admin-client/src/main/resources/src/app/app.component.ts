@@ -2,7 +2,7 @@ import {Component, HostListener} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {FontawesomeIcons} from "./sweetest-components/components/presentation/icon/fontawesome-icon.utils";
 import {Router} from "@angular/router";
-import {ProjectOpenComponent} from "./sakuli-admin/project/project-open.component";
+import {ProjectOpenComponent} from "./sakuli-admin/workspace/project-open.component";
 import {AppState} from "./sakuli-admin/appstate.interface";
 import {Store} from "@ngrx/store";
 import {LayoutMenuService} from "./sweetest-components/components/layout/menu/layout-menu.service";
