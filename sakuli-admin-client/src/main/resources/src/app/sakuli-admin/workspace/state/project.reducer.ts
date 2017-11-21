@@ -1,4 +1,4 @@
-import {ProjectState, ProjectStateInit} from './project.interface';
+import {WorkspaceState, WorkspaceStateInit} from './project.interface';
 import * as Actions from './project.actions';
 import {absPath, FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
 import {Tree} from "../../../sweetest-components/components/presentation/tree/tree.interface";
@@ -26,8 +26,12 @@ function recursiveTreeWalker(filter: (item: Tree<FileResponse>) => boolean,
   return tree;
 }
 
-export function projectReducer(state: ProjectState, action: Actions.All): ProjectState {
+export function projectReducer(state: WorkspaceState, action: Actions.All): WorkspaceState {
   switch (action.type) {
+    case Actions.OPEN: {
+      const {file} = action;
+      return ({...state, workspace: absPath(file)})
+    }
     case Actions.SELECT_FILE: {
       const {file: selectedFile} = action;
       return ({...state, selectedFile});
@@ -60,10 +64,6 @@ export function projectReducer(state: ProjectState, action: Actions.All): Projec
         ))
       return ({...state, fileTree});
     }
-    case Actions.SET_PROJECT: {
-      const {project} = action;
-      return ({...state, project})
-    }
   }
-  return state || ProjectStateInit;
+  return state || WorkspaceStateInit;
 }

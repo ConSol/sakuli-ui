@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {SweetestComponentsModule} from '../sweetest-components/index';
 import {SakuliAdminRoutingModule} from './sakuli-admin.routing';
-import {ProjectModule} from './project/project.module';
+import {ProjectModule} from './workspace/project.module';
 import {EffectsModule} from "@ngrx/effects";
 import {TestModule} from "./test/test.module";
 import {StoreRouterConnectingModule} from "@ngrx/router-store";
@@ -28,10 +28,6 @@ import {BrowserModule} from "@angular/platform-browser";
   ],
   providers: [
     SakuliProjectGuardService,
-    {
-      provide: INITIAL_STATE,
-      useFactory: initStateFactory
-    }
   ],
   exports: [
     SakuliAdminRoutingModule,

@@ -35,6 +35,7 @@ import {ScMenuModule} from "./components/layout/menu/menu.module";
 import {ScRouterModule} from "./services/router/router.module";
 import {PreventRoutingGuardService} from "./components/forms/prevent-routing-guard.service";
 import {ScFormsModule} from "./components/forms/sc-forms.module";
+import {ScOpenFileModule} from "./components/presentation/open-file/sc-open-file.module";
 
 
 export const SweetestComponentsAndDirectives  = [
@@ -87,7 +88,8 @@ export const SweetestComponentsAndDirectives  = [
     ScLoadingModule,
     ScMenuModule,
     ScRouterModule,
-    ScFormsModule
+    ScFormsModule,
+    ScOpenFileModule,
   ],
   declarations: [
     ...(SweetestComponentsAndDirectives)

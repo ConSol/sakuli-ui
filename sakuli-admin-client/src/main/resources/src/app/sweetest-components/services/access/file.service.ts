@@ -5,7 +5,7 @@ import {FileResponse, FileWithContent} from "./model/file-response.interface";
 
 const projectUrl = '/api/files';
 
-export const rmHeadSlash = (p: string) => p.slice(p.startsWith("/") ? 1 : 0);
+export const rmHeadSlash = (p: string = '') => p.slice(p.startsWith("/") ? 1 : 0);
 
 @Injectable()
 export class FileService {
@@ -15,8 +15,9 @@ export class FileService {
   ) {}
 
   files(path: string = ''): Observable<FileResponse[]> {
+    console.log(path);
     return this.http
-      .get(`${projectUrl}/ls?path=${rmHeadSlash(path)}`)
+      .get(`${projectUrl}/ls?path=${rmHeadSlash(path || '')}`)
       .map(r => r.json() as FileResponse[])
       .map(fr => fr
         .sort((a, b) => (a.name.toLowerCase() === b.name.toLowerCase()) ? 0 : (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1)

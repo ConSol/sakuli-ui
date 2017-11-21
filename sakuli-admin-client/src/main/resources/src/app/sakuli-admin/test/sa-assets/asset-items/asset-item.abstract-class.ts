@@ -31,19 +31,6 @@ export const AssetItemStyle = `
 
     `;
 
-export interface AssetItem {
-  item: FileResponse;
-  basePath: string;
-  delete: EventEmitter<FileResponse>;
-  click: EventEmitter<FileResponse>;
-
-  readonly hostBindingClass: string;
-
-  onClick(file: FileResponse):void;
-  onDelete(file: FileResponse):void;
-
-}
-
 export class AbstractAssetItem {
   @Input() item: FileResponse;
   @Input() basePath;

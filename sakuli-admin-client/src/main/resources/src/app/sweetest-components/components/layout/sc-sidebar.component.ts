@@ -7,6 +7,8 @@ import {Store} from "@ngrx/store";
 import {menuSelectors} from "./menu/menu.state";
 import {SelectionState} from "../../model/tree";
 import {FontawesomeIcons} from "../presentation/icon/fontawesome-icon.utils";
+import {workpaceSelectors} from "../../../sakuli-admin/workspace/state/project.interface";
+import {NavigateToTestSuiteAssets} from "../../../sakuli-admin/test/state/test-navitation.actions";
 
 @Component({
   selector: 'sc-sidebar',
@@ -44,6 +46,14 @@ import {FontawesomeIcons} from "../presentation/icon/fontawesome-icon.utils";
           </sc-link>
         </ul>
       </ng-container>
+      <sc-link [fixedIconWidth]="true"
+               icon="fa-files-o"
+               *ngIf="workspace$ | async"
+               (click)="navigateToWorkspaceAssets()"
+               [ngStyle]="{order: 99999}"
+      >
+        Files
+      </sc-link>
     </ul>
   `,
   styles: [`
@@ -96,6 +106,8 @@ export class ScSidebarComponent {
 
   @Output() menuItemSelected = new EventEmitter<IMenuItem>();
 
+  workspace$ = this.store.select(workpaceSelectors.workspace);
+
   @HostBinding('class')
   get hostClass() {
     return 'col-1 col-sm-3 flex';
@@ -115,5 +127,12 @@ export class ScSidebarComponent {
 
   isActive(item: IMenuItem) {
     return item.selected === SelectionState.Selected || item.selected === SelectionState.Indeterminate;
+  }
+
+  navigateToWorkspaceAssets() {
+    this.workspace$.first()
+      .subscribe(ws => {
+        this.store.dispatch(new NavigateToTestSuiteAssets(ws))
+      })
   }
 }

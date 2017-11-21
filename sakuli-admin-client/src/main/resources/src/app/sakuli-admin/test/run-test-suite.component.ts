@@ -112,7 +112,6 @@ import {
 })
 export class RunTestSuiteComponent {
   @Input() testSuite: SakuliTestSuite;
-  @Input() project: ProjectModel;
 
   showConfiguration = false;
 

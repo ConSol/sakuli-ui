@@ -1,6 +1,5 @@
 import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core';
-import {AbstractAssetItem, AssetItem, AssetItemStyle} from "./asset-item.abstract-class";
-import {FileResponse} from "../../../../sweetest-components/services/access/model/file-response.interface";
+import {AbstractAssetItem, AssetItemStyle} from "./asset-item.abstract-class";
 
 @Component({
   selector: 'asset-item-text',

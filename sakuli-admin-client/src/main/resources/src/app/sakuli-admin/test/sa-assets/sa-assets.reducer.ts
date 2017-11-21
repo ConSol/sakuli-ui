@@ -16,12 +16,11 @@ export function assetReducer(state:AssetsState = AssetsStateInit, action:AssetsA
       return ({
         ...state,
         files: uniq([...children, ...state.files], f => absPath(f)),
-        currentFolder: parent
       });
     }
     case ASSETS_SET_CURRENT_FOLDER: {
-      const {folder: currentFolder} = action;
-      return ({...state, currentFolder});
+      const {folder: currentFolder, basePath} = action;
+      return ({...state, currentFolder, basePath});
     }
     case ASSETS_UPLOAD: {
       const {files} = action;

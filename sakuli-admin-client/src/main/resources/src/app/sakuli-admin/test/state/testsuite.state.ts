@@ -2,18 +2,25 @@ import {SakuliTestSuite} from "../../../sweetest-components/services/access/mode
 import {createEntityAdapter, EntityState} from "@ngrx/entity";
 import {Action, createFeatureSelector, createSelector} from "@ngrx/store";
 import {MenuState} from "../../../sweetest-components/components/layout/menu/menu.state";
+import {uniqueName} from "../../../core/redux.util";
+import {selectToastId} from "../../../sweetest-components/components/presentation/toast/toast-state.interface";
 
 export interface TestSuiteState extends EntityState<SakuliTestSuite> {
-
+  selectedTestSuite: string;
 }
+
+export const TestSuiteFeatureName = 'testsuite';
 
 export const testSuiteSelectId = ts => ts.root;
 
 export const testSuiteEntityAdapter = createEntityAdapter<SakuliTestSuite>({
-  selectId: testSuiteSelectId
+  selectId: testSuiteSelectId,
 });
 
-export const testSuiteStateInitial = testSuiteEntityAdapter.getInitialState();
+export const testSuiteStateInitial = {
+  ...testSuiteEntityAdapter.getInitialState(),
+  selectedTestSuite: ''
+};
 
 export const LOAD_TESTSUITE = '[TESTSUITE] LOAD';
 export class LoadTestsuite implements Action {
@@ -63,7 +70,16 @@ export class UpdateTestsuiteError implements Action {
   ) {}
 }
 
+export const SELECT_TESTSUITE = uniqueName('[TESTSUITE] SELECT');
+export class SelectTestsuite implements Action {
+  readonly type = SELECT_TESTSUITE;
+  constructor(
+    readonly testSuite: SakuliTestSuite
+  ) {}
+}
+
 const selectors = testSuiteEntityAdapter.getSelectors(createFeatureSelector<TestSuiteState>('testsuite'));
+const testSuiteState = createFeatureSelector<TestSuiteState>(TestSuiteFeatureName);
 
 function testCasesFor(testSuite: SakuliTestSuite) {
   return createSelector(
@@ -79,13 +95,22 @@ function byId(id: string) {
   )
 }
 
+function selectedTestSuite() {
+  const idSelector = createSelector(
+    testSuiteState,
+    (s) => s.selectedTestSuite
+  );
+  return createSelector(idSelector, byId);
+}
+
 export const testSuiteSelectors = {
   ...selectors,
   testCasesFor,
-  byId
-}
+  byId,
+  selectedTestSuite
+};
 
-export type TestsuiteActions = LoadTestsuite | LoadTestsuiteSuccess | LoadTestsuiteError;
+export type TestsuiteActions = LoadTestsuite | LoadTestsuiteSuccess | LoadTestsuiteError | SelectTestsuite;
 
 export function testsuiteReducer(state: TestSuiteState = testSuiteStateInitial, action: TestsuiteActions) {
   switch (action.type) {
@@ -97,6 +122,14 @@ export function testsuiteReducer(state: TestSuiteState = testSuiteStateInitial, 
       } else {
         return testSuiteEntityAdapter.addOne(testsuite, state);
       }
+    }
+    case SELECT_TESTSUITE: {
+      const {testSuite} = action;
+      const id = testSuiteSelectId(testSuite);
+      return ({
+        ...state,
+
+      })
     }
   }
   return state;
