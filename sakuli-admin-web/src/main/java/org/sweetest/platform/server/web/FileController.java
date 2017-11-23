@@ -36,15 +36,20 @@ public class FileController {
 
     @GetMapping(value = "ls")
     @ResponseBody
-    public List<FileModel> getFiles(
+    public ResponseEntity<List<FileModel>> getFiles(
             @RequestParam("path") String path,
             @RequestParam("filter") Optional<String> filter
     ) {
-        return fileSystemService.getFiles(path)
-                .filter(FileSystemService.hiddenFiles)
-                .filter(createFilter(filter))
-                .map(FileSystemService.toFileModel.apply(path))
-                .collect(Collectors.toList());
+        if(fileSystemService.fileExists(path)) {
+            List<FileModel> files = fileSystemService.getFiles(path)
+                    .filter(FileSystemService.hiddenFiles)
+                    .filter(createFilter(filter))
+                    .map(FileSystemService.toFileModel.apply(path))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(files);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     private Predicate<File> createFilter(Optional<String> optionalFilter) {

@@ -3,6 +3,8 @@ import {NgbTabChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SakuliTestCase, SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
 import {FormBaseComponent} from "../../../sweetest-components/components/forms/form-base-component.interface";
 import {SaSourceComponent} from "./tabs/source.component";
+import {FormGroup} from "@angular/forms";
+import {TestEditorEntity} from "../state/test-editor.interface";
 
 @Component({
   selector: 'sa-test-detail',
@@ -13,7 +15,7 @@ import {SaSourceComponent} from "./tabs/source.component";
                     class=""
                     (tabChange)="onTabChange($event)"
                     [activeId]="activeTab">
-          <ngb-tab [id]="fileTabId">
+          <ngb-tab [id]="fileTabId" (click)="onTabChange()">
             <ng-template ngbTabTitle class="d-flex justify-content-between">
               <sc-icon icon="fa-files-o"></sc-icon>
             </ng-template>
@@ -33,11 +35,14 @@ import {SaSourceComponent} from "./tabs/source.component";
           </ngb-tab>
           <ngb-tab
             *ngFor="let tab of tabs"
-            [id]="tab"
+            [id]="tab.id"
           >
             <ng-template ngbTabTitle class="d-flex justify-content-between">
-              <span>{{tab}}</span>
-              <a (click)="onCloseTab($event, tab)">&times;</a>
+              <span class="text-overflow-ellipsis"
+                    [ngbTooltip]="tab.testCase"
+                    container="body"
+              >{{tab.testCase}}</span>
+              <a (click)="onCloseTab($event, tab)" class="ml-1">&times;</a>
             </ng-template>
             <ng-template ngbTabContent class="test-cnt">
               <sa-source
@@ -67,6 +72,32 @@ import {SaSourceComponent} from "./tabs/source.component";
       display: flex;
     }
 
+    :host /deep/ ul.nav-tabs {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+    
+    :host /deep/ .nav-item {
+      width: auto;
+    }
+    
+    :host /deep/ .nav-item a.nav-link > span {
+      direction: rtl;
+    }
+    
+    :host /deep/ .nav-item a.nav-link {
+      display: flex;
+      max-width: 8rem;
+    }
+    
+    :host /deep/ .nav-item a.nav-link.active {
+      display: flex;
+      max-width: inherit;
+    }
+    
     :host /deep/ .tab-content {
       flex-grow: 1;
       flex-direction: column;
@@ -95,21 +126,22 @@ export class TestDetailComponent implements FormBaseComponent {
 
   fileTabId = 'test-detail-component-item-tab-id';
   @Input() testSuite: SakuliTestSuite;
-  @Input() tabs: string[] = [];
+  @Input() tabs: TestEditorEntity[] = [];
   @Input() activeTab: string = this.fileTabId;
   @Input() testCase: SakuliTestCase = null;
   @Input() allTestCases: SakuliTestCase[] = [];
 
-  @Output() testSelect = new EventEmitter<NgbTabChangeEvent>();
-  @Output() homeSelect = new EventEmitter<NgbTabChangeEvent>();
+  @Output() testSelect = new EventEmitter<TestEditorEntity>();
+  @Output() homeSelect = new EventEmitter<TestEditorEntity>();
   @Output() tabClose = new EventEmitter<string>();
   @Output() openCase = new EventEmitter<string>();
 
   onTabChange($event: NgbTabChangeEvent) {
-    if ($event.nextId !== this.fileTabId) {
-      this.testSelect.next($event);
+    const entity = this.tabs.find(t => t.id === $event.nextId);
+    if (entity && $event.nextId !== this.fileTabId) {
+      this.testSelect.next(entity);
     } else {
-      this.homeSelect.next($event);
+      //this.homeSelect.next($event);
     }
   }
 
@@ -134,6 +166,10 @@ export class TestDetailComponent implements FormBaseComponent {
   }
 
   getForm() {
-    return this.sourceEditor.getForm();
+    if(this.sourceEditor) {
+      return this.sourceEditor.getForm();
+    } else {
+      return new FormGroup({});
+    }
   }
 }

@@ -1,11 +1,10 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {AppState} from "../../appstate.interface";
-import {Store} from "@ngrx/store";
+import {createSelector, Store} from "@ngrx/store";
 import {activeTest, openTests} from "../state/test.interface";
 import {ActivatedRoute} from "@angular/router";
 import {LoadTestsuite, testSuiteSelectors} from "../state/testsuite.state";
 import {notNull} from "../../../core/redux.util";
-import {CloseTest, OpenTest} from "../state/test.actions";
 import {Observable} from "rxjs/Observable";
 import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
 import {NgbTabChangeEvent} from "@ng-bootstrap/ng-bootstrap";
@@ -13,6 +12,11 @@ import {NavigateToTestSuiteSource} from "../state/test-navitation.actions";
 import {FormBaseComponent} from "../../../sweetest-components/components/forms/form-base-component.interface";
 import {TestDetailComponent} from "./test-detail.component";
 import {FormGroup} from "@angular/forms";
+import {
+  CloseTest, OpenTest, ResetSelectedTestcase, TestEditorEntity,
+  testEditorSelectors
+} from "../state/test-editor.interface";
+import {nothrowFn} from "../../../core/utils";
 
 @Component({
   selector: 'test-detail-connected',
@@ -23,7 +27,7 @@ import {FormGroup} from "@angular/forms";
       [testCase]="testCase$ | async"
       [allTestCases]="allTestCases$ | async"
       [testSuite]="testSuite$ | async"
-      
+
       (homeSelect)="onHomeSelect($event)"
       (tabClose)="onTabClose($event)"
       (testSelect)="onTabSelect($event)"
@@ -37,65 +41,62 @@ export class TestDetailConnectedComponent implements OnInit, FormBaseComponent {
   @ViewChild(TestDetailComponent)
   testDetailComponent: TestDetailComponent;
 
+  tabs$ = this.store.select(testEditorSelectors.selectAll);
+  activeTab$ = this.store.select(testEditorSelectors.selectedId);
+  testCase$ = this.store.select(testEditorSelectors.selectedTestCase);
+  allTestCases$ = this.store.select(createSelector(
+    testEditorSelectors.selectedTestSuite,
+    nothrowFn(ts => ts.testCases, [])
+  ));
+  testSuite$ = this.store.select(testEditorSelectors.selectedTestSuite);
+
   constructor(private route: ActivatedRoute,
-              private store: Store<AppState>,
-  ) {
-    const [fileUrl$, noUrl$] = this.route.paramMap
-      .map(p => p.get('file'))
-      .partition(notNull);
-
-    noUrl$
-      .subscribe(_ => this.store.dispatch(new OpenTest('')));
-
-    fileUrl$
-      .map(decodeURIComponent)
-      .subscribe(u => this.store.dispatch(new OpenTest(u)));
+              private store: Store<AppState>,) {
 
   }
 
-  testSuite$: Observable<SakuliTestSuite> = this.route.paramMap
-    .map(p => p.get('suite'))
-    .map(decodeURIComponent)
-    .mergeMap(s => this.store.select(testSuiteSelectors.byId(s)))
-    .filter(notNull);
-  tabs$         = this.store.select(openTests);
-  activeTab$    = this.store.select(activeTest);
-  testCase$     = this.testSuite$
-    .withLatestFrom(this.activeTab$)
-    .map(([suite, activeTab]) => {
-      return suite.testCases.find(tc => `${tc.name}/${tc.mainFile}` === activeTab)
-    });
-  allTestCases$ = this.testSuite$.map(ts => ts.testCases);
-
   ngOnInit(): void {
-    this.route.paramMap
-      .map(m => m.get('suite'))
-      .subscribe(suite => {
-        this.store.dispatch(new LoadTestsuite(suite));
+    this.route.params
+      .map(p => {
+        const {file, suite} = p;
+        if (file && suite) {
+          return new OpenTest(suite, file);
+        } else {
+          return new ResetSelectedTestcase();
+        }
       })
+      .subscribe(a => this.store.dispatch(a));
+
+    this.tabs$.subscribe(s => console.log('tabs', s));
+    this.activeTab$.subscribe(s => console.log('activetabs', s));
+    this.testCase$.subscribe(s => console.log('testcase', s));
+    this.allTestCases$.subscribe(s => console.log('all cases', s));
+    this.testSuite$.subscribe(s => console.log('all cases', s));
   }
 
   onHomeSelect($event: NgbTabChangeEvent) {
-    this.dispatchNavigation();
+    //this.store.dispatch(new NavigateToTestSuiteSource(e.testSuite));
   }
 
-  onTabClose(test: string) {
-    this.store.dispatch(new CloseTest(test));
+  onTabClose(test: TestEditorEntity) {
+    this.store.dispatch(new CloseTest(test.id));
     this.dispatchNavigation(test)
   }
 
-  onTabSelect($event: NgbTabChangeEvent) {
-    this.dispatchNavigation($event.nextId)
+  onTabSelect($event: TestEditorEntity) {
+    this.store.dispatch(new NavigateToTestSuiteSource($event.testSuite, $event.testCase));
   }
 
   onOpenCase(test: string) {
-    this.dispatchNavigation(test);
+    //this.dispatchNavigation(test);
   }
 
-  dispatchNavigation(test?: string) {
-    this.testSuite$.first().subscribe(ts => {
-      this.store.dispatch(new NavigateToTestSuiteSource(ts, test));
-    })
+  dispatchNavigation(e?: TestEditorEntity) {
+    if(e) {
+
+    } else {
+
+    }
   }
 
   getForm(): FormGroup {

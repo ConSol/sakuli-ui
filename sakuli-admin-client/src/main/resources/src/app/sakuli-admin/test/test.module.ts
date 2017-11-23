@@ -21,6 +21,7 @@ import {SaReportModule} from "./report/sa-report.module";
 import {ReactiveFormsModule} from "@angular/forms";
 import {TestSuiteFeatureName, testsuiteReducer} from "./state/testsuite.state";
 import {TestsuiteEffects} from "./state/testsuite.effects";
+import {TestEditorFeatureName, testEditorReducer} from "./state/test-editor.interface";
 
 export const DeclareAndExport = [
   TestComponent,
@@ -44,6 +45,7 @@ export const DeclareAndExport = [
     ]),
     StoreModule.forFeature(TestSuiteFeatureName, testsuiteReducer),
     StoreModule.forFeature('test', testReducer),
+    StoreModule.forFeature(TestEditorFeatureName, testEditorReducer),
     RouterModule,
     SaAssetsModule,
     RunConfigurationModule,

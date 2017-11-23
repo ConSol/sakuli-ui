@@ -7,13 +7,13 @@ import {rmHeadSlash} from "../../../sweetest-components/services/access/file.ser
   template: `
     <ng-container>
       <li class="list-group-item pointer-cursor d-flex flex-row" (click)="toggleCollapse()">
-        <sc-icon [icon]="step.testActions.length ? 'fa-caret-right' : ''" [fixedWidth]="true" [rotate]="collapsed ? 90 : 0"></sc-icon>
+        <sc-icon [icon]="step?.testActions?.length ? 'fa-caret-right' : ''" [fixedWidth]="true" [rotate]="collapsed ? 90 : 0"></sc-icon>
         <ng-container *ngIf="step.exception">
           <sc-icon iconClass="text-danger" icon="fa-exclamation-triangle"></sc-icon>
         </ng-container>
         <strong>{{step.name}}</strong>
         <ng-template #noException>
-          <span class=" pl-1">{{step.testActions.length}} actions </span>
+          <span class=" pl-1">{{step.testActions?.length}} actions </span>
           <span class="text-muted  pl-1" *ngIf="step.stopDate">
             <sc-icon icon="fa-clock-o"></sc-icon>
             {{((step.stopDate | dateDiff:step.startDate) / 1000) | number}} ec

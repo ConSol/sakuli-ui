@@ -36,4 +36,6 @@ public interface FileSystemService {
     boolean deleteFile(String path);
     boolean writeFile(String path, byte[] content);
     Optional<Resource> readFile(String path);
+
+    boolean fileExists(String path);
 }

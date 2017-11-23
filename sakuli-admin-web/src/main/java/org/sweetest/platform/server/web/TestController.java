@@ -67,9 +67,10 @@ public class TestController {
 
     @GetMapping(value = "results")
     @ResponseBody
-    public List<TestSuiteResult> getResults() {
-        String sakuliPath = projectService.getActiveProject().getPath();
-        return testService.getTestSuiteResults(sakuliPath);
+    public List<TestSuiteResult> getResults(
+            @RequestParam("path") String path
+    ) {
+        return testService.getTestSuiteResults(path);
     }
 
     @PutMapping

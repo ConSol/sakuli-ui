@@ -5,11 +5,13 @@ import {
   ToastStateInit
 } from "../sweetest-components/components/presentation/toast/toast-state.interface";
 import {AssetsState, AssetsStateInit} from "./test/sa-assets/sa-assets.interface";
+import {testEditorEntityAdapter, TestEditorState, testEditorStateInit} from "./test/state/test-editor.interface";
 
 export interface AppStateBase {
   project: WorkspaceState,
   test: TestState,
-  assets: AssetsState
+  assets: AssetsState,
+  testEditor: TestEditorState
 }
 
 export type AppState = AppStateBase & ToastAppState;
@@ -19,6 +21,7 @@ export function initStateFactory() {
     project: WorkspaceStateInit,
     test: TestStateInit,
     assets: AssetsStateInit,
-    scToast: ToastStateInit
+    scToast: ToastStateInit,
+    testEditor: testEditorStateInit
   });
 }

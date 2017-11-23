@@ -10,6 +10,7 @@ import {ProjectService} from "./project.service";
 import {absPath} from "./model/file-response.interface";
 import {DateUtil} from "../../utils";
 import {SakuliTestSuite} from "./model/sakuli-test-model";
+import {log} from "../../../core/redux.util";
 
 const testUrl = `api/testsuite`;
 
@@ -31,7 +32,7 @@ export class TestService {
     return this.http.put(
       `${testUrl}`,
       JSON.stringify(testSuite),
-      { headers: new Headers({'Content-Type': 'application/json'})}
+      {headers: new Headers({'Content-Type': 'application/json'})}
     ).map(r => r.text());
   }
 
@@ -58,28 +59,28 @@ export class TestService {
   }
 
   testResultsFromJson(testSuitePath: string): Observable<TestSuiteResult[]> {
-    return this.project
-      .activeProject()
-      .mergeMap(p => this.files.files(`${testSuitePath}/_logs/_json`))
-      .mergeMap(files => Observable
-        .forkJoin(...files.map(file => this.files.read(absPath(file)))))
+    return this.files.files(`${testSuitePath}/_logs/_json`)
+      .mergeMap(files => {
+        if(files.length) {
+          return Observable
+            .forkJoin(...files.map(file => this.files.read(absPath(file))))
+        } else {
+          return Observable.of([]);
+        }
+      })
       .map(raw => raw.map(JSON.parse.bind(JSON)))
-
   }
 
   testResults(testSuitePath: string): Observable<TestSuiteResult[]> {
-    return Observable.combineLatest(
-      this.testResultsFromLogs(testSuitePath),
-      this.testResultsFromJson(testSuitePath)
-    ).map(([fromLogs, fromJson]) => ([
-        //...fromLogs,
-        ...fromJson])
-      .sort(DateUtil
-        .createComparator(
-          (r:TestSuiteResult) => r.startDate,
-          DateUtil.Formats.default)
-      )
-    )
+    return this.testResultsFromJson(testSuitePath)
+      .do(log(`form ${testSuitePath}`))
+      .catch(e => this.testResultsFromLogs(testSuitePath))
+      .map((results) => results
+        .sort(DateUtil
+          .createComparator(
+            (r: TestSuiteResult) => r.startDate,
+            DateUtil.Formats.default)
+        ));
   }
 
 }

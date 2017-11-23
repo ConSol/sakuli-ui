@@ -74,6 +74,11 @@ public class LocalFileSystemService implements FileSystemService {
     }
 
     @Override
+    public boolean fileExists(String path) {
+        return normalizePath(path).toFile().exists();
+    }
+
+    @Override
     public boolean writeFile(String path, byte[] bytes) {
         try {
             FileUtils.writeByteArrayToFile(

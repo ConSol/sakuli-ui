@@ -6,23 +6,6 @@ import {SakuliTestSuite} from "../../../sweetest-components/services/access/mode
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
 import {DockerPullInfo} from "./test.interface";
 
-
-export const OPEN_TEST = uniqueName('[test] opentest');
-export class OpenTest implements Action {
-  readonly type = OPEN_TEST;
-  constructor(
-    readonly testCase: string
-  ) {}
-}
-
-export const CLOSE_TEST = uniqueName('[test] closetest');
-export class CloseTest implements Action {
-  readonly type = CLOSE_TEST;
-  constructor(
-    readonly testCase: string
-  ) {}
-}
-
 export const RUN_TEST = uniqueName('[test] runtest');
 export class RunTest implements Action {
   readonly type = RUN_TEST;
@@ -119,8 +102,6 @@ export class DockerPullCompleted implements Action {
 }
 
 export type AllTypes =
-  | CloseTest
-  | OpenTest
   | RunTest
   | SetTestRunInfo
   | AppendTestRunInfoLog

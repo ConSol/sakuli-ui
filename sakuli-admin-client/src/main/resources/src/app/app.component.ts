@@ -25,9 +25,12 @@ export class AppComponent {
 
   @HostListener('window:beforeunload', ['$event'])
   hostBeforeUnload() {
-    this.store.select(s => s).first().subscribe(s => {
-      sessionStorage.setItem("sakuli-admin-state", JSON.stringify(s))
-    })
+    console.log('preventStatePersistance', window['preventStatePersistance']);
+    if(!window['preventStatePersistance']) {
+      this.store.select(s => s).first().subscribe(s => {
+        sessionStorage.setItem("sakuli-admin-state", JSON.stringify(s))
+      })
+    }
   }
 
   constructor(private menuService: LayoutMenuService,

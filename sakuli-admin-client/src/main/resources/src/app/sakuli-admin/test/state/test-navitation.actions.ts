@@ -4,14 +4,14 @@ import {testSuiteSelectId} from "./testsuite.state";
 
 export class NavigateToTestSuiteSource extends RouterGo {
   constructor(
-    readonly suite: SakuliTestSuite,
+    readonly suite: SakuliTestSuite | string,
     readonly testCase?: string
   ) {
     super({path: [
       '/testsuite',
-      encodeURIComponent(testSuiteSelectId(suite)),
+      ((typeof suite === 'string') ? suite : testSuiteSelectId(suite)),
       'sources',
-      ...((testCase) ? [encodeURIComponent(testCase)] : [])
+      ...((testCase) ? [(testCase)] : [])
     ]})
   }
 }
@@ -24,9 +24,9 @@ export class NavigateToTestSuiteAssets extends RouterGo {
   ) {
     super({path: [
       '/testsuite',
-      (typeof suite === 'string') ? suite : testSuiteSelectId(suite),
+      ((typeof suite === 'string') ? suite : testSuiteSelectId(suite)),
       'assets',
-      ...((asset) ? [asset] : [])
+      ...((asset) ? [(asset)] : [])
     ]})
   }
 }

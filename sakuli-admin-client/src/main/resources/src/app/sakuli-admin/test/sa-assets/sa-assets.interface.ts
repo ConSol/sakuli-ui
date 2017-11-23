@@ -58,7 +58,7 @@ export const currentChildren = createSelector(
 export const currentChildrenBy = (filter: (f:FileResponse) => boolean) => createSelector(
   currentChildren,
   c => c.filter(filter)
-)
+);
 
 export const uploading = createSelector(assets, a => nothrow(() => a.uploading) || []);
 

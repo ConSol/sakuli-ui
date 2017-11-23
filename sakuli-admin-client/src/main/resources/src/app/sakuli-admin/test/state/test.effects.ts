@@ -26,7 +26,7 @@ import {
   menuSelectors
 } from "../../../sweetest-components/components/layout/menu/menu.state";
 import {AppState} from "../../appstate.interface";
-import {Store} from "@ngrx/store";
+import {createSelector, Store} from "@ngrx/store";
 import {SelectionState} from "../../../sweetest-components/model/tree";
 import {
   LOAD_TESTSUITE, LOAD_TESTSUITE_SUCCESS, LoadTestsuite, LoadTestsuiteSuccess,
@@ -34,6 +34,9 @@ import {
 } from "./testsuite.state";
 import {SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
 import {CreateToast} from "../../../sweetest-components/components/presentation/toast/toast.actions";
+import {log, notNull} from "../../../core/redux.util";
+import {workpaceSelectors} from "../../workspace/state/project.interface";
+import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
 
 @Injectable()
 export class TestEffects {
@@ -135,11 +138,13 @@ export class TestEffects {
     .map((sp: SetProject) => new LoadTestsuiteSuccess(sp.project.testSuite));
 
   @Effect() loadTestResults = this.actions$.ofType(LOAD_TESTRESULTS)
-    .withLatestFrom(this.store.select(testSuiteSelectors.selectAll))
-    .mergeMap(([_, testSuites]) => Observable.forkJoin(
-        ...testSuites.map(ts => this.testService.testResults(ts.root))
+    .withLatestFrom(this.store.select(
+        testSuiteSelectors.selectAll
+    ).filter(notNull))
+    .mergeMap(([_, suites]) => Observable.forkJoin(
+        ...suites.map(ts => this.testService.testResults(ts.root))
       ))
-    .map(r => r.reduce((flat, tsa) => [...flat, ...tsa]), [])
+    .map((r: TestSuiteResult[][]) => r.reduce((flat, tsa) => [...flat, ...tsa]), [])
     .map(r => new LoadTestResultsSuccess(r))
     .catch(ErrorMessage('Unable to load test results'))
   ;
