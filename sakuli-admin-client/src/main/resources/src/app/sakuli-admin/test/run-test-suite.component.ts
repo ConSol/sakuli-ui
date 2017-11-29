@@ -21,6 +21,7 @@ import {
   DockerPullInfo, dockerPullInfoForCurrentRunInfoAsArray, dockerPullStreamForCurrentRunInfo,
   logsForCurrentRunInfo
 } from "./state/test.interface";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'run-test-suite',
@@ -117,11 +118,17 @@ export class RunTestSuiteComponent {
 
   constructor(
     private store: Store<AppState>,
+    readonly route: ActivatedRoute,
     readonly actions$: Actions
   ) {}
 
+  dispatchLoadRunConfiguration() {
+    this.route.params.map(p => p['suite'])
+      .subscribe(s => this.store.dispatch(new LoadRunConfiguration(s)));
+  }
+
   ngOnInit() {
-    this.store.dispatch(new LoadRunConfiguration());
+    this.dispatchLoadRunConfiguration();
     this.store.dispatch(new LoadSakuliContainer());
     this.actions$.ofType(SAVE_RUN_CONFIGURATION_SUCCESS).subscribe(_ => this.showConfiguration = false);
   }
@@ -133,7 +140,7 @@ export class RunTestSuiteComponent {
   toggleConfiguration() {
     this.showConfiguration = !this.showConfiguration;
     if(this.showConfiguration) {
-      this.store.dispatch(new LoadRunConfiguration());
+      this.dispatchLoadRunConfiguration();
     }
   }
 
@@ -142,7 +149,8 @@ export class RunTestSuiteComponent {
   }
 
   onSaveConfiguration($event: RunConfiguration) {
-    this.store.dispatch(new SaveRunConfiguration($event));
+    this.route.params.map(p => p['suite']).first()
+      .subscribe(path => this.store.dispatch(new SaveRunConfiguration(path, $event)));
   }
 
   onContainerChange($event: SakuliContainer) {

@@ -9,7 +9,8 @@ export const menuSelectId = (menuItem: IMenuItem) => menuItem.id;
 export interface MenuState extends EntityState<IMenuItem> {}
 
 export const menuEntityAdapter = createEntityAdapter({
-  selectId: menuSelectId
+  selectId: menuSelectId,
+  sortComparer: (e1, e2) => e1.order - e2.order
 });
 
 export const ADD_MENUITEM = uniqueName('[MENUITEM] ADD');
@@ -52,6 +53,7 @@ export const menuSelectors = {
 
 export type MenuActions = AddMenuItem | AddAllMenuItems | SelectMenuItem;
 
+export const menuStateInit = menuEntityAdapter.getInitialState();
 export function menuReducer(state: MenuState, action: MenuActions) {
 
   function addOrUpdateOne(state: MenuState, item:IMenuItem) {
@@ -76,6 +78,6 @@ export function menuReducer(state: MenuState, action: MenuActions) {
       return mapEntities(map, state, menuSelectId);
     }
     default:
-      return state || menuEntityAdapter.getInitialState()
+      return state || menuStateInit
   }
 }

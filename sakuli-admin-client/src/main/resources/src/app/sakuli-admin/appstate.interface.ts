@@ -6,22 +6,42 @@ import {
 } from "../sweetest-components/components/presentation/toast/toast-state.interface";
 import {AssetsState, AssetsStateInit} from "./test/sa-assets/sa-assets.interface";
 import {testEditorEntityAdapter, TestEditorState, testEditorStateInit} from "./test/state/test-editor.interface";
+import {TestSuiteState, testSuiteStateInit} from "./test/state/testsuite.state";
+import {ScLoadingState} from "../sweetest-components/components/presentation/loading/sc-loading.state";
+import {MenuState, menuStateInit} from "../sweetest-components/components/layout/menu/menu.state";
 
 export interface AppStateBase {
   project: WorkspaceState,
   test: TestState,
   assets: AssetsState,
-  testEditor: TestEditorState
+  testEditor: TestEditorState,
+  testsuite: TestSuiteState,
+  scLoading: ScLoadingState,
+  scMenu: MenuState,
 }
 
 export type AppState = AppStateBase & ToastAppState;
 
 export function initStateFactory() {
-  return (JSON.parse(sessionStorage.getItem('sakuli-admin-state')) as AppState) || ({
+  const stateInit: AppState = {
     project: WorkspaceStateInit,
     test: TestStateInit,
     assets: AssetsStateInit,
     scToast: ToastStateInit,
-    testEditor: testEditorStateInit
-  });
+    testEditor: testEditorStateInit,
+    testsuite: testSuiteStateInit,
+    scLoading: {},
+    scMenu: menuStateInit
+  };
+  const dehydrationProps: (keyof AppState)[] = [
+    'project',
+    'test',
+    'assets',
+    'testsuite',
+    'testEditor',
+    'scMenu'
+  ];
+  const state = JSON.parse(sessionStorage.getItem('sakuli-admin-state')) || {} as AppState;
+
+  return dehydrationProps.reduce((s, k) => ({...s, [k]: state[k]}), stateInit);
 }

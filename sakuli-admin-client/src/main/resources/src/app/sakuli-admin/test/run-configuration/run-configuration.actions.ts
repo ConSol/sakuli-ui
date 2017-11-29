@@ -5,7 +5,9 @@ import {ContainerTag, RunConfiguration, SakuliContainer} from "./run-configurati
 export const LOAD_RUN_CONFIGURATION = uniqueName('[run-configuration] LOAD_RUN_CONFIGURATION');
 export class LoadRunConfiguration implements Action {
   readonly type = LOAD_RUN_CONFIGURATION;
-  constructor() {}
+  constructor(
+    readonly path: string
+  ) {}
 }
 
 
@@ -22,6 +24,7 @@ export const SAVE_RUN_CONFIGURATION = uniqueName('[run-configuration] SAVE_RUN_C
 export class SaveRunConfiguration implements Action {
   readonly type = SAVE_RUN_CONFIGURATION;
   constructor(
+    readonly path: string,
     readonly runConfiguration: RunConfiguration
   ) {}
 }
@@ -35,7 +38,7 @@ export class SaveRunConfigurationSuccess implements Action {
 
 export const LOAD_SAKULI_CONTAINER = uniqueName('[run-configuration] LOAD_SAKULI_CONTAINER');
 export class LoadSakuliContainer implements Action {
-  readonly type = LOAD_SAKULI_CONTAINER
+  readonly type = LOAD_SAKULI_CONTAINER;
   constructor() {}
 }
 

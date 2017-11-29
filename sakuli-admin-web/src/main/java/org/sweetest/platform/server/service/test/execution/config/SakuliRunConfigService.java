@@ -26,9 +26,9 @@ public class SakuliRunConfigService {
     @Autowired
     private FileSystemService fileSystemService;
 
-    public RunConfiguration getRunConfigFromProject(ProjectModel project) {
+    public RunConfiguration getRunConfigFromProject(String path) {
         return fileSystemService
-                .getFileFromPath(project.getPath(), FILE_NAME)
+                .getFileFromPath(path, FILE_NAME)
                 .map(Unchecked.function(f -> {
                     ObjectMapper mapper = new ObjectMapper();
                     return mapper.readValue(f, RunConfiguration.class);
@@ -36,12 +36,12 @@ public class SakuliRunConfigService {
                 .orElse(new RunConfiguration());
     }
 
-    public boolean setRunConfigurationToProject(RunConfiguration runConfiguration, ProjectModel project) {
+    public boolean setRunConfigurationToProject(RunConfiguration runConfiguration, String path) {
         ObjectMapper mapper = new ObjectMapper();
-        File file = fileSystemService.getFileFromPath(project.getPath(), FILE_NAME)
+        File file = fileSystemService.getFileFromPath(path, FILE_NAME)
                 .orElseGet(() -> {
-                    fileSystemService.writeFile(Paths.get(project.getPath(), FILE_NAME).toString(), new byte[0]);
-                    return fileSystemService.getFileFromPath(project.getPath(), FILE_NAME).get();
+                    fileSystemService.writeFile(Paths.get(path, FILE_NAME).toString(), new byte[0]);
+                    return fileSystemService.getFileFromPath(path, FILE_NAME).get();
                 });
         try {
             if (!file.exists()) {

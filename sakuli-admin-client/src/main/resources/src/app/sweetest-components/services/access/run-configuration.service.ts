@@ -13,13 +13,13 @@ export class RunConfigurationService {
     private http: Http
   ) {}
 
-  getRunConfiguration(): Observable<RunConfiguration> {
-    return this.http.get(`${runConfigUrl}`)
+  getRunConfiguration(path: string): Observable<RunConfiguration> {
+    return this.http.get(`${runConfigUrl}?path=${path}`)
       .map(r => r.json())
   }
 
-  saveRunConfiguration(runConfiguration: RunConfiguration): Observable<any> {
-    return this.http.post(`${runConfigUrl}`, runConfiguration)
+  saveRunConfiguration(path: string, runConfiguration: RunConfiguration): Observable<any> {
+    return this.http.post(`${runConfigUrl}?path=${path}`, runConfiguration)
       .map(r => r.json())
       .catch(_ => Observable.of({}))
   }

@@ -27,19 +27,22 @@ public class RunConfigController {
 
     @GetMapping
     @ResponseBody
-    public RunConfiguration getRunConfiguration() {
-        return runConfigService.getRunConfigFromProject(
-                projectService.getActiveProject()
-        );
+    public RunConfiguration getRunConfiguration(
+            @RequestParam("path") String path
+    ) {
+        return runConfigService.getRunConfigFromProject(path);
     }
 
     @PostMapping
     @ResponseBody
-    public ResponseEntity setRunConfiguration(@RequestBody RunConfiguration runConfiguration) {
+    public ResponseEntity setRunConfiguration(
+            @RequestBody RunConfiguration runConfiguration,
+            @RequestParam("path") String path
+    ) {
         boolean success = this.runConfigService
                 .setRunConfigurationToProject(
                         runConfiguration,
-                        projectService.getActiveProject()
+                        path
                 );
         return success ?
                 ResponseEntity.ok().build() :

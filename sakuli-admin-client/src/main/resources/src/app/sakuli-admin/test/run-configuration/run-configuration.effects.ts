@@ -3,7 +3,7 @@ import {Actions, Effect} from "@ngrx/effects";
 import {
   LOAD_RUN_CONFIGURATION, LOAD_RUN_CONFIGURATION_SUCCESS, LOAD_SAKULI_CONTAINER, LOAD_SAKULI_CONTAINER_SUCCESS,
   LOAD_SAKULI_CONTAINER_TAGS,
-  LOAD_SAKULI_CONTAINER_TAGS_SUCCESS,
+  LOAD_SAKULI_CONTAINER_TAGS_SUCCESS, LoadRunConfiguration,
   LoadRunConfigurationSuccess, LoadSakuliContainerSuccess, LoadSakuliContainerTags, LoadSakuliContainerTagsSuccess,
   SAVE_RUN_CONFIGURATION,
   SAVE_RUN_CONFIGURATION_SUCCESS,
@@ -21,14 +21,15 @@ import {
 import {ScLoadingService} from "../../../sweetest-components/components/presentation/loading/sc-loading.service";
 import {SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
 import {CreateToast} from "../../../sweetest-components/components/presentation/toast/toast.actions";
+import {log} from "../../../core/redux.util";
 
 @Injectable()
 export class RunConfigurationEffects {
 
   @Effect() getConfig$ = this.actions$
     .ofType(LOAD_RUN_CONFIGURATION)
-    .mergeMap(_ => this.runConfigurationService
-      .getRunConfiguration()
+    .mergeMap((lrc: LoadRunConfiguration) => this.runConfigurationService
+      .getRunConfiguration(lrc.path)
       .map((r: RunConfiguration) => new LoadRunConfigurationSuccess(r))
       .catch(ErrorMessage(`cannot fetch current configuration`))
     );
@@ -41,7 +42,7 @@ export class RunConfigurationEffects {
     .ofType(SAVE_RUN_CONFIGURATION)
     .mergeMap((a: SaveRunConfiguration) => this
       .runConfigurationService
-      .saveRunConfiguration(a.runConfiguration)
+      .saveRunConfiguration(a.path, a.runConfiguration)
       .map(_ => a.runConfiguration)
       .mergeMap((rc) => [
         new SaveRunConfigurationSuccess(),
@@ -65,6 +66,8 @@ export class RunConfigurationEffects {
     );
 
   @Effect() loadContainerTags$ = this.actions$.ofType(LOAD_SAKULI_CONTAINER_TAGS)
+    .do(log('dsgfhsd'))
+    .filter((a: LoadSakuliContainerTags) => !!a.container)
     .mergeMap((a: LoadSakuliContainerTags) => this
       .runConfigurationService
       .loadSakuliContainerTags(a.container.name)

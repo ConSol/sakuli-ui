@@ -19,8 +19,6 @@ export const toastEntityAdapter = createEntityAdapter({
 export const ToastStateInit: ToastState = {
   ...toastEntityAdapter.getInitialState(),
   history: [
-    new DangerToast("This was an error", Error('nothin good happend')),
-    new DangerToast("This was an error", Error('nothin good happend'))
   ],
   configuration: {
     ttl: 30000

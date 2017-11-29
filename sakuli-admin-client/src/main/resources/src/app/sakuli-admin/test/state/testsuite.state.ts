@@ -17,7 +17,7 @@ export const testSuiteEntityAdapter = createEntityAdapter<SakuliTestSuite>({
   selectId: testSuiteSelectId,
 });
 
-export const testSuiteStateInitial = {
+export const testSuiteStateInit = {
   ...testSuiteEntityAdapter.getInitialState(),
   selectedTestSuite: ''
 };
@@ -112,7 +112,7 @@ export const testSuiteSelectors = {
 
 export type TestsuiteActions = LoadTestsuite | LoadTestsuiteSuccess | LoadTestsuiteError | SelectTestsuite;
 
-export function testsuiteReducer(state: TestSuiteState = testSuiteStateInitial, action: TestsuiteActions) {
+export function testsuiteReducer(state: TestSuiteState = testSuiteStateInit, action: TestsuiteActions) {
   switch (action.type) {
     case LOAD_TESTSUITE_SUCCESS: {
       const {testsuite} = action;

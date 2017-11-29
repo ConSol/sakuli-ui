@@ -15,6 +15,7 @@ import {TestEditorEntity} from "../state/test-editor.interface";
                     class=""
                     (tabChange)="onTabChange($event)"
                     [activeId]="activeTab">
+          <!--
           <ngb-tab [id]="fileTabId" (click)="onTabChange()">
             <ng-template ngbTabTitle class="d-flex justify-content-between">
               <sc-icon icon="fa-files-o"></sc-icon>
@@ -33,6 +34,7 @@ import {TestEditorEntity} from "../state/test-editor.interface";
               </ng-container>
             </ng-template>
           </ngb-tab>
+          -->
           <ngb-tab
             *ngFor="let tab of tabs"
             [id]="tab.id"

@@ -55,9 +55,6 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
     private DockerClient dockerClient;
 
     @Autowired
-    private ProjectService projectService;
-
-    @Autowired
     private FileSystemService fileSystemService;
     private String pathInImage;
     private Volume volume;
@@ -89,7 +86,7 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
         ports.bind(vncWebPort, bindPort(availableVncWebPort));
 
         Optional<File> maybeFile = fileSystemService.getFileFromPath(
-                projectService.getActiveProject().getPath(),
+                testSuite.getRoot(),
                 getConfiguration().getFile());
         if (maybeFile.isPresent()) {
             new Thread(() -> {
@@ -101,10 +98,8 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
                             @Override
                             public void onNext(BuildResponseItem item) {
                                 ObjectMapper mapper = new ObjectMapper();
-
                                 try {
                                     String buildResponse = mapper.writeValueAsString(item);
-                                    log.info(buildResponse);
                                     next(new DockerPullProgressEvent(executionId, buildResponse));
                                 } catch (JsonProcessingException e) {
                                     e.printStackTrace();

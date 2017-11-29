@@ -54,8 +54,12 @@ export class TestEffects {
       const {testsuite} = ats;
       const {name, id} = testsuite;
       const parentId = `${LayoutMenuService.Menus.SIDEBAR}.${name}`;
+      const item = items.find(i => i.id === parentId);
       const order = items.length * 100;
       const basePath = ['/testsuite', testSuiteSelectId(testsuite)];
+      if(item) {
+        return ({type: 'noop'});
+      }
       function selectionState(id: string) {
         const found = items.find(i => menuSelectId(i) === id);
         return found ? found.selected : SelectionState.UnSelected;
@@ -96,6 +100,7 @@ export class TestEffects {
         selectionState(`${parentId}.configuration`),
         order + ((testsuite.testCases.length + 2) * 10)
       );
+
       return new AddAllMenuItems([parentMenuItem, ...cases, assetsMenuItem, configurationMenuItem]);
     });
 

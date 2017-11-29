@@ -133,8 +133,7 @@ public class SakuliTestService implements TestService {
     }
 
     public TestRunInfo run(TestSuite testSuite) {
-        ProjectModel projectModel = projectService.getActiveProject();
-        RunConfiguration runConfiguration = runConfigService.getRunConfigFromProject(projectModel);
+        RunConfiguration runConfiguration = runConfigService.getRunConfigFromProject(testSuite.getRoot());
         return testExecutionStrategyFactory
                 .getStrategyByRunConfiguration(runConfiguration)
                 .map(strategy -> {
