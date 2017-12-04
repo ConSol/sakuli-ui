@@ -21,7 +21,7 @@ public interface TestService {
 
     boolean saveTestSuite(ProjectModel project, SakuliTestSuite testSuite);
 
-    TestRunInfo run(TestSuite testSuite);
+    TestRunInfo run(TestSuite testSuite, String workspace);
 
     List<TestSuiteResult> getTestSuiteResults(String sakuliPath);
 }

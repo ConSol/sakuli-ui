@@ -19,7 +19,6 @@ export class TestService {
 
   constructor(private http: Http,
               private files: FileService,
-              private project: ProjectService,
               private stomp: StompService) {
   }
 
@@ -36,8 +35,8 @@ export class TestService {
     ).map(r => r.text());
   }
 
-  run(testSuite: SakuliTestSuite): Observable<TestRunInfo> {
-    return this.http.post(`${testUrl}/run`, testSuite)
+  run(testSuite: SakuliTestSuite, workspace: string): Observable<TestRunInfo> {
+    return this.http.post(`${testUrl}/run?workspace=${workspace}`, testSuite)
       .map(r => r.json());
   }
 

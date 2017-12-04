@@ -60,8 +60,11 @@ public class TestController {
 
     @RequestMapping(value = "run", method = RequestMethod.POST)
     @ResponseBody
-    public TestRunInfo runTest(@RequestBody TestSuite testSuite) {
-        return this.testService.run(testSuite);
+    public TestRunInfo runTest(
+            @RequestBody TestSuite testSuite,
+            @RequestParam("workspace") String workspace
+    ) {
+        return this.testService.run(testSuite, workspace);
     }
 
 

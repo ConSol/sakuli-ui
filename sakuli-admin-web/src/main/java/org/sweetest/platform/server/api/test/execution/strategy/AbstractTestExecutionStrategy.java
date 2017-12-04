@@ -8,6 +8,7 @@ import org.sweetest.platform.server.api.common.*;
 public abstract class AbstractTestExecutionStrategy<T> implements TestExecutionStrategy<T> {
     protected T configuration;
     protected TestSuite testSuite;
+    protected String workspace;
 
     public void setTestSuite(SakuliTestSuite testSuite) {
         this.testSuite = testSuite;
@@ -36,4 +37,13 @@ public abstract class AbstractTestExecutionStrategy<T> implements TestExecutionS
     @Override
     abstract public TestRunInfo execute(Observer<TestExecutionEvent> testExecutionEventObserver);
 
+    @Override
+    public String getWorkspace() {
+        return workspace;
+    }
+
+    @Override
+    public void setWorkspace(String workspace) {
+        this.workspace = workspace;
+    }
 }

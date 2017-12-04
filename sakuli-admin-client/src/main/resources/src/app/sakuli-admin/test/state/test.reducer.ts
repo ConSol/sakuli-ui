@@ -3,25 +3,6 @@ import * as Actions from './test.actions';
 
 export function testReducer(state: TestState = TestStateInit, action: Actions.AllTypes): TestState {
   switch (action.type) {
-    case Actions.OPEN_TEST: {
-      const {testCase: activeTest} = action;
-      const hasTest = state.openTests.indexOf(activeTest) > -1 || activeTest === '';
-      return ({
-        ...state,
-        activeTest: activeTest === '' ? null : activeTest,
-        openTests: hasTest ? state.openTests : [...state.openTests, activeTest]
-      })
-    }
-    case Actions.CLOSE_TEST: {
-      const {testCase} = action;
-      const idx = state.openTests.indexOf(testCase);
-      const openTests = state.openTests.filter(ot => ot !== testCase);
-      return ({
-        ...state,
-        openTests,
-        activeTest: openTests[idx % openTests.length]
-      })
-    }
     case Actions.SET_TEST_RUN_INFO: {
       const {testRunInfo} = action;
       return ({

@@ -1,6 +1,5 @@
 package org.sweetest.platform.server.service.sakuli;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.jooq.lambda.Unchecked;
 import org.slf4j.Logger;
@@ -21,10 +20,7 @@ import org.sweetest.platform.server.service.test.execution.TestExecutionContext;
 import org.sweetest.platform.server.service.test.execution.TestExecutionStrategyFactory;
 import org.sweetest.platform.server.service.test.execution.config.SakuliRunConfigService;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
@@ -132,13 +128,13 @@ public class SakuliTestService implements TestService {
         return testSuiteFileContent.toString();
     }
 
-    public TestRunInfo run(TestSuite testSuite) {
+    public TestRunInfo run(TestSuite testSuite, String workspace) {
         RunConfiguration runConfiguration = runConfigService.getRunConfigFromProject(testSuite.getRoot());
         return testExecutionStrategyFactory
                 .getStrategyByRunConfiguration(runConfiguration)
                 .map(strategy -> {
                     testExecutionContext.setStrategy(strategy);
-                    return testExecutionContext.executeStrategy(testSuite, event -> {
+                    return testExecutionContext.executeStrategy(testSuite, workspace, event -> {
                         log.info(ReflectionToStringBuilder.toString(event));
                         simpMessagingTemplate.convertAndSend(
                                 "/topic/test-run-info/" + event.getProcessId(),

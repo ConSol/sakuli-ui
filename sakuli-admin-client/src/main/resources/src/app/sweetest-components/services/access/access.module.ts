@@ -3,18 +3,47 @@ import {StompService} from "./stomp.service";
 import {FileService} from "./file.service";
 import {TestService} from "./test.service";
 import {ProjectService} from "./project.service";
-
-
+import {ScAuthenticationService} from "./sc-authentication.service";
+import {ScHttpService} from "./sc-http.service";
+import {Http, RequestOptions, XHRBackend} from "@angular/http";
+import {ScLoginComponent} from "./auth/sc-login.component";
+import {TokenService} from "./token.service";
+import {Store} from "@ngrx/store";
+import {ReactiveFormsModule} from "@angular/forms";
+import {EffectsModule} from "@ngrx/effects";
+import {HttpEffects} from "./http.state";
 
 export const providers = [
   ProjectService,
   TestService,
   FileService,
   StompService,
+  ScAuthenticationService,
+  TokenService,
+  HttpEffects
 ];
 
 @NgModule({
-  providers
+  imports: [
+    ReactiveFormsModule,
+    EffectsModule.forFeature([HttpEffects])
+  ],
+  entryComponents: [
+    ScLoginComponent
+  ],
+  declarations: [
+    ScLoginComponent
+  ],
+  providers: [
+    ...providers,
+    {
+      provide: Http,
+      useFactory: (backend: XHRBackend, options: RequestOptions, token: TokenService, store: Store<any>) => {
+        return new ScHttpService(backend, options, token, store);
+      },
+      deps: [XHRBackend, RequestOptions, TokenService, Store]
+    }
+  ]
 })
 export class ScAccessModule {
 }

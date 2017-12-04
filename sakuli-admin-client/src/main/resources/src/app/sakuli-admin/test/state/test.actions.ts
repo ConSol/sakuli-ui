@@ -5,6 +5,7 @@ import {TestExecutionEvent} from "../../../sweetest-components/services/access/m
 import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
 import {DockerPullInfo} from "./test.interface";
+import {CloseTest, OpenTest} from "./test-editor.interface";
 
 export const RUN_TEST = uniqueName('[test] runtest');
 export class RunTest implements Action {
@@ -102,6 +103,8 @@ export class DockerPullCompleted implements Action {
 }
 
 export type AllTypes =
+  | OpenTest
+  | CloseTest
   | RunTest
   | SetTestRunInfo
   | AppendTestRunInfoLog

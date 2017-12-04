@@ -7,7 +7,6 @@ import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.command.AttachContainerResultCallback;
 import com.github.dockerjava.core.command.BuildImageResultCallback;
-import com.github.dockerjava.core.command.EventsResultCallback;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.SocketUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.sweetest.platform.server.api.file.FileSystemService;
-import org.sweetest.platform.server.api.project.ProjectService;
 import org.sweetest.platform.server.api.runconfig.DockerFileExecutionConfiguration;
 import org.sweetest.platform.server.api.test.TestRunInfo;
 import org.sweetest.platform.server.api.test.execution.strategy.AbstractTestExecutionStrategy;
@@ -56,32 +54,32 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
 
     @Autowired
     private FileSystemService fileSystemService;
-    private String pathInImage;
+    private String mountPath;
     private Volume volume;
     private ExposedPort vncPort;
     private ExposedPort vncWebPort;
     private Ports ports;
-    private int availableVncPort;
-    private int availableVncWebPort;
     private CreateContainerResponse container;
+    private SakuliEventResultCallback eventsResultCallback;
 
     @Override
     public TestRunInfo execute(Observer<TestExecutionEvent> testExecutionEventObserver) {
         subject.subscribe(testExecutionEventObserver);
         subject.subscribe(e -> {
-            if(e.equals(readyToRun)) {
+            if (e.equals(readyToRun)) {
 
             }
         });
         executionId = UUID.randomUUID().toString();
+        eventsResultCallback = new SakuliEventResultCallback(executionId, subject, dockerClient);
         readyToRun = new TestExecutionEvent(INTERNAL_READY_TO_RUN, "", executionId);
-        pathInImage = ("/" + testSuite.getRoot()).replace("//", "/");
-        volume = new Volume(pathInImage);
+        mountPath = ("/" + getWorkspace()).replace("//", "/");
+        volume = new Volume(mountPath);
         vncPort = ExposedPort.tcp(5901);
         vncWebPort = ExposedPort.tcp(6901);
         ports = new Ports();
-        availableVncPort = SocketUtils.findAvailableTcpPort(5901, 6900);
-        availableVncWebPort = SocketUtils.findAvailableTcpPort(6901);
+        int availableVncPort = SocketUtils.findAvailableTcpPort(5901, 6900);
+        int availableVncWebPort = SocketUtils.findAvailableTcpPort(6901);
         ports.bind(vncPort, bindPort(availableVncPort));
         ports.bind(vncWebPort, bindPort(availableVncWebPort));
 
@@ -127,29 +125,10 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
     }
 
     private void startContainer() {
-        dockerClient.eventsCmd().exec(new EventsResultCallback() {
-            @Override
-            public void onNext(Event item) {
-                log.info(item.getAction());
-                if(item.getAction().equals("start")) {
-                    next(new TestExecutionStartEvent(executionId));
-                }
-                if (item.getAction().equals("disconnect")) {
-                    subject.next(new TestExecutionCompletedEvent(executionId));
-                    if(item.getActor().getAttributes() != null && item.getActor().getAttributes().containsKey("container")) {
-                        String containerId = item.getActor().getAttributes().get("container");
-                        log.info("Clean up and remove container " + containerId);
-                        dockerClient.removeContainerCmd(containerId).exec();
-                    }
-                    super.onComplete();
-                } else {
-                    super.onNext(item);
-                }
-            }
-        });
+        dockerClient.eventsCmd().exec(eventsResultCallback);
         //subject.next(new TestExecutionStartEvent(executionId));
         dockerClient.startContainerCmd(container.getId()).exec();
-        Optional.ofNullable(container.getWarnings()).map(s -> ReflectionToStringBuilder.toString(s))
+        Optional.ofNullable(container.getWarnings()).map(ReflectionToStringBuilder::toString)
                 .ifPresent(w -> {
                     log.warn(w);
                     next(new TestExecutionEvent(TestExecutionEvent.TYPE_WARNING, w, executionId));
@@ -159,12 +138,12 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
     private void createContainer(String id) {
         container = dockerClient
                 .createContainerCmd(id)
-                .withCmd("run", pathInImage)
+                .withCmd("run", "/" + testSuite.getRoot())
                 .withExposedPorts(vncPort, vncWebPort)
                 .withPortBindings(ports)
                 .withPublishAllPorts(true)
                 .withVolumes(volume)
-                .withBinds(new Bind(Paths.get(rootDirectory, testSuite.getRoot()).toString(), volume))
+                .withBinds(new Bind(Paths.get(rootDirectory, mountPath).toString(), volume))
                 .exec();
     }
 

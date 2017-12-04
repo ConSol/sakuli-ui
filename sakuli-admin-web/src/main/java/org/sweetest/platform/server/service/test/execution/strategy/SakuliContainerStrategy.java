@@ -6,7 +6,6 @@ import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.command.AttachContainerResultCallback;
-import com.github.dockerjava.core.command.EventsResultCallback;
 import com.github.dockerjava.core.command.PullImageResultCallback;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
@@ -45,7 +44,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
     @Qualifier("rootDirectory")
     private String rootDirectory;
 
-    private String pathInImage;
+    private String mountPath;
     private Volume volume;
     private ExposedPort vncPort;
     private ExposedPort vncWebPort;
@@ -54,26 +53,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
     private int availableVncWebPort;
     private TestExecutionSubject subject = new TestExecutionSubject();
 
-    final EventsResultCallback eventsResultCallback = new EventsResultCallback() {
-        @Override
-        public void onNext(Event item) {
-            log.info(item.getAction());
-            if(item.getAction().equals("start")) {
-                next(new TestExecutionStartEvent(executionId));
-            }
-            if (item.getAction().equals("disconnect")) {
-                subject.next(new TestExecutionCompletedEvent(executionId));
-                if(item.getActor().getAttributes() != null && item.getActor().getAttributes().containsKey("container")) {
-                    String containerId = item.getActor().getAttributes().get("container");
-                    log.info("Clean up and remove container " + containerId);
-                    dockerClient.removeContainerCmd(containerId).exec();
-                }
-                super.onComplete();
-            } else {
-                super.onNext(item);
-            }
-        }
-    };
+    private SakuliEventResultCallback eventsResultCallback;
 
     private CreateContainerResponse container;
     private String executionId;
@@ -93,9 +73,10 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
             }
         });
         executionId = UUID.randomUUID().toString();
+        eventsResultCallback = new SakuliEventResultCallback(executionId, subject, dockerClient);
         readyToRun = new TestExecutionEvent(INTERNAL_READY_TO_RUN, "", executionId);
-        pathInImage = ("/" + testSuite.getRoot()).replace("//", "/");
-        volume = new Volume(pathInImage);
+        mountPath = ("/" + getWorkspace()).replace("//", "/");
+        volume = new Volume(mountPath);
         vncPort = ExposedPort.tcp(5901);
         vncWebPort = ExposedPort.tcp(6901);
         ports = new Ports();
@@ -187,7 +168,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
         dockerClient.eventsCmd().exec(eventsResultCallback);
         //subject.next(new TestExecutionStartEvent(executionId));
         dockerClient.startContainerCmd(container.getId()).exec();
-        Optional.ofNullable(container.getWarnings()).map(s -> ReflectionToStringBuilder.toString(s))
+        Optional.ofNullable(container.getWarnings()).map(ReflectionToStringBuilder::toString)
                 .ifPresent(w -> {
                     log.warn(w);
                     next(new TestExecutionEvent(TestExecutionEvent.TYPE_WARNING, w, executionId));
@@ -197,12 +178,12 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
     private void createContainer() {
         container = dockerClient
                 .createContainerCmd(containerToRunWithTag)
-                .withCmd("run", pathInImage)
+                .withCmd("run", "/" + testSuite.getRoot())
                 .withExposedPorts(vncPort, vncWebPort)
                 .withPortBindings(ports)
                 .withPublishAllPorts(true)
                 .withVolumes(volume)
-                .withBinds(new Bind(Paths.get(rootDirectory, testSuite.getRoot()).toString(), volume))
+                .withBinds(new Bind(Paths.get(rootDirectory, mountPath).toString(), volume))
                 .exec();
     }
 

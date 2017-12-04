@@ -2,6 +2,7 @@ package org.sweetest.platform.server;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
@@ -34,5 +35,10 @@ public class ApplicationConfig {
             return System.getenv(PROJECT_DEFAULT_ENV);
         }
         return null;
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

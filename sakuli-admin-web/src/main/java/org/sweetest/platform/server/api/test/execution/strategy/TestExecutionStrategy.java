@@ -9,6 +9,9 @@ public interface TestExecutionStrategy<T> {
     void setTestSuite(TestSuite testSuite);
     TestSuite getTestSuite();
 
+    void setWorkspace(String workspace);
+    String getWorkspace();
+
     void setConfiguration(T config);
     T getConfiguration();
 

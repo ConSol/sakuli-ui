@@ -48,7 +48,12 @@ export class TestEffects {
       .catch(ErrorMessage(`Unable to load testsuite from ${loadTestSuite.path}`))
     );
 
-  @Effect() loadTestSuiteSuccessAddMenuItems = this.actions$.ofType(LOAD_TESTSUITE_SUCCESS)
+  /**
+   * TODO: There is maybe a better approach to add this items
+   * @type {Observable<any>}
+   * @private
+   */
+  @Effect() loadTestSuiteSuccessAddMenuItems$ = this.actions$.ofType(LOAD_TESTSUITE_SUCCESS)
     .withLatestFrom(this.store.select(menuSelectors.byParent(LayoutMenuService.Menus.SIDEBAR)))
     .map(([ats, items]: [LoadTestsuiteSuccess, IMenuItem[]]) => {
       const {testsuite} = ats;
@@ -105,7 +110,8 @@ export class TestEffects {
     });
 
   @Effect() runTest$ = this.actions$.ofType(RUN_TEST)
-    .mergeMap((rt: RunTest) => this.testService.run(rt.testSuite).map(tri => new SetTestRunInfo(tri)));
+    .withLatestFrom(this.store.select(workpaceSelectors.workspace))
+    .mergeMap(([rt, workspace]: [RunTest, string]) => this.testService.run(rt.testSuite, workspace).map(tri => new SetTestRunInfo(tri)));
 
   @Effect() runTestLoading$ = this.loading.registerLoadingActions(
     'runTest',
