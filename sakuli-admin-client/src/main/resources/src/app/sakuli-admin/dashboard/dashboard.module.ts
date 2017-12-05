@@ -4,9 +4,15 @@ import {SweetestComponentsModule} from "../../sweetest-components/index";
 import {DashboardService} from "./dashboard.service";
 import {EffectsModule} from "@ngrx/effects";
 import {CommonModule} from "@angular/common";
+import {DashboardConnectedComponent} from "./dashboard-connected.component";
+import {TestsuiteStatsComponent} from "./testsuite-stats.component";
+import {StateStateListItemComponent} from "./state-state-list-item.component";
 
 const declareAndExport = [
-  DashboardComponent
+  DashboardComponent,
+  DashboardConnectedComponent,
+  TestsuiteStatsComponent,
+  StateStateListItemComponent
 ]
 
 @NgModule({

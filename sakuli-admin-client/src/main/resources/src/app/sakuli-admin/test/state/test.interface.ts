@@ -87,3 +87,17 @@ export const testResults = createSelector(
   testState,
   nothrowFn(ts => ts.testResults, [])
 )
+
+export const testSelectors = {
+  testState,
+  openTests,
+  activeTest,
+  runInfo,
+  dockerPullInfo,
+  dockerPullStream,
+  dockerPullStreamForCurrentRunInfo,
+  dockerPullInfoForCurrentRunInfoAsArray,
+  testRunLogs,
+  logsForCurrentRunInfo,
+  testResults
+}

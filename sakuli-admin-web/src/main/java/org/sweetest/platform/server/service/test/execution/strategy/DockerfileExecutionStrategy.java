@@ -108,7 +108,6 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
                             @Override
                             public void onComplete() {
                                 next(new DockerPullCompletedEvent(executionId));
-
                                 super.onComplete();
                             }
                         }).awaitImageId();

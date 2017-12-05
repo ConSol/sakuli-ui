@@ -9,6 +9,7 @@ import {SelectionState} from "../../model/tree";
 import {FontawesomeIcons} from "../presentation/icon/fontawesome-icon.utils";
 import {workpaceSelectors} from "../../../sakuli-admin/workspace/state/project.interface";
 import {NavigateToTestSuiteAssets} from "../../../sakuli-admin/test/state/test-navitation.actions";
+import {testSuiteSelectors} from "../../../sakuli-admin/test/state/testsuite.state";
 
 @Component({
   selector: 'sc-sidebar',
@@ -107,6 +108,8 @@ export class ScSidebarComponent {
   @Output() menuItemSelected = new EventEmitter<IMenuItem>();
 
   workspace$ = this.store.select(workpaceSelectors.workspace);
+
+  testSuites$ = this.store.select(testSuiteSelectors.selectAll);
 
   @HostBinding('class')
   get hostClass() {

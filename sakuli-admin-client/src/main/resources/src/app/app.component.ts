@@ -10,6 +10,7 @@ import {IMenuItem, MenuItem} from "./sweetest-components/components/layout/menu/
 import {SelectMenuItem} from "./sweetest-components/components/layout/menu/menu.state";
 import {SelectionState} from "./sweetest-components/model/tree";
 import {RouterGo} from "./sweetest-components/services/router/router.actions";
+import {TokenService} from "./sweetest-components/services/access/token.service";
 
 @Component({
   selector: 'app-root',
@@ -25,18 +26,19 @@ export class AppComponent {
 
   @HostListener('window:beforeunload', ['$event'])
   hostBeforeUnload() {
-    console.log('preventStatePersistance', window['preventStatePersistance']);
     if(!window['preventStatePersistance']) {
       this.store.select(s => s).first().subscribe(s => {
         sessionStorage.setItem("sakuli-admin-state", JSON.stringify(s))
-      })
+      });
+      this.tokenService.persistToken();
     }
   }
 
   constructor(private menuService: LayoutMenuService,
               private router: Router,
               private store: Store<AppState>,
-              private modal: NgbModal) {
+              private modal: NgbModal,
+              private tokenService: TokenService) {
 
     this.menuService.addMenuItems(
       [

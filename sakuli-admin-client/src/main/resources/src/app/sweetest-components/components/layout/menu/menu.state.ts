@@ -37,6 +37,14 @@ export class SelectMenuItem implements Action {
   ) {}
 }
 
+export const REMOVE_MENUITEM = '[MENUITEM] REMOVE';
+export class RemoveMenuitem implements Action {
+  readonly type = REMOVE_MENUITEM;
+  constructor(
+    readonly parent?: string
+  ) {}
+}
+
 const _menuSelectors = menuEntityAdapter.getSelectors(createFeatureSelector<MenuState>('scMenu'));
 
 const byParent = (parent: string) => createSelector(
@@ -51,7 +59,7 @@ export const menuSelectors = {
   byParent
 };
 
-export type MenuActions = AddMenuItem | AddAllMenuItems | SelectMenuItem;
+export type MenuActions = AddMenuItem | AddAllMenuItems | SelectMenuItem | RemoveMenuitem;
 
 export const menuStateInit = menuEntityAdapter.getInitialState();
 export function menuReducer(state: MenuState, action: MenuActions) {
@@ -76,6 +84,15 @@ export function menuReducer(state: MenuState, action: MenuActions) {
         selected: menuSelectId(entity) === action.id ? SelectionState.Selected : (action.id.startsWith(menuSelectId(entity))) ? SelectionState.Indeterminate : SelectionState.UnSelected
       });
       return mapEntities(map, state, menuSelectId);
+    }
+    case REMOVE_MENUITEM: {
+      const {parent} = action;
+      if(parent) {
+        const toDelete = Object.keys(state.entities).filter(k => state.entities[k].parent === parent);
+        return menuEntityAdapter.removeMany(toDelete, state);
+      } else {
+        return menuEntityAdapter.removeAll(state);
+      }
     }
     default:
       return state || menuStateInit

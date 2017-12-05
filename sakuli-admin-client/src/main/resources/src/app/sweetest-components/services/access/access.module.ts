@@ -4,7 +4,7 @@ import {FileService} from "./file.service";
 import {TestService} from "./test.service";
 import {ProjectService} from "./project.service";
 import {ScAuthenticationService} from "./sc-authentication.service";
-import {ScHttpService} from "./sc-http.service";
+import {ScHttpService, ScHttpServiceProvider} from "./sc-http.service";
 import {Http, RequestOptions, XHRBackend} from "@angular/http";
 import {ScLoginComponent} from "./auth/sc-login.component";
 import {TokenService} from "./token.service";
@@ -38,9 +38,7 @@ export const providers = [
     ...providers,
     {
       provide: Http,
-      useFactory: (backend: XHRBackend, options: RequestOptions, token: TokenService, store: Store<any>) => {
-        return new ScHttpService(backend, options, token, store);
-      },
+      useFactory: ScHttpServiceProvider,
       deps: [XHRBackend, RequestOptions, TokenService, Store]
     }
   ]

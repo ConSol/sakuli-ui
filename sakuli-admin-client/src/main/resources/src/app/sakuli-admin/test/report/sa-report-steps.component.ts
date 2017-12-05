@@ -16,7 +16,7 @@ import {rmHeadSlash} from "../../../sweetest-components/services/access/file.ser
           <span class=" pl-1">{{step.testActions?.length}} actions </span>
           <span class="text-muted  pl-1" *ngIf="step.stopDate">
             <sc-icon icon="fa-clock-o"></sc-icon>
-            {{((step.stopDate | dateDiff:step.startDate) / 1000) | number}} ec
+            {{((step.stopDate | dateDiff:step.startDate) / 1000) | number}} sec
           </span>
         </ng-template>
         <ng-container *ngIf="step.exception; else noException">

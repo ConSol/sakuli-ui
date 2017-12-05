@@ -29,6 +29,12 @@ export class TokenService {
   }
 
   persistToken() {
-    this.storage.setItem("AUTH_TOKEN", this.token);
+    if(this.token) {
+      this.storage.setItem("AUTH_TOKEN", this.token);
+    }
+  }
+
+  forgetToken() {
+    this.token = '';
   }
 }

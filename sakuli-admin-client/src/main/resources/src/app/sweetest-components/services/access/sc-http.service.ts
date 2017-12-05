@@ -3,11 +3,17 @@ import {Observable} from "rxjs/Observable";
 import {Store} from "@ngrx/store";
 import {HttpError} from "./http.state";
 import {TokenService} from "./token.service";
+import {Injectable} from "@angular/core";
 
 const isRequest = (url: string | Request): url is Request => {
   return "url" in  (url as any);
+};
+
+export function ScHttpServiceProvider(backend: XHRBackend, options: RequestOptions, token: TokenService, store: Store<any>) {
+  return new ScHttpService(backend, options, token, store);
 }
 
+@Injectable()
 export class ScHttpService extends Http {
   constructor(
     backend: XHRBackend,

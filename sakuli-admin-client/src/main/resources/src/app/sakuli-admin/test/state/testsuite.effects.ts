@@ -2,18 +2,24 @@ import {Injectable} from "@angular/core";
 import {Actions, Effect} from "@ngrx/effects";
 import {TestService} from "../../../sweetest-components/services/access/test.service";
 import {
-  LoadTestsuite, LoadTestsuiteSuccess, UPDATE_TESTSUITE, UPDATE_TESTSUITE_SUCCESS, UpdateTestsuite,
+  LoadTestsuiteSuccess,
+  RemoveAllTestsuites,
+  UPDATE_TESTSUITE,
+  UPDATE_TESTSUITE_SUCCESS,
+  UpdateTestsuite,
   UpdateTestsuiteSuccess
 } from "./testsuite.state";
 import {ErrorMessage} from "../../../sweetest-components/components/presentation/toast/toast.actions";
+import {OPEN} from "../../workspace/state/project.actions";
+import {RemoveMenuitem} from "../../../sweetest-components/components/layout/menu/menu.state";
+import {LayoutMenuService} from "../../../sweetest-components/components/layout/menu/layout-menu.service";
 
 @Injectable()
 export class TestsuiteEffects {
 
-  constructor(
-    readonly actions$: Actions,
-    readonly testService: TestService
-  ) {}
+  constructor(readonly actions$: Actions,
+              readonly testService: TestService) {
+  }
 
   @Effect() update$ = this.actions$
     .ofType(UPDATE_TESTSUITE)
@@ -28,5 +34,11 @@ export class TestsuiteEffects {
     .ofType(UPDATE_TESTSUITE_SUCCESS)
     .map((a: UpdateTestsuiteSuccess) => new LoadTestsuiteSuccess(a.testsuite))
 
+  @Effect() closeAfterOpen$ = this.actions$
+    .ofType(OPEN)
+    .mergeMap(_ => [
+      new RemoveAllTestsuites(),
+      new RemoveMenuitem(LayoutMenuService.Menus.SIDEBAR)
+    ])
 
 }

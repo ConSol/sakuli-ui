@@ -78,6 +78,12 @@ export class SelectTestsuite implements Action {
   ) {}
 }
 
+export const REMOVEALL_TESTSUITES = '[TESTSUITE] REMOVEALL';
+export class RemoveAllTestsuites implements Action {
+  readonly type = REMOVEALL_TESTSUITES;
+  constructor() {}
+}
+
 const selectors = testSuiteEntityAdapter.getSelectors(createFeatureSelector<TestSuiteState>('testsuite'));
 const testSuiteState = createFeatureSelector<TestSuiteState>(TestSuiteFeatureName);
 
@@ -110,7 +116,8 @@ export const testSuiteSelectors = {
   selectedTestSuite
 };
 
-export type TestsuiteActions = LoadTestsuite | LoadTestsuiteSuccess | LoadTestsuiteError | SelectTestsuite;
+
+export type TestsuiteActions = LoadTestsuite | LoadTestsuiteSuccess | LoadTestsuiteError | SelectTestsuite | RemoveAllTestsuites;
 
 export function testsuiteReducer(state: TestSuiteState = testSuiteStateInit, action: TestsuiteActions) {
   switch (action.type) {
@@ -128,8 +135,10 @@ export function testsuiteReducer(state: TestSuiteState = testSuiteStateInit, act
       const id = testSuiteSelectId(testSuite);
       return ({
         ...state,
-
       })
+    }
+    case REMOVEALL_TESTSUITES: {
+      return testSuiteEntityAdapter.removeAll(state);
     }
   }
   return state;
