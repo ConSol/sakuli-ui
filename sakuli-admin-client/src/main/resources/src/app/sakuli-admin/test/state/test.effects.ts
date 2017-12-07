@@ -48,67 +48,6 @@ export class TestEffects {
       .catch(ErrorMessage(`Unable to load testsuite from ${loadTestSuite.path}`))
     );
 
-  /**
-   * TODO: There is maybe a better approach to add this items
-   * @type {Observable<any>}
-   * @private
-   */
-  @Effect() loadTestSuiteSuccessAddMenuItems$ = this.actions$.ofType(LOAD_TESTSUITE_SUCCESS)
-    .withLatestFrom(this.store.select(menuSelectors.byParent(LayoutMenuService.Menus.SIDEBAR)))
-    .map(([ats, items]: [LoadTestsuiteSuccess, IMenuItem[]]) => {
-      const {testsuite} = ats;
-      const {name, id} = testsuite;
-      const parentId = `${LayoutMenuService.Menus.SIDEBAR}.${name}`;
-      const item = items.find(i => i.id === parentId);
-      const order = items.length * 100;
-      const basePath = ['/testsuite', testSuiteSelectId(testsuite)];
-      if(item) {
-        return ({type: 'noop'});
-      }
-      function selectionState(id: string) {
-        const found = items.find(i => menuSelectId(i) === id);
-        return found ? found.selected : SelectionState.UnSelected;
-      }
-      const parentMenuItem = new MenuItem(
-        parentId,
-        id,
-        basePath,
-        FontawesomeIcons.cubes,
-        LayoutMenuService.Menus.SIDEBAR,
-        selectionState(parentId),
-        order
-      );
-      const cases = testsuite.testCases.map((tc, i) => new MenuItem(
-        `${parentId}.${tc.name}`,
-        tc.name,
-        [...basePath, 'sources', [tc.name, tc.mainFile].join('/')],
-        FontawesomeIcons.code,
-        parentId,
-        selectionState(`${parentId}.${tc.name}`),
-        order + (i * 10)
-      ));
-      const assetsMenuItem = new MenuItem(
-        `${parentId}.assets`,
-        'Files',
-        [...basePath, 'assets'],
-        FontawesomeIcons.filesO,
-        parentId,
-        selectionState(`${parentId}.assets`),
-        order + ((testsuite.testCases.length + 1) * 10)
-      );
-      const configurationMenuItem = new MenuItem(
-        `${parentId}.configuration`,
-        'Configuration',
-        [...basePath, 'configuration'],
-        FontawesomeIcons.wrench,
-        parentId,
-        selectionState(`${parentId}.configuration`),
-        order + ((testsuite.testCases.length + 2) * 10)
-      );
-
-      return new AddAllMenuItems([parentMenuItem, ...cases, assetsMenuItem, configurationMenuItem]);
-    });
-
   @Effect() runTest$ = this.actions$.ofType(RUN_TEST)
     .withLatestFrom(this.store.select(workpaceSelectors.workspace))
     .mergeMap(([rt, workspace]: [RunTest, string]) => this.testService.run(rt.testSuite, workspace).map(tri => new SetTestRunInfo(tri)));
@@ -170,6 +109,7 @@ export class TestEffects {
               private store: Store<AppState>,
               private actions$: Actions,
               private loading: ScLoadingService,) {
+    console.log('Test effects');
   }
 
 }

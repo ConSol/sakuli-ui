@@ -6,13 +6,15 @@ import {ProjectOpenComponent} from "./workspace/project-open.component";
 import {testSuiteSelectors} from "./test/state/testsuite.state";
 import {ScModalService} from "../sweetest-components/components/presentation/modal/sc-modal.service";
 import {Observable} from "rxjs/Observable";
+import {ScFileSelectorService} from "../sweetest-components/components/presentation/file-selector/sc-file-selector.service";
+import {OpenWorkspace} from "./workspace/state/project.actions";
 
 @Injectable()
 export class SakuliProjectGuardService implements CanActivate {
 
   constructor(
               private store: Store<AppState>,
-              private modal: ScModalService
+              readonly fileSelector: ScFileSelectorService
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot) {
@@ -21,8 +23,13 @@ export class SakuliProjectGuardService implements CanActivate {
         if (total > 0) {
           return Observable.of(true);
         } else {
-          const projectModal = this.modal.open(ProjectOpenComponent, {});
-          return Observable.fromPromise(projectModal);
+          return Observable.fromPromise(
+            this.fileSelector.openModal('')
+              .then(([file]) => {
+                this.store.dispatch(new OpenWorkspace(file))
+                return true;
+              })
+          );
         }
       });
   }

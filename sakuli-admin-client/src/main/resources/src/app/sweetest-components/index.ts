@@ -36,6 +36,8 @@ import {ScRouterModule} from "./services/router/router.module";
 import {PreventRoutingGuardService} from "./components/forms/prevent-routing-guard.service";
 import {ScFormsModule} from "./components/forms/sc-forms.module";
 import {ScOpenFileModule} from "./components/presentation/open-file/sc-open-file.module";
+import {ScFileSelectorModule} from "./components/presentation/file-selector/sc-file-selector.module";
+import {RouterModule} from "@angular/router";
 
 
 export const SweetestComponentsAndDirectives  = [
@@ -78,6 +80,7 @@ export const SweetestComponentsAndDirectives  = [
     CommonModule,
     FormsModule,
     HttpModule,
+    RouterModule,
     NgbModule.forRoot(),
     BrowserAnimationsModule,
     ScAccessModule,
@@ -90,6 +93,7 @@ export const SweetestComponentsAndDirectives  = [
     ScRouterModule,
     ScFormsModule,
     ScOpenFileModule,
+    ScFileSelectorModule
   ],
   declarations: [
     ...(SweetestComponentsAndDirectives)

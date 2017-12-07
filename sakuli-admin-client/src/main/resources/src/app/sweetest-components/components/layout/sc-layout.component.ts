@@ -61,7 +61,7 @@ export class ScLayoutComponent implements OnInit {
   ngOnInit() {
     this.primaryMenuItems$ = this.menuService.get(LayoutMenuService.Menus.PRIMARY);
     this.secondaryMenuItems$ = this.menuService.get(LayoutMenuService.Menus.SECONDARY);
-    this.sidebarMenuItems$ = this.menuService.get(LayoutMenuService.Menus.SIDEBAR);
+    this.sidebarMenuItems$ = this.menuService.get(LayoutMenuService.Menus.SIDEBAR).do(log("Menu"));
   }
 
   onMenuItemSelected(menuItem: IMenuItem) {

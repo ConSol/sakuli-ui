@@ -1,49 +1,64 @@
 import {Component, EventEmitter, HostBinding, Input, Output} from "@angular/core";
 import {Theme} from "../theme";
-import {ActivatedRoute, Router} from "@angular/router";
 import {IMenuItem} from "./menu/menu-item.interface";
 import {AppState} from "../../../sakuli-admin/appstate.interface";
 import {Store} from "@ngrx/store";
-import {menuSelectors} from "./menu/menu.state";
-import {SelectionState} from "../../model/tree";
 import {FontawesomeIcons} from "../presentation/icon/fontawesome-icon.utils";
 import {workpaceSelectors} from "../../../sakuli-admin/workspace/state/project.interface";
 import {NavigateToTestSuiteAssets} from "../../../sakuli-admin/test/state/test-navitation.actions";
 import {testSuiteSelectors} from "../../../sakuli-admin/test/state/testsuite.state";
+import {SakuliTestSuite} from "../../services/access/model/sakuli-test-model";
+import {RouterGo} from "../../services/router/router.actions";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'sc-sidebar',
   template: `
     <ul class="nav flex-column">
-      <ng-container *ngFor="let menuItem of menuItems">
+      <ng-container *ngFor="let testSuite of testSuites$ | async">
         <sc-link [fixedIconWidth]="true"
-                 [icon]="menuItem.icon"
-                 (click)="onMenuItemSelected(menuItem)"
-                 [ngStyle]="{order: menuItem.order}"
+                 icon="fa-cubes"
+                 (click)="testSuiteItemClick(testSuite)"
+                 [ngClass]="{'active': isActive(['/testsuite', testSuite.root])}"
         >
           <span class="hidden-md-down link-text">
-          {{menuItem.label}}
+            {{testSuite.id}}
           </span>
           <span class="actions mr-lg-0 mr-sm-3">
-            <button 
-              class="ml-1 btn btn-sm rounded btn-success"
-              [ngbTooltip]="'Run ' + menuItem.label"
+            <a
+              class="run-button ml-1 btn btn-sm rounded btn-success"
+              [ngbTooltip]="'Run ' + testSuite.id"
               placement="right"
             >
               <sc-icon
                 icon="fa-play"
-                (click)="onMenuItemSelected(menuItem, {autorun:'1'})"
+                (click)="testSuiteItemClick(testSuite, {autorun:'1'}); $event.stopPropagation()"
               ></sc-icon>
-            </button>
+            </a>
           </span>
         </sc-link>
-        <ul *ngIf="isActive(menuItem)" [ngStyle]="{order: menuItem.order}">
-          <sc-link *ngFor="let childItem of childrenFor$(menuItem.id) | async"
+        <ul *ngIf="isOpen(testSuite)">
+          <sc-link *ngFor="let testCase of testSuite.testCases"
                    [fixedIconWidth]="true"
-                   [icon]="childItem.icon"
-                   (click)="onMenuItemSelected(childItem)"
+                   icon="fa-code"
+                   [routerLink]="['/testsuite', testSuite.root, 'sources', [testCase.name, testCase.mainFile].join('/')]"
+                   [ngClass]="{'active': isActive(['/testsuite', testSuite.root, 'sources', [testCase.name, testCase.mainFile].join('/')])}"
           >
-            <span class="hidden-xs-down link-text">{{childItem.label}}</span>
+            <span class="hidden-xs-down link-text">{{testCase.name}}</span>
+          </sc-link>
+          <sc-link [fixedIconWidth]="true"
+                   [routerLink]="['/testsuite', testSuite.root, 'assets']"
+                   [ngClass]="{'active': isActive(['/testsuite', testSuite.root, 'assets'])}"
+                   icon="fa-files-o"
+          >
+            <span class="hidden-xs-down link-text">Files</span>
+          </sc-link>
+          <sc-link [fixedIconWidth]="true"
+                   [routerLink]="['/testsuite', testSuite.root, 'configuration']"
+                   [ngClass]="{'active': isActive(['/testsuite', testSuite.root, 'configuration'])}"
+                   icon="fa-wrench"
+          >
+            <span class="hidden-xs-down link-text">Configuration</span>
           </sc-link>
         </ul>
       </ng-container>
@@ -51,7 +66,6 @@ import {testSuiteSelectors} from "../../../sakuli-admin/test/state/testsuite.sta
                icon="fa-files-o"
                *ngIf="workspace$ | async"
                (click)="navigateToWorkspaceAssets()"
-               [ngStyle]="{order: 99999}"
       >
         Files
       </sc-link>
@@ -59,13 +73,15 @@ import {testSuiteSelectors} from "../../../sakuli-admin/test/state/testsuite.sta
   `,
   styles: [`
     sc-link.main {
-        width: 100%;  
+      width: 100%;
     }
-    
+
     :host {
       background-color: ${Theme.colors.secondary};
       color: #374d85;
       padding: 0;
+      overflow-y: auto;
+      max-height: calc(100vh - 62px);
     }
 
     :host /deep/ sc-link, .sc-link {
@@ -73,7 +89,7 @@ import {testSuiteSelectors} from "../../../sakuli-admin/test/state/testsuite.sta
       border-bottom: 1px solid #dae6f3;
       display: flex;
     }
-    
+
     :host /deep/ sc-link {
       justify-content: flex-start;
       align-items: center;
@@ -95,11 +111,24 @@ import {testSuiteSelectors} from "../../../sakuli-admin/test/state/testsuite.sta
 
     ul ul sc-link {
       padding-left: 25px;
+      padding-top: 0;
+      padding-bottom: 0;
+      height: auto;
+    }
+
+    .run-button {
+      color: white !important;
+    }
+    
+    sc-link.active {
+      background-color: #e3effc;
     }
 
   `]
 })
 export class ScSidebarComponent {
+
+  private selectionMap = new Map<string, boolean>();
 
   icons = FontawesomeIcons;
 
@@ -116,20 +145,14 @@ export class ScSidebarComponent {
     return 'col-1 col-sm-3 flex';
   }
 
-  constructor(private store: Store<AppState>) {
+  constructor(
+    private store: Store<AppState>,
+    private router: Router
+  ) {}
 
-  }
 
-  childrenFor$(parent: string) {
-    return this.store.select(menuSelectors.byParent(parent));
-  }
-
-  onMenuItemSelected(menuItem: IMenuItem, queryParams: {[key:string]:string} = {}) {
-    this.menuItemSelected.next({...menuItem, queryParams})
-  }
-
-  isActive(item: IMenuItem) {
-    return item.selected === SelectionState.Selected || item.selected === SelectionState.Indeterminate;
+  isOpen(item: SakuliTestSuite) {
+    return this.selectionMap.get(item.root);
   }
 
   navigateToWorkspaceAssets() {
@@ -137,5 +160,16 @@ export class ScSidebarComponent {
       .subscribe(ws => {
         this.store.dispatch(new NavigateToTestSuiteAssets(ws))
       })
+  }
+
+  testSuiteItemClick(testSuite: SakuliTestSuite, query: any) {
+    const path = ['/testsuite', testSuite.root];
+    this.store.dispatch(new RouterGo({path, query}))
+    this.selectionMap.set(testSuite.root, !this.selectionMap.get(testSuite.root));
+  }
+
+  isActive(path: any[]) {
+    const tree = this.router.createUrlTree(path);
+    return this.router.isActive(tree, false);
   }
 }

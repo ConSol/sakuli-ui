@@ -2,6 +2,7 @@ import {Injectable} from "@angular/core";
 import {Actions, Effect} from "@ngrx/effects";
 import {TestService} from "../../../sweetest-components/services/access/test.service";
 import {
+  LOAD_TESTSUITE, LoadTestsuite,
   LoadTestsuiteSuccess,
   RemoveAllTestsuites,
   UPDATE_TESTSUITE,
@@ -10,7 +11,7 @@ import {
   UpdateTestsuiteSuccess
 } from "./testsuite.state";
 import {ErrorMessage} from "../../../sweetest-components/components/presentation/toast/toast.actions";
-import {OPEN} from "../../workspace/state/project.actions";
+import {OPEN_WORKSPACE} from "../../workspace/state/project.actions";
 import {RemoveMenuitem} from "../../../sweetest-components/components/layout/menu/menu.state";
 import {LayoutMenuService} from "../../../sweetest-components/components/layout/menu/layout-menu.service";
 
@@ -32,10 +33,15 @@ export class TestsuiteEffects {
 
   @Effect() refresh$ = this.actions$
     .ofType(UPDATE_TESTSUITE_SUCCESS)
-    .map((a: UpdateTestsuiteSuccess) => new LoadTestsuiteSuccess(a.testsuite))
+    .map((a: UpdateTestsuiteSuccess) => new LoadTestsuiteSuccess(a.testsuite));
+
+  @Effect() loadTestSuite$ = this.actions$
+    .ofType(LOAD_TESTSUITE)
+    .mergeMap((a: LoadTestsuite) => this.testService.testSuite(a.path))
+    .map(ts => new LoadTestsuiteSuccess(ts));
 
   @Effect() closeAfterOpen$ = this.actions$
-    .ofType(OPEN)
+    .ofType(OPEN_WORKSPACE)
     .mergeMap(_ => [
       new RemoveAllTestsuites(),
       new RemoveMenuitem(LayoutMenuService.Menus.SIDEBAR)

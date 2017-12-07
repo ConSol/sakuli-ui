@@ -37,9 +37,9 @@ export class SelectFile implements Action {
   ) {}
 }
 
-export const OPEN = uniqueName('[testSuite] open');
-export class Open implements Action {
-  readonly type = OPEN;
+export const OPEN_WORKSPACE = uniqueName('[testSuite] open');
+export class OpenWorkspace implements Action {
+  readonly type = OPEN_WORKSPACE;
   constructor(
     readonly file: FileResponse
   ) {}
@@ -59,4 +59,4 @@ export class RefreshProject implements Action {
   constructor() {}
 }
 
-export type All = LoadPath | AppendChildren | ToggleOpen | SelectFile | SetProject | Open;
+export type All = LoadPath | AppendChildren | ToggleOpen | SelectFile | SetProject | OpenWorkspace;

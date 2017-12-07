@@ -11,6 +11,9 @@ import {SelectMenuItem} from "./sweetest-components/components/layout/menu/menu.
 import {SelectionState} from "./sweetest-components/model/tree";
 import {RouterGo} from "./sweetest-components/services/router/router.actions";
 import {TokenService} from "./sweetest-components/services/access/token.service";
+import {ScFileSelectorModalComponent} from "./sweetest-components/components/presentation/file-selector/sc-file-selector-modal.component";
+import {ScFileSelectorService} from "./sweetest-components/components/presentation/file-selector/sc-file-selector.service";
+import {OpenWorkspace} from "./sakuli-admin/workspace/state/project.actions";
 
 @Component({
   selector: 'app-root',
@@ -34,11 +37,13 @@ export class AppComponent {
     }
   }
 
-  constructor(private menuService: LayoutMenuService,
-              private router: Router,
-              private store: Store<AppState>,
-              private modal: NgbModal,
-              private tokenService: TokenService) {
+  constructor(readonly menuService: LayoutMenuService,
+              readonly router: Router,
+              readonly store: Store<AppState>,
+              readonly modal: NgbModal,
+              readonly tokenService: TokenService,
+              readonly fileSelector: ScFileSelectorService
+  ) {
 
     this.menuService.addMenuItems(
       [
@@ -50,7 +55,7 @@ export class AppComponent {
     this.menuService.addMenuItems(
       [
         new MenuItem('primary.new', 'New', 'new', FontawesomeIcons.plus, LayoutMenuService.Menus.PRIMARY),
-        new MenuItem('primary.open', 'Open', 'testSuite/open', FontawesomeIcons.folderO, LayoutMenuService.Menus.PRIMARY),
+        new MenuItem('primary.open', 'OpenWorkspace', 'testSuite/open', FontawesomeIcons.folderO, LayoutMenuService.Menus.PRIMARY),
         new MenuItem('sidebar.dashboard',
           'Dashboard', '',
           FontawesomeIcons.dashboard,
@@ -68,10 +73,12 @@ export class AppComponent {
 
   }
 
-  onLink(item: IMenuItem) {
+  async onLink(item: IMenuItem) {
     this.store.dispatch(new SelectMenuItem(item.id));
     if (item.link[0] === 'testSuite/open') {
-      this.modal.open(ProjectOpenComponent);
+      const [file] = await this.fileSelector.openModal('');
+      console.log(file);
+      this.store.dispatch(new OpenWorkspace(file));
     } else {
       this.store.dispatch(new RouterGo({path: item.link, extras: {queryParams: item.queryParams || {}}}));
     }
