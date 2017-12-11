@@ -5,7 +5,7 @@ import {Tree} from '../../sweetest-components/components/presentation/tree/tree.
 import {animate, style, transition, trigger} from "@angular/animations";
 import {Store} from "@ngrx/store";
 import {WorkspaceState} from "./state/project.interface";
-import {LoadPath, Open, SelectFile, ToggleOpen} from "./state/project.actions";
+import {LoadPath, OpenWorkspace, SelectFile, ToggleOpen} from "./state/project.actions";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 
@@ -83,7 +83,7 @@ export class ProjectOpenComponent {
     this.selectedFile$
       .take(1)
       .subscribe(f => {
-        this.store.dispatch(new Open(f));
+        this.store.dispatch(new OpenWorkspace(f));
         this.modal.close(f);
       });
   }

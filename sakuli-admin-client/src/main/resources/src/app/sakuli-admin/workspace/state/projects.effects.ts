@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Actions, Effect} from '@ngrx/effects';
 import {ProjectService} from '../../../sweetest-components/services/access/project.service';
 import {
-  AppendChildren, LOAD_PATH, LoadPath, OPEN, Open, REFRESH_PROJECT, SetProject, TOGGLE_OPEN,
+  AppendChildren, LOAD_PATH, LoadPath, OPEN_WORKSPACE, OpenWorkspace, REFRESH_PROJECT, SetProject, TOGGLE_OPEN,
   ToggleOpen
 } from './project.actions';
 import {of} from 'rxjs/observable/of';
@@ -41,8 +41,8 @@ export class ProjectEffects {
     .catch(ErrorMessage(`Error while opening path`));
 
 
-  @Effect() open = this.actions$.ofType(OPEN)
-    .map((open: Open) => open.file)
+  @Effect() open = this.actions$.ofType(OPEN_WORKSPACE)
+    .map((open: OpenWorkspace) => open.file)
     .expand((fr) => {
       if(fr.directory) {
         return this

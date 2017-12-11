@@ -5,13 +5,15 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ScEditorComponent} from "./editor/sc-editor.component";
 import {ScIconModule} from "../presentation/icon/sc-icon.module";
 import {CommonModule} from "@angular/common";
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 @NgModule({
   imports: [
     ReactiveFormsModule,
     FormsModule,
     ScIconModule,
-    CommonModule
+    CommonModule,
+    NgbModule
   ],
   providers: [
     PreventRoutingGuardService

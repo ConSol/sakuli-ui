@@ -29,7 +29,7 @@ export class HttpEffects {
       let modal: ScLoginComponent;
       if(!this.isModalOpen) {
         this.isModalOpen = true;
-        console.log('Open');
+        console.log('OpenWorkspace');
         await this.scModal.open(ScLoginComponent, {}, m => modal = m);
         this.isModalOpen = false;
         console.log('close');

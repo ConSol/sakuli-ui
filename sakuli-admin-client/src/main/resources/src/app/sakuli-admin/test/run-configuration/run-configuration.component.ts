@@ -1,12 +1,21 @@
-import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {RunConfigurationTypes} from "./run-configuration-types.enum";
 import {ContainerTag, RunConfiguration, SakuliContainer} from "./run-configuration.interface";
 import {ProjectModel} from "../../../sweetest-components/services/access/model/project.model";
 import {InplaceFileEditorComponent} from "../../../sweetest-components/components/forms/inplace-file-editor.component";
 import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
+import {Store} from "@ngrx/store";
+import {AppState} from "../../appstate.interface";
+import {workpaceSelectors} from "../../workspace/state/project.interface";
+import * as path from 'path';
+import {
+  FileSelectorFilter,
+  Filters
+} from "../../../sweetest-components/components/presentation/file-selector/file-selector-filter.interface";
+import {FileSelectorFile} from "../../../sweetest-components/components/presentation/file-selector/file-selector.state";
 
 @Component({
-  moduleId: module.id,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'run-configuration',
   template: `
     <sc-loading class="d-block margin-y" #loadingCmp displayAs="progressbar" for="runconfig"></sc-loading>
@@ -49,8 +58,8 @@ import {SakuliTestSuite} from "../../../sweetest-components/services/access/mode
           </label>
           <div *ngIf="config.type === types[types.DockerCompose]" class="config-area margin-y">
             <inplace-file-editor
-              [root]="testSuite.root"
-              file="docker-compose.yml"
+              [root]="workspace$ | async"
+              [file]="dockerComposeFile"
               mode="yaml"
               [defaultFile]="defaultDockerComposeFile"
               #dockerComposeFileEditor
@@ -65,8 +74,8 @@ import {SakuliTestSuite} from "../../../sweetest-components/services/access/mode
           </label>
           <div *ngIf="config.type === types[types.Dockerfile]" class="config-area margin-y">
             <inplace-file-editor
-              [root]="testSuite.root"
-              file="Dockerfile"
+              [root]="workspace$ | async"
+              [file]="dockerFile"
               mode="dockerfile"
               [defaultFile]="defaultDockerFile"
               #dockerFileEditor
@@ -103,6 +112,9 @@ export class RunConfigurationComponent {
 
   selectedContainer: SakuliContainer;
 
+  _dockerFile: string;
+  _dockerComposeFile: string;
+
   defaultDockerComposeFile = new File([`version: '2'
 services:
   sakuli_test:
@@ -118,36 +130,52 @@ services:
   @ViewChild(InplaceFileEditorComponent)
   dockerComposeFileEditor: InplaceFileEditorComponent;
 
+  workspace$ = this.store.select(workpaceSelectors.workspace);
+
   constructor(
+    readonly store: Store<AppState>
   ) {
   }
 
   ngOnInit() {
+  }
 
+  get dockerFile() {
+    return path.resolve(this.testSuite.root, this.config.dockerfile.file)
+  }
+
+  get dockerComposeFile() {
+    return path.resolve(this.testSuite.root, this.config.dockerCompose.file)
   }
 
   async onSave($event: MouseEvent, config: RunConfiguration) {
     $event.preventDefault();
-    await Promise.all([
+    const [dockerFile, dockerComposeFile] = await Promise.all([
       this.saveDockerFile(),
       this.saveDockerComposeFile()
     ]);
+    if(dockerFile) {
+      config.dockerfile.file = path.relative(this.testSuite.root, dockerFile);
+    }
+    if(dockerComposeFile) {
+      config.dockerCompose.file = path.relative(this.testSuite.root, dockerComposeFile);
+    }
     this.save.next(config);
   }
 
   async saveDockerFile() {
-    if(this.dockerFileEditor) {
-      return this.dockerFileEditor.save().toPromise();
-    } else {
-      return Promise.resolve(0);
-    }
+    return RunConfigurationComponent.saveInplaceEditor(this.dockerFileEditor);
   }
 
   async saveDockerComposeFile() {
-    if(this.dockerComposeFileEditor) {
-      return this.dockerComposeFileEditor.save().toPromise();
+    return RunConfigurationComponent.saveInplaceEditor(this.dockerComposeFileEditor);
+  }
+
+  static async saveInplaceEditor(editor: InplaceFileEditorComponent) {
+    if(editor) {
+      return editor.save().toPromise();
     } else {
-      return Promise.resolve(0);
+      return Promise.resolve(null);
     }
   }
 

@@ -30,7 +30,6 @@ export class ScHttpService extends Http {
     } else if(!options.headers) {
       options.headers = new Headers();
     }
-    console.log(this.token, this.token.hasToken());
     if(this.token.hasToken()) {
       if(isRequest(url)) {
         if(!url.headers) {
@@ -40,7 +39,6 @@ export class ScHttpService extends Http {
       }
       options.headers.append('Authorization', this.token.getPrefixedToken());
     }
-    console.log(url, options);
     return super
       .request(url, options)
       .map(res => {

@@ -14,10 +14,9 @@ import java.util.Optional;
 public class MimeTypeMap extends HashMap<String, List<String>> {
 
     private static MimeTypeMap instance = null;
-    private List<String> textMimes = Arrays.asList(new String[]{
+    private List<String> textMimes = Arrays.asList(
             "application/x-javascript",
-            "application/json",
-    });
+            "application/json");
 
     public static MimeTypeMap getInstance() {
         if (null == instance) {
@@ -35,9 +34,7 @@ public class MimeTypeMap extends HashMap<String, List<String>> {
                     .map(s -> s.split(" "))
                     .filter(s -> s.length > 1)
                     .forEach(s -> put(s[0], Arrays.asList(Arrays.copyOfRange(s, 1, s.length))));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
     }
@@ -46,10 +43,20 @@ public class MimeTypeMap extends HashMap<String, List<String>> {
         return mime.startsWith("text") || textMimes.contains(mime);
     }
 
+    public Optional<String> getMimeForPath(String path) {
+        String[] parts = path.split("\\.");
+        if(parts.length > 0) {
+            String ext = parts[parts.length - 1];
+            return getMimeFor(ext);
+        } else {
+            return Optional.empty();
+        }
+    }
+
     public Optional<String> getMimeFor(String ext) {
         return this.entrySet().stream()
                 .filter(es -> es.getValue().contains(ext.toLowerCase()))
-                .map(es -> es.getKey()).findFirst();
+                .map(Entry::getKey).findFirst();
     }
 
     public Optional<String> getMimeFor(File file) {

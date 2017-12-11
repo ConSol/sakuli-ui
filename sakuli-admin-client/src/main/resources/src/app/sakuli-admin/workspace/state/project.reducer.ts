@@ -28,7 +28,7 @@ function recursiveTreeWalker(filter: (item: Tree<FileResponse>) => boolean,
 
 export function projectReducer(state: WorkspaceState, action: Actions.All): WorkspaceState {
   switch (action.type) {
-    case Actions.OPEN: {
+    case Actions.OPEN_WORKSPACE: {
       const {file} = action;
       return ({...state, workspace: absPath(file)})
     }

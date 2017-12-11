@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.HandlerMapping;
 import org.sweetest.platform.server.api.file.FileModel;
 import org.sweetest.platform.server.api.file.FileSystemService;
+import org.sweetest.platform.server.api.file.MimeTypeMap;
 import org.sweetest.platform.server.api.project.ProjectService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,9 +31,6 @@ public class FileController {
 
     @Autowired
     private FileSystemService fileSystemService;
-
-    @Autowired
-    private ProjectService projectService;
 
     @GetMapping(value = "ls")
     @ResponseBody
@@ -63,8 +61,15 @@ public class FileController {
     @GetMapping()
     @ResponseBody
     public ResponseEntity<Resource> readFile(@RequestParam("path") String path) {
+        MediaType mediaType = MimeTypeMap
+                .getInstance()
+                .getMimeForPath(path)
+                .map(MediaType::parseMediaType)
+                .orElse(MediaType.APPLICATION_OCTET_STREAM);
         return fileSystemService.readFile(path)
-                .map(cnt -> ResponseEntity.ok().body(cnt))
+                .map(ResponseEntity
+                        .ok()
+                        .contentType(mediaType)::body)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -74,16 +79,12 @@ public class FileController {
             @RequestParam("path") String path,
             @RequestParam("file") MultipartFile file) throws IOException {
         boolean success = fileSystemService.writeFile(path, file.getBytes());
-        projectService.readProject(projectService.getActiveProject().getPath())
-                .ifPresent(pm -> projectService.setActiveProject(pm));
         return success ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
 
     @DeleteMapping()
     public ResponseEntity deleteFile(@RequestParam("path") String path) {
         boolean success = fileSystemService.deleteFile(path);
-        projectService.readProject(projectService.getActiveProject().getPath())
-                .ifPresent(pm -> projectService.setActiveProject(pm));
         return success ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
 }

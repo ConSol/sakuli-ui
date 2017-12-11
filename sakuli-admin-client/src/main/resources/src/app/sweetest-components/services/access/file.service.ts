@@ -15,7 +15,6 @@ export class FileService {
   ) {}
 
   files(path: string = ''): Observable<FileResponse[]> {
-    console.log(path);
     return this.http
       .get(`${projectUrl}/ls?path=${rmHeadSlash(path || '')}`)
       .map(r => r.json() as FileResponse[])
