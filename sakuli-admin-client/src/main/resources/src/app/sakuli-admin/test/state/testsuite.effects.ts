@@ -35,10 +35,12 @@ export class TestsuiteEffects {
     .ofType(UPDATE_TESTSUITE_SUCCESS)
     .map((a: UpdateTestsuiteSuccess) => new LoadTestsuiteSuccess(a.testsuite));
 
-  @Effect() loadTestSuite$ = this.actions$
-    .ofType(LOAD_TESTSUITE)
-    .mergeMap((a: LoadTestsuite) => this.testService.testSuite(a.path))
-    .map(ts => new LoadTestsuiteSuccess(ts));
+  @Effect() loadTestSuite$ = this.actions$.ofType(LOAD_TESTSUITE)
+    .mergeMap((loadTestSuite: LoadTestsuite) => this.testService
+      .testSuite(loadTestSuite.path)
+      .map(ts => new LoadTestsuiteSuccess(ts))
+      .catch(ErrorMessage(`Unable to load testsuite from ${loadTestSuite.path}`))
+    );
 
   @Effect() closeAfterOpen$ = this.actions$
     .ofType(OPEN_WORKSPACE)

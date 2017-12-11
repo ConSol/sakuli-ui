@@ -66,7 +66,6 @@ export class RunConfigurationEffects {
     );
 
   @Effect() loadContainerTags$ = this.actions$.ofType(LOAD_SAKULI_CONTAINER_TAGS)
-    .do(log('dsgfhsd'))
     .filter((a: LoadSakuliContainerTags) => !!a.container)
     .mergeMap((a: LoadSakuliContainerTags) => this
       .runConfigurationService

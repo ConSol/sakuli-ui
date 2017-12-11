@@ -22,5 +22,6 @@ export class RemoveToast implements Action {
 export type ToastActions = CreateToast | RemoveToast;
 
 export const ErrorMessage = (message: string) => (e: Error) => {
+  console.warn('Error caugth', e);
   return Observable.of(new CreateToast(new DangerToast(message, e)));
 };

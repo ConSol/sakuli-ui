@@ -134,6 +134,7 @@ export class RunTestSuiteComponent {
   }
 
   runSuite(testSuite: SakuliTestSuite) {
+    console.log('Run **', this.store);
     this.store.dispatch(new RunTest(testSuite));
   }
 

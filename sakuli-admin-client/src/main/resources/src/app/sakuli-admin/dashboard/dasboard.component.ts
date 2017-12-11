@@ -1,5 +1,5 @@
 import {TestCaseResult, TestSuiteResult} from "../../sweetest-components/services/access/model/test-result.interface";
-import {ChangeDetectionStrategy, Component, Input} from "@angular/core";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from "@angular/core";
 import {SakuliTestSuite} from "../../sweetest-components/services/access/model/sakuli-test-model";
 
 @Component({
@@ -10,7 +10,13 @@ import {SakuliTestSuite} from "../../sweetest-components/services/access/model/s
       <sc-heading
         icon="fa-cube"
         title="Dashboard"
-      ></sc-heading>
+      >
+        <sc-icon 
+          class="cursor-pointer"
+          icon="fa-refresh"
+          (click)="refresh.next()"
+        ></sc-icon>
+      </sc-heading>
       <article class="d-flex flex-column">
         <sc-loading displayAs="progressbar" for="loadingTestResults" #loading></sc-loading>
         <ng-container *ngIf="!(loading.show$ | async)">
@@ -27,6 +33,8 @@ export class DashboardComponent {
 
   @Input() testSuites: SakuliTestSuite[];
   @Input() testResults: TestSuiteResult[];
+
+  @Output() refresh = new EventEmitter<void>();
 
   getResultsForSuite(testSuite: SakuliTestSuite) {
     return this.testResults.filter(tr => {

@@ -39,13 +39,13 @@ export const DeclareAndExport = [
     CommonModule,
     SweetestComponentsModule,
     NgbModule,
-    EffectsModule.forFeature([
-      TestEffects,
-      TestsuiteEffects
-    ]),
     StoreModule.forFeature(TestSuiteFeatureName, testsuiteReducer),
     StoreModule.forFeature('test', testReducer),
     StoreModule.forFeature(TestEditorFeatureName, testEditorReducer),
+    EffectsModule.forFeature([
+      TestsuiteEffects,
+      TestEffects,
+    ]),
     RouterModule,
     SaAssetsModule,
     RunConfigurationModule,

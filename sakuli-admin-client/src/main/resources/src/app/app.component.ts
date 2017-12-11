@@ -14,6 +14,7 @@ import {TokenService} from "./sweetest-components/services/access/token.service"
 import {ScFileSelectorModalComponent} from "./sweetest-components/components/presentation/file-selector/sc-file-selector-modal.component";
 import {ScFileSelectorService} from "./sweetest-components/components/presentation/file-selector/sc-file-selector.service";
 import {OpenWorkspace} from "./sakuli-admin/workspace/state/project.actions";
+import {Filters} from "./sweetest-components/components/presentation/file-selector/file-selector-filter.interface";
 
 @Component({
   selector: 'app-root',
@@ -76,7 +77,10 @@ export class AppComponent {
   async onLink(item: IMenuItem) {
     this.store.dispatch(new SelectMenuItem(item.id));
     if (item.link[0] === 'testSuite/open') {
-      const [file] = await this.fileSelector.openModal('');
+      const [file] = await this.fileSelector.openModal({
+        root: '',
+        inactive: Filters.isFile()
+      });
       console.log(file);
       this.store.dispatch(new OpenWorkspace(file));
     } else {

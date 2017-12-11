@@ -20,10 +20,8 @@ export class ScFileSelectorService {
     readonly fileService: FileService
   ) {}
 
-  openModal(root: string): Promise<FileSelectorFile[]> {
-      return this.modal.open(ScFileSelectorModalComponent, {
-        root
-      })
+  openModal(config: Partial<ScFileSelectorModalComponent>): Promise<FileSelectorFile[]> {
+      return this.modal.open(ScFileSelectorModalComponent, config);
   }
 
   @Effect()

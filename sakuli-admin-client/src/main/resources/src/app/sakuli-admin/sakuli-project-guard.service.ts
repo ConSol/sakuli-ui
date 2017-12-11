@@ -24,9 +24,9 @@ export class SakuliProjectGuardService implements CanActivate {
           return Observable.of(true);
         } else {
           return Observable.fromPromise(
-            this.fileSelector.openModal('')
+            this.fileSelector.openModal({root: ''})
               .then(([file]) => {
-                this.store.dispatch(new OpenWorkspace(file))
+                this.store.dispatch(new OpenWorkspace(file));
                 return true;
               })
           );

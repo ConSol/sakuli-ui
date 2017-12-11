@@ -2,38 +2,31 @@ import {Injectable} from '@angular/core';
 import {Actions, Effect} from '@ngrx/effects';
 import {TestService} from "../../../sweetest-components/services/access/test.service";
 import {
-  AppendTestRunInfoLog, DockerPullCompleted, DockerPullProgress, DockerPullStarted,
+  AppendTestRunInfoLog,
+  DockerPullCompleted,
+  DockerPullProgress,
+  DockerPullStarted,
   DockerPullStream,
-  LOAD_TESTRESULTS, LOAD_TESTRESULTS_SUCCESS,
+  LOAD_TESTRESULTS,
+  LOAD_TESTRESULTS_SUCCESS,
   LoadTestResultsSuccess,
-  RUN_TEST, RunTest,
+  RUN_TEST,
+  RunTest,
   SET_TEST_RUN_INFO,
   SetTestRunInfo,
-  TEST_EXECUTION_COMPLETED, TestExecutionCompleted, TestExecutionStarted
+  TEST_EXECUTION_COMPLETED,
+  TestExecutionCompleted,
+  TestExecutionStarted
 } from "./test.actions";
 import {SET_PROJECT, SetProject} from "../../workspace/state/project.actions";
 
 import {Observable} from "rxjs/Observable";
 import {ScLoadingService} from "../../../sweetest-components/components/presentation/loading/sc-loading.service";
-import {
-  ErrorMessage,
-} from "../../../sweetest-components/components/presentation/toast/toast.actions";
-import {IMenuItem, MenuItem} from "../../../sweetest-components/components/layout/menu/menu-item.interface";
-import {FontawesomeIcons} from "../../../sweetest-components/components/presentation/icon/fontawesome-icon.utils";
-import {LayoutMenuService} from "../../../sweetest-components/components/layout/menu/layout-menu.service";
-import {
-  AddAllMenuItems, menuSelectId,
-  menuSelectors
-} from "../../../sweetest-components/components/layout/menu/menu.state";
+import {CreateToast, ErrorMessage,} from "../../../sweetest-components/components/presentation/toast/toast.actions";
 import {AppState} from "../../appstate.interface";
-import {createSelector, Store} from "@ngrx/store";
-import {SelectionState} from "../../../sweetest-components/model/tree";
-import {
-  LOAD_TESTSUITE, LOAD_TESTSUITE_SUCCESS, LoadTestsuite, LoadTestsuiteSuccess,
-  testSuiteSelectId, testSuiteSelectors
-} from "./testsuite.state";
+import {Store} from "@ngrx/store";
+import {LoadTestsuiteSuccess, testSuiteSelectors} from "./testsuite.state";
 import {SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
-import {CreateToast} from "../../../sweetest-components/components/presentation/toast/toast.actions";
 import {log, notNull} from "../../../core/redux.util";
 import {workpaceSelectors} from "../../workspace/state/project.interface";
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
@@ -41,16 +34,11 @@ import {TestSuiteResult} from "../../../sweetest-components/services/access/mode
 @Injectable()
 export class TestEffects {
 
-  @Effect() loadTestSuite$ = this.actions$.ofType(LOAD_TESTSUITE)
-    .mergeMap((loadTestSuite: LoadTestsuite) => this.testService
-      .testSuite(loadTestSuite.path)
-      .map(ts => new LoadTestsuiteSuccess(ts))
-      .catch(ErrorMessage(`Unable to load testsuite from ${loadTestSuite.path}`))
-    );
 
   @Effect() runTest$ = this.actions$.ofType(RUN_TEST)
     .withLatestFrom(this.store.select(workpaceSelectors.workspace))
     .mergeMap(([rt, workspace]: [RunTest, string]) => this.testService.run(rt.testSuite, workspace).map(tri => new SetTestRunInfo(tri)));
+
 
   @Effect() runTestLoading$ = this.loading.registerLoadingActions(
     'runTest',
@@ -87,17 +75,17 @@ export class TestEffects {
   @Effect() projectOpen = this.actions$.ofType(SET_PROJECT)
     .map((sp: SetProject) => new LoadTestsuiteSuccess(sp.project.testSuite));
 
+
   @Effect() loadTestResults = this.actions$.ofType(LOAD_TESTRESULTS)
-    .withLatestFrom(this.store.select(
-        testSuiteSelectors.selectAll
+    .mergeMap(_ => this.store.select(
+      testSuiteSelectors.selectAll
     ).filter(notNull))
-    .mergeMap(([_, suites]) => Observable.forkJoin(
-        ...suites.map(ts => this.testService.testResults(ts.root))
-      ))
+    .mergeMap((suites) => Observable.forkJoin(
+      ...suites.map(ts => this.testService.testResults(ts.root))
+    ))
     .map((r: TestSuiteResult[][]) => r.reduce((flat, tsa) => [...flat, ...tsa]), [])
     .map(r => new LoadTestResultsSuccess(r))
-    .catch(ErrorMessage('Unable to load test results'))
-  ;
+    .catch(ErrorMessage('Unable to load test results'));
 
   @Effect() loadingTestResult = this.loading.registerLoadingActions(
     "loadingTestResults",
@@ -105,11 +93,10 @@ export class TestEffects {
     LOAD_TESTRESULTS_SUCCESS
   );
 
-  constructor(private testService: TestService,
-              private store: Store<AppState>,
-              private actions$: Actions,
-              private loading: ScLoadingService,) {
-    console.log('Test effects');
+  constructor(readonly testService: TestService,
+              readonly store: Store<AppState>,
+              readonly actions$: Actions,
+              readonly loading: ScLoadingService) {
   }
 
 }

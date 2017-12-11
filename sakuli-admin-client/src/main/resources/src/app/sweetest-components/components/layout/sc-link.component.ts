@@ -13,6 +13,10 @@ import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
       </li>
     `,
     styles: [`
+      :host {
+        outline: none;
+      }
+      
       a {
           cursor: pointer;
       }

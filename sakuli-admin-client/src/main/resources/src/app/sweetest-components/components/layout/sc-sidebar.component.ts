@@ -29,6 +29,7 @@ import {Router} from "@angular/router";
               class="run-button ml-1 btn btn-sm rounded btn-success"
               [ngbTooltip]="'Run ' + testSuite.id"
               placement="right"
+              container="body"
             >
               <sc-icon
                 icon="fa-play"

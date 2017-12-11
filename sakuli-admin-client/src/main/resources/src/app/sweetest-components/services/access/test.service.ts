@@ -72,7 +72,6 @@ export class TestService {
 
   testResults(testSuitePath: string): Observable<TestSuiteResult[]> {
     return this.testResultsFromJson(testSuitePath)
-      .do(log(`form ${testSuitePath}`))
       .catch(e => this.testResultsFromLogs(testSuitePath))
       .map((results) => results
         .sort(DateUtil

@@ -141,5 +141,5 @@ export function testsuiteReducer(state: TestSuiteState = testSuiteStateInit, act
       return testSuiteEntityAdapter.removeAll(state);
     }
   }
-  return state;
+  return state || testSuiteStateInit;
 }
