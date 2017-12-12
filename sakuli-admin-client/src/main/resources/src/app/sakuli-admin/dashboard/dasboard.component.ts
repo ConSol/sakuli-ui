@@ -1,4 +1,4 @@
-import {TestCaseResult, TestSuiteResult} from "../../sweetest-components/services/access/model/test-result.interface";
+import {TestSuiteResult} from "../../sweetest-components/services/access/model/test-result.interface";
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from "@angular/core";
 import {SakuliTestSuite} from "../../sweetest-components/services/access/model/sakuli-test-model";
 
@@ -11,7 +11,7 @@ import {SakuliTestSuite} from "../../sweetest-components/services/access/model/s
         icon="fa-cube"
         title="Dashboard"
       >
-        <sc-icon 
+        <sc-icon
           class="cursor-pointer"
           icon="fa-refresh"
           (click)="refresh.next()"
@@ -20,10 +20,15 @@ import {SakuliTestSuite} from "../../sweetest-components/services/access/model/s
       <article class="d-flex flex-column">
         <sc-loading displayAs="progressbar" for="loadingTestResults" #loading></sc-loading>
         <ng-container *ngIf="!(loading.show$ | async)">
-          <div class="shade mb-3 p-3" *ngFor="let testSuite of testSuites">
-              <h4 class="border-bottom-1">{{testSuite.id}}</h4>
+          <ng-container *ngFor="let testSuite of testSuites">
+            <sa-report-navigation
+              [testResult]="first(getResultsForSuite(testSuite))"
+              [navigation]="false"
+            ></sa-report-navigation>
+            <div class="shade mb-3 p-3">
               <testsuite-stats-component [results]="getResultsForSuite(testSuite)"></testsuite-stats-component>
-          </div>
+            </div>
+          </ng-container>
         </ng-container>
       </article>
     </sc-content>
@@ -35,6 +40,10 @@ export class DashboardComponent {
   @Input() testResults: TestSuiteResult[];
 
   @Output() refresh = new EventEmitter<void>();
+
+  first<T>(array: T[], defaultValue?: T): T {
+    return array[0] || defaultValue;
+  }
 
   getResultsForSuite(testSuite: SakuliTestSuite) {
     return this.testResults.filter(tr => {

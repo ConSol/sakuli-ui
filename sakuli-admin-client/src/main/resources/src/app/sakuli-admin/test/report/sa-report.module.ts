@@ -12,6 +12,16 @@ import {SaReportStepsComponent} from "./sa-report-steps.component";
 import {SaReportTestcaseComponent} from "./sa-report-testcase.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
+const declareAndExport = [
+  SaReportComponent,
+  SaActionComponent,
+  SaReportContentComponent,
+  SaReportNavigationComponent,
+  SaReportStepsTimingComponent,
+  SaReportStepsComponent,
+  SaReportTestcaseComponent
+];
+
 @NgModule({
   imports: [
     CommonModule,
@@ -19,15 +29,11 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     SweetestComponentsModule,
     NgbModule,
   ],
-  exports: [],
+  exports: [
+    ...declareAndExport
+  ],
   declarations: [
-    SaReportComponent,
-    SaActionComponent,
-    SaReportContentComponent,
-    SaReportNavigationComponent,
-    SaReportStepsTimingComponent,
-    SaReportStepsComponent,
-    SaReportTestcaseComponent
+    ...declareAndExport
   ],
   providers: [],
 })

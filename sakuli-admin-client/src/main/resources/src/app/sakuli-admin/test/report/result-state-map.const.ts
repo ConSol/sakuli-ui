@@ -1,9 +1,11 @@
 export const resultStateMap = {
-  'CRITICAL_IN_SUITE': 'bg-warning',
-  'WARNING_IN_STEP': 'bg-warning',
-  'WARNING_IN_CASE': 'bg-warning',
-  'ERRORS': 'bg-danger',
-}
+  'ERRORS': 'danger',
+  'CRITICAL_IN_SUITE': 'danger',
+  'WARNING_IN_SUITE': 'warning',
+  'WARNING_IN_CASE': 'warning',
+  'WARNING_IN_STEP': 'warning',
+  'OK': 'success'
+};
 
 
 export const colors = [

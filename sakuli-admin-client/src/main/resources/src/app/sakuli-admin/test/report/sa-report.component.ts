@@ -20,6 +20,7 @@ import {BoundIndexIterator} from "../../../sweetest-components/utils";
         <sa-report-navigation [testResult]="currentResult$ | async"
                               (next)="next()"
                               (prev)="prev()"
+                              [navigation]="true"
         ></sa-report-navigation>
         <sa-report-content
           [testResult]="currentResult$ | async"

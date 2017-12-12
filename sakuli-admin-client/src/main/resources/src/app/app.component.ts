@@ -2,7 +2,6 @@ import {Component, HostListener} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {FontawesomeIcons} from "./sweetest-components/components/presentation/icon/fontawesome-icon.utils";
 import {Router} from "@angular/router";
-import {ProjectOpenComponent} from "./sakuli-admin/workspace/project-open.component";
 import {AppState} from "./sakuli-admin/appstate.interface";
 import {Store} from "@ngrx/store";
 import {LayoutMenuService} from "./sweetest-components/components/layout/menu/layout-menu.service";
@@ -11,7 +10,6 @@ import {SelectMenuItem} from "./sweetest-components/components/layout/menu/menu.
 import {SelectionState} from "./sweetest-components/model/tree";
 import {RouterGo} from "./sweetest-components/services/router/router.actions";
 import {TokenService} from "./sweetest-components/services/access/token.service";
-import {ScFileSelectorModalComponent} from "./sweetest-components/components/presentation/file-selector/sc-file-selector-modal.component";
 import {ScFileSelectorService} from "./sweetest-components/components/presentation/file-selector/sc-file-selector.service";
 import {OpenWorkspace} from "./sakuli-admin/workspace/state/project.actions";
 import {Filters} from "./sweetest-components/components/presentation/file-selector/file-selector-filter.interface";
@@ -77,12 +75,16 @@ export class AppComponent {
   async onLink(item: IMenuItem) {
     this.store.dispatch(new SelectMenuItem(item.id));
     if (item.link[0] === 'testSuite/open') {
-      const [file] = await this.fileSelector.openModal({
-        root: '',
-        inactive: Filters.isFile()
-      });
-      console.log(file);
-      this.store.dispatch(new OpenWorkspace(file));
+      try {
+        const [file] = await this.fileSelector.openModal({
+          root: '',
+          inactive: Filters.isFile()
+        });
+        console.log(file);
+        this.store.dispatch(new OpenWorkspace(file));
+      } catch(e) {
+        console.warn(e, new OpenWorkspace(null));
+      }
     } else {
       this.store.dispatch(new RouterGo({path: item.link, extras: {queryParams: item.queryParams || {}}}));
     }

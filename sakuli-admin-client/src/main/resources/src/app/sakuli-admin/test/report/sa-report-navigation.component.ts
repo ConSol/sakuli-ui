@@ -1,13 +1,17 @@
-import {Component, EventEmitter, HostBinding, HostListener, Input, OnInit, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, EventEmitter, HostBinding, HostListener, Input, OnInit,
+  Output
+} from '@angular/core';
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
 import {resultStateMap} from "./result-state-map.const";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'sa-report-navigation',
   template: `
     <div [class]="cardClass" *ngIf="testResult">
       <div [class]="'d-flex flex-row justify-content-between align-items-center ' + stateClass">
-        <button class="btn btn-link cursor-pointer" (click)="prev()">
+        <button class="btn btn-link cursor-pointer" (click)="prev()" *ngIf="navigation">
           <sc-icon icon="fa-chevron-left"></sc-icon>
         </button>
         <div style="flex-grow: 1" class="text-center">
@@ -20,16 +24,18 @@ import {resultStateMap} from "./result-state-map.const";
           {{testResult.id}} |
           {{testResult.state}}
         </div>
-        <button class="btn btn-link cursor-pointer" (click)="next()">
+        <button class="btn btn-link cursor-pointer" (click)="next()" *ngIf="navigation">
           <sc-icon icon="fa-chevron-right"></sc-icon>
         </button>
       </div>
+
     </div>
   `
 })
 
 export class SaReportNavigationComponent {
   @Input() testResult: TestSuiteResult;
+  @Input() navigation: boolean;
 
   @Output("next") _next = new EventEmitter();
   @Output("prev") _prev = new EventEmitter();
@@ -46,7 +52,7 @@ export class SaReportNavigationComponent {
 
   get stateClass() {
     const {state = ''} = this.testResult;
-    return resultStateMap[state] || '';
+    return `bg-${resultStateMap[state] || 'default'}`;
   }
 
   get cardClass() {

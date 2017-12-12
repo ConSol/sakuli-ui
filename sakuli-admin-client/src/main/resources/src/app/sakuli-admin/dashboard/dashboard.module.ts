@@ -7,16 +7,18 @@ import {CommonModule} from "@angular/common";
 import {DashboardConnectedComponent} from "./dashboard-connected.component";
 import {TestsuiteStatsComponent} from "./testsuite-stats.component";
 import {StateStateListItemComponent} from "./state-state-list-item.component";
+import {SaReportModule} from "../test/report/sa-report.module";
 
 const declareAndExport = [
   DashboardComponent,
   DashboardConnectedComponent,
   TestsuiteStatsComponent,
-  StateStateListItemComponent
+  StateStateListItemComponent,
 ]
 
 @NgModule({
   imports: [
+    SaReportModule,
     CommonModule,
     SweetestComponentsModule,
     EffectsModule.forFeature([DashboardService]),

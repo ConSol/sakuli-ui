@@ -3,12 +3,16 @@ import {Component, HostBinding, Input, OnInit} from '@angular/core';
 @Component({
   selector: 'state-state-list-item-component',
   template: `
-    <div class="stacked" [ngClass]="valueStateClass" [ngStyle]="{'width': value}"></div>
+    <div class="stacked background" [ngClass]="valueStateClass" [ngStyle]="{'width': value}"></div>
     <div class="stacked pl-1">
       <ng-content></ng-content> 
     </div>
   `,
   styles: [`
+    .background {
+      transition: width .35s ease-out;
+    }
+    
     .stacked {
       position: absolute;
       left: 0;
