@@ -49,7 +49,7 @@ export class SaReportTestcaseComponent implements OnInit {
       testActions: this.testCase.testActions,
       name: `Final steps`,
       exception: null,
-      state: this.testCase.state,
+      state: 'OK',
       resultCode: this.testCase.resultCode,
       dbPrimaryKey: this.testCase.dbPrimaryKey,
       id: ``,

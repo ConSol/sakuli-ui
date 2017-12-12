@@ -1,11 +1,8 @@
-import {ChangeDetectionStrategy, Component, ElementRef, Input, OnInit, Renderer2} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {
   TestCaseResult,
   TestSuiteResult
 } from "../../../sweetest-components/services/access/model/test-result.interface";
-import {DateUtil} from "../../../sweetest-components/utils";
-import {colors} from "./result-state-map.const";
-import {scan} from "ramda";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,6 +16,9 @@ import {scan} from "ramda";
               <sc-icon icon="fa-clock-o">
                 {{((testCase.stopDate | dateDiff:testCase.startDate) / 1000) | number}} sec
               </sc-icon>
+              <span class="badge badge-warning" *ngIf="testCase.state === 'WARNING'">
+                Warningtime of <strong>{{testCase.warningTime}}</strong> sec exceeded
+              </span>
             </small>
           </h4>
         </div>
@@ -40,5 +40,6 @@ export class SaReportContentComponent implements OnInit {
   get testCases(): TestCaseResult[] {
     return Object.keys(this.testResult.testCases).reduce((l, k) => [...l, this.testResult.testCases[k]], []);
   }
+
 
 }

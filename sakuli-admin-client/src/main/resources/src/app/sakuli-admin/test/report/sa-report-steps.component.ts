@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {TestCaseStepResult} from "../../../sweetest-components/services/access/model/test-result.interface";
 import {rmHeadSlash} from "../../../sweetest-components/services/access/file.service";
+import {resultStateMap} from "./result-state-map.const";
 
 @Component({
   selector: 'sa-report-steps',
@@ -17,6 +18,9 @@ import {rmHeadSlash} from "../../../sweetest-components/services/access/file.ser
           <span class="text-muted  pl-1" *ngIf="step.stopDate">
             <sc-icon icon="fa-clock-o"></sc-icon>
             {{((step.stopDate | dateDiff:step.startDate) / 1000) | number}} sec
+          </span>
+          <span class="m-1 badge badge-warning" *ngIf="step.state === 'WARNING'">
+            Warningtime of <strong>{{step.warningTime}}</strong> sec exceeded
           </span>
         </ng-template>
         <ng-container *ngIf="step.exception; else noException">
@@ -112,5 +116,11 @@ export class SaReportStepsComponent implements OnInit {
     const r = document.execCommand('copy');
     textArea.setSelectionRange(0, 0);
     textArea.disabled = pd;
+  }
+
+  backgroundState(state: string) {
+    console.log(state);
+
+    return state === 'OK' ? 'bg-default' :  `bg-${resultStateMap[state]}`;
   }
 }
