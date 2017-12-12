@@ -12,9 +12,11 @@ export interface TestSuiteState extends EntityState<SakuliTestSuite> {
 export const TestSuiteFeatureName = 'testsuite';
 
 export const testSuiteSelectId = ts => ts.root;
+export const testSuiteSortComparer = (t1: SakuliTestSuite, t2: SakuliTestSuite) =>  testSuiteSelectId(t1).localeCompare(testSuiteSelectId(t2));
 
 export const testSuiteEntityAdapter = createEntityAdapter<SakuliTestSuite>({
   selectId: testSuiteSelectId,
+  sortComparer: testSuiteSortComparer
 });
 
 export const testSuiteStateInit = {

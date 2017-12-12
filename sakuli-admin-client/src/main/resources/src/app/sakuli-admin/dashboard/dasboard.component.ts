@@ -1,6 +1,9 @@
 import {TestSuiteResult} from "../../sweetest-components/services/access/model/test-result.interface";
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from "@angular/core";
 import {SakuliTestSuite} from "../../sweetest-components/services/access/model/sakuli-test-model";
+import {DateUtil} from "../../sweetest-components/utils";
+import {resultStateMap} from "../test/report/result-state-map.const";
+import * as moment from "moment";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,8 +28,38 @@ import {SakuliTestSuite} from "../../sweetest-components/services/access/model/s
               [testResult]="first(getResultsForSuite(testSuite))"
               [navigation]="false"
             ></sa-report-navigation>
-            <div class="shade mb-3 p-3">
-              <testsuite-stats-component [results]="getResultsForSuite(testSuite)"></testsuite-stats-component>
+            <div class="shade mb-3 p-0">
+              <div>
+                <testsuite-stats-component
+                  class="m-3 d-flex"
+                  [results]="getResultsForSuite(testSuite)"
+                  *ngIf="!isTableView(testSuite)"
+                >
+                </testsuite-stats-component>
+                <table *ngIf="isTableView(testSuite)" class="table">
+                  <tr>
+                    <th>State</th>
+                    <th>Started</th>
+                    <th>Duration (s)</th>
+                  </tr>
+                  <tr *ngFor="let result of getResultsForSuite(testSuite)">
+                    <td>
+                      <span class="badge" [ngClass]="badgeClass(result.state)">{{result.state}}</span>
+                    </td>
+                    <td>{{result.startDate|moment:'DD.MM.YYYY hh:mm'}}</td>
+                    <td>{{duration(result.startDate, result.stopDate)}}</td>
+                  </tr>
+                </table>
+              </div>
+              <div
+                class="p-3 footer d-flex flex-row justify-content-end border border-primary border-left-0 border-right-0 border-bottom-0">
+                <button *ngIf="!isTableView(testSuite)" class="btn-link border-0" (click)="toggleTableView(testSuite)">
+                  <sc-icon icon="fa-table">Tableview</sc-icon>
+                </button>
+                <button *ngIf="isTableView(testSuite)" class="btn-link border-0" (click)="toggleTableView(testSuite)">
+                  <sc-icon icon="fa-line-chart">Statistics</sc-icon>
+                </button>
+              </div>
             </div>
           </ng-container>
         </ng-container>
@@ -41,14 +74,33 @@ export class DashboardComponent {
 
   @Output() refresh = new EventEmitter<void>();
 
+  tableViewMap = new Map<string, boolean>();
+
   first<T>(array: T[], defaultValue?: T): T {
     return array[0] || defaultValue;
+  }
+
+  toggleTableView(testSuite: SakuliTestSuite) {
+    this.tableViewMap.set(testSuite.id, !this.tableViewMap.get(testSuite.id));
+  }
+
+  isTableView(testSuite: SakuliTestSuite) {
+    return !!this.tableViewMap.get(testSuite.id);
   }
 
   getResultsForSuite(testSuite: SakuliTestSuite) {
     return this.testResults.filter(tr => {
       return (tr.testSuiteFolder || '').endsWith(testSuite.root)
     })
+      .sort((a,b) => moment(b.startDate).diff(moment(a.startDate)))
+  }
+
+  duration(start:string, stop:string) {
+    return DateUtil.diff(stop, start) / 1000;
+  }
+
+  badgeClass(state: string) {
+    return `badge-${resultStateMap[state]}`;
   }
 }
 
