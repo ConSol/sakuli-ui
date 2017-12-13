@@ -12,7 +12,7 @@ import {FileSelectorFilter} from "../presentation/file-selector/file-selector-fi
   selector: 'inplace-file-editor',
   template: `
     <sc-editor [(ngModel)]="content" [mode]="mode">
-      <nav class="navbar top justify-content-start p-0">
+      <nav *ngIf="showNav" class="navbar top justify-content-start p-0">
         <button 
           class="btn btn-sm" 
           (click)="openFile()"
@@ -42,6 +42,8 @@ export class InplaceFileEditorComponent implements OnInit {
   @Input() defaultFile: File;
   @Input() hide: FileSelectorFilter;
   @Input() inactive: FileSelectorFilter;
+
+  @Input() showNav = false;
 
   @Output() fileChanged = new EventEmitter<string>();
 

@@ -29,7 +29,7 @@
     "@ngrx/router-store": "^4.0.0",
     "@ngrx/store": "^4.0.0",
     "@ngrx/store-devtools": "^4.0.0",
-    "@types/immutability-helper": "2.0.15",
+    "@types/immutability-helper": "^2.0.15",
     "ace-builds": "1.2.9",
     "bootstrap": "4.0.0-beta.2",
     "brace": "^0.10.0",

@@ -18,7 +18,6 @@ import {FileService} from "../../../sweetest-components/services/access/file.ser
 import {AppState} from "../../appstate.interface";
 import {ScModalService} from "../../../sweetest-components/components/presentation/modal/sc-modal.service";
 import {log, notNull} from "../../../core/redux.util";
-import {ProjectModel} from "../../../sweetest-components/services/access/model/project.model";
 import {
   absPath, FileResponse,
   fileResponseFromPath

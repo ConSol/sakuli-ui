@@ -46,19 +46,36 @@ export class AppComponent {
 
     this.menuService.addMenuItems(
       [
-        new MenuItem('secondary.log', 'Log', 'app-log', FontawesomeIcons.commentingO, LayoutMenuService.Menus.SECONDARY),
-        new MenuItem('secondary.help', '', '', FontawesomeIcons.questionCircle, LayoutMenuService.Menus.SECONDARY),
+        new MenuItem('secondary.log', 'Log', 'app-log', FontawesomeIcons.commentingO, LayoutMenuService.Menus.SECONDARY, SelectionState.UnSelected, 10),
+        new MenuItem('secondary.help', 'Help', '', FontawesomeIcons.questionCircle, LayoutMenuService.Menus.SECONDARY, SelectionState.UnSelected, 20),
       ]
     );
 
     this.menuService.addMenuItems(
       [
-        new MenuItem('primary.new', 'New', 'new', FontawesomeIcons.plus, LayoutMenuService.Menus.PRIMARY),
-        new MenuItem('primary.open', 'OpenWorkspace', 'testSuite/open', FontawesomeIcons.folderO, LayoutMenuService.Menus.PRIMARY),
+        new MenuItem(
+          'primary.new',
+          'New',
+          'new',
+          FontawesomeIcons.plus,
+          LayoutMenuService.Menus.PRIMARY,
+          SelectionState.UnSelected,
+          10),
+        new MenuItem(
+          'primary.open',
+          'Open',
+          'testSuite/open',
+          FontawesomeIcons.folderO,
+          LayoutMenuService.Menus.PRIMARY,
+          SelectionState.UnSelected,
+          20
+        ),
         new MenuItem('sidebar.dashboard',
           'Dashboard', '',
           FontawesomeIcons.dashboard,
           LayoutMenuService.Menus.PRIMARY,
+          SelectionState.UnSelected,
+          30
         ),
 
         new MenuItem('sidebar.reports',
@@ -66,6 +83,7 @@ export class AppComponent {
           FontawesomeIcons.tasks,
           LayoutMenuService.Menus.PRIMARY,
           SelectionState.UnSelected,
+          40
         ),
       ]
     );

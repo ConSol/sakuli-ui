@@ -102,6 +102,24 @@ export class AssetsCloseFile implements Action {
   constructor() {}
 }
 
+export const ASSETS_PIN = '[asset] ASSETS_PIN';
+export class AssetsPin implements Action {
+  readonly type = ASSETS_PIN;
+  constructor(
+    readonly file: FileResponse,
+    readonly context: string = ''
+  ) {}
+}
+
+export const ASSETS_UNPIN = '[assets] ASSETS_UNPIN';
+export class AssetsUnpin implements Action {
+  readonly type = ASSETS_UNPIN;
+  constructor(
+    readonly file: FileResponse,
+    readonly context: string = ''
+  ) {}
+}
+
 export type AssetsActions = AssetLoadFolder
   | AssetLoadFolderSuccess
   | AssetsSetCurrentFolder
@@ -112,4 +130,6 @@ export type AssetsActions = AssetLoadFolder
   | AssetsDeleteSuccess
   | AssetsOpenFile
   | AssetsCloseFile
+  | AssetsPin
+  | AssetsUnpin
 ;

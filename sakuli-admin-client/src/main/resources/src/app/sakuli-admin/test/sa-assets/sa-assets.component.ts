@@ -56,6 +56,7 @@ export interface UploadEvent {
           [basePath]="basePath"
           (select)="onFileSelect($event)"
           (delete)="onDelete($event)"
+          (pin)="onPin($event)"
         ></sa-assest-items>
       </article>
       <footer *ngIf="uploading.length">
@@ -130,6 +131,7 @@ export class SaAssetsComponent implements OnInit {
 
   @Output() upload = new EventEmitter<UploadEvent>();
   @Output() delete = new EventEmitter<FileResponse>();
+  @Output() pin = new EventEmitter<FileResponse>();
 
   @Output() fileSelected = new EventEmitter<FileResponse>();
   onFileSelect(file: FileResponse) {
@@ -201,6 +203,10 @@ export class SaAssetsComponent implements OnInit {
 
   onDelete(file: FileResponse) {
     this.delete.next(file);
+  }
+
+  onPin(file: FileResponse) {
+    this.pin.next(file);
   }
 
   handleUpload(files: FileList) {
