@@ -84,13 +84,19 @@ export class CloseTest implements Action {
   ) {}
 }
 
+export const CLOSE_ALL_TESTS = '[test] CLOSE_ALL';
+export class CloseAllTests implements Action {
+  readonly type = CLOSE_ALL_TESTS;
+  constructor() {}
+}
+
 export const RESET_SELECTEDTESTCASE = '[SELECTEDTESTCASE] RESET';
 export class ResetSelectedTestcase implements Action {
   readonly type = RESET_SELECTEDTESTCASE;
   constructor() {}
 }
 
-export type TestEditorActions = OpenTest | CloseTest | ResetSelectedTestcase;
+export type TestEditorActions = OpenTest | CloseTest | ResetSelectedTestcase | CloseAllTests;
 
 export function testEditorReducer(state: TestEditorState, action: TestEditorActions) {
   switch (action.type) {
@@ -105,6 +111,9 @@ export function testEditorReducer(state: TestEditorState, action: TestEditorActi
     }
     case CLOSE_TEST: {
       return testEditorEntityAdapter.removeOne(action.id, state);
+    }
+    case CLOSE_ALL_TESTS: {
+      return testEditorEntityAdapter.removeAll(state);
     }
     default:
       return state || testEditorStateInit

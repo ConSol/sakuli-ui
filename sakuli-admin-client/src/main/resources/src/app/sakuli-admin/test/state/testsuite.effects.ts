@@ -14,6 +14,7 @@ import {ErrorMessage} from "../../../sweetest-components/components/presentation
 import {OPEN_WORKSPACE} from "../../workspace/state/project.actions";
 import {RemoveMenuitem} from "../../../sweetest-components/components/layout/menu/menu.state";
 import {LayoutMenuService} from "../../../sweetest-components/components/layout/menu/layout-menu.service";
+import {CloseAllTests} from "./test-editor.interface";
 
 @Injectable()
 export class TestsuiteEffects {
@@ -44,9 +45,9 @@ export class TestsuiteEffects {
 
   @Effect() closeAfterOpen$ = this.actions$
     .ofType(OPEN_WORKSPACE)
-    .mergeMap(_ => [
+    .mergeMap(() => [
       new RemoveAllTestsuites(),
-      new RemoveMenuitem(LayoutMenuService.Menus.SIDEBAR)
+      new CloseAllTests()
     ])
 
 }

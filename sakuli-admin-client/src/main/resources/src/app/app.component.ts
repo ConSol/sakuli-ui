@@ -13,6 +13,7 @@ import {TokenService} from "./sweetest-components/services/access/token.service"
 import {ScFileSelectorService} from "./sweetest-components/components/presentation/file-selector/sc-file-selector.service";
 import {OpenWorkspace} from "./sakuli-admin/workspace/state/project.actions";
 import {Filters} from "./sweetest-components/components/presentation/file-selector/file-selector-filter.interface";
+import {testSuiteSelectors} from "./sakuli-admin/test/state/testsuite.state";
 
 @Component({
   selector: 'app-root',
@@ -98,8 +99,12 @@ export class AppComponent {
           root: '',
           inactive: Filters.isFile()
         });
-        console.log(file);
         this.store.dispatch(new OpenWorkspace(file));
+        this.store.select(testSuiteSelectors.selectTotal)
+          .filter(t => t > 0)
+          .first()
+          .subscribe(() => this.store.dispatch(new RouterGo({path:['/dashboard']})))
+
       } catch(e) {
         console.warn(e, new OpenWorkspace(null));
       }

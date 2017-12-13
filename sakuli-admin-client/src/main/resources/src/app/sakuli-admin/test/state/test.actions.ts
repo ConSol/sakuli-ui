@@ -54,7 +54,7 @@ export class LoadTestResultsSuccess implements Action {
 
 export const TEST_EXECUTION_STARTED = uniqueName('[test] TEST_EXECUTION_STARTED');
 export class TestExecutionStarted implements Action {
-  readonly type = TEST_EXECUTION_STARTED
+  readonly type = TEST_EXECUTION_STARTED;
   constructor(
     readonly id: string
   ) {}
