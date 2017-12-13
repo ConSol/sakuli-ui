@@ -68,7 +68,7 @@ export class SaAssetsEffects {
 
     })
 
-  @Effect({dispatch: false}) $openFile = this.action$
+  @Effect() $openFile = this.action$
     .ofType(ASSETS_OPEN_FILE)
     .map((a: AssetsOpenFile): [AssetsOpenFile, FileResponse] => ([a, fileResponseFromPath(a.file, true)]))
     .groupBy(([a, fr]) => getItemType(fr))
@@ -93,10 +93,14 @@ export class SaAssetsEffects {
         [AssetItemType.Text]: ga.mergeMap(([a, fr]: [AssetsOpenFile, FileResponse]) => {
           const file = {...fr, path: `${a.base}/${fr.path}`};
           const p = this.modal.open(SaTextModalComponent, {file});
-          return Observable.fromPromise(p.catch(e => null));
+          return Observable.fromPromise(p.catch(e => {
+            console.warn(e);
+            return null
+          }));
         })
       });
       return r[ga.key] || Observable.empty();
     })
+
     .map(_ => new AssetsCloseFile())
 }

@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, HostListener, Input, OnInit, Optional, ViewChild} from "@angular/core";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
+import {absPath, FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
 import {InplaceFileEditorComponent} from "../../../sweetest-components/components/forms/inplace-file-editor.component";
 import {ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
 import {DangerToast, SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
@@ -15,7 +15,7 @@ import {DangerToast, SuccessToast} from "../../../sweetest-components/components
     <div class="modal-body m-0 p-0">
       <inplace-file-editor
         [root]="file.path"
-        [file]="file.name"
+        [file]="fileName"
         #editor
       >
       </inplace-file-editor>
@@ -50,6 +50,10 @@ export class SaTextModalComponent implements OnInit {
     @Optional() public activeModal: NgbActiveModal,
     readonly toastService: ScToastService
   ) {}
+
+  get fileName() {
+    return absPath(this.file);
+  }
 
   ngOnInit(): void {
 

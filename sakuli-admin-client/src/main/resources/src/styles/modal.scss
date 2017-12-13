@@ -2,7 +2,7 @@
 ngb-modal-window {
   display: flex !important;
 
-  &.sa-text-modal {
+  &.sa-text-modal, &.SaTextModalComponent {
     .modal-content {
       width: 100vw;
     }

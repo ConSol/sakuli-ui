@@ -107,7 +107,7 @@ export type FileSelectorActions = AddFileSelectorFiles
 
 const addOrUpdate = (state: FileSelectorState, entities: FileSelectorFile[]): FileSelectorState => {
   const {ids} = state;
-  const added = entities
+  const added = (entities as FileSelectorFile[])
     .filter(e => ids.indexOf(fileSelectorSelectId(e)) < 0);
   return fileSelectorEntityAdapter.addMany(
     added,
