@@ -10,7 +10,7 @@ export interface FileSelectorFile extends FileResponse {
   loading: boolean;
 }
 
-export const fileSelectorSelectId = (e: FileSelectorFile) => absPath(e);
+export const fileSelectorSelectId = (e: FileSelectorFile):string => absPath(e);
 
 export interface FileSelectorState extends EntityState<FileSelectorFile> {
   open: boolean;
@@ -107,8 +107,8 @@ export type FileSelectorActions = AddFileSelectorFiles
 
 const addOrUpdate = (state: FileSelectorState, entities: FileSelectorFile[]): FileSelectorState => {
   const {ids} = state;
-  const added = entities
-    .filter(e => ids.indexOf(fileSelectorSelectId(e)) < 0);
+  const added = (entities as FileSelectorFile[])
+    .filter(e => (ids as string[]).indexOf(fileSelectorSelectId(e)) < 0);
   return fileSelectorEntityAdapter.addMany(
     added,
     state
@@ -137,7 +137,7 @@ export function fileSelectorReducer(state: FileSelectorState = fileSelectorState
     }
     case SELECT_FILESELECTORFILE: {
       const {id} = action;
-      const resetState = fileSelectorEntityAdapter.updateMany(state.ids.map(id => ({id, changes: {selected: false}})), state);
+      const resetState = fileSelectorEntityAdapter.updateMany((state.ids as string[]).map((id:string) => ({id, changes: {selected: false}})), state);
       return fileSelectorEntityAdapter.updateOne({id, changes: {selected: true}}, resetState);
     }
     default: {

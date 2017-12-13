@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostBinding, Input, Output} from "@angular/core";
+import {ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, Output} from "@angular/core";
 import {Theme} from "../theme";
 import {IMenuItem} from "./menu/menu-item.interface";
 import {AppState} from "../../../sakuli-admin/appstate.interface";
@@ -10,8 +10,14 @@ import {testSuiteSelectors} from "../../../sakuli-admin/test/state/testsuite.sta
 import {SakuliTestSuite} from "../../services/access/model/sakuli-test-model";
 import {RouterGo} from "../../services/router/router.actions";
 import {Router} from "@angular/router";
+import {pinnedByContext} from "../../../sakuli-admin/test/sa-assets/sa-assets.interface";
+import {ScModalService} from "../presentation/modal/sc-modal.service";
+import {SaTextModalComponent} from "../../../sakuli-admin/test/sa-assets/sa-text-modal.component";
+import {FileResponse} from "../../services/access/model/file-response.interface";
+import {AssetsUnpin} from "../../../sakuli-admin/test/sa-assets/sa-assets.action";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'sc-sidebar',
   template: `
     <ul class="nav flex-column">
@@ -55,6 +61,21 @@ import {Router} from "@angular/router";
             <span class="hidden-xs-down link-text">Files</span>
           </sc-link>
           <sc-link [fixedIconWidth]="true"
+                   *ngFor="let pinned of getPinnedFiles$(testSuite.root) | async"
+                   (click)="openFile(pinned.file)"
+                   icon="fa-file-o"
+                   class="d-flex justify-content-between"
+          >
+            <span class="hidden-xs-down link-text">{{pinned.file.name}}</span>
+            <button type="button" 
+                    class="close" 
+                    (click)="unPin($event, pinned.file, testSuite)"
+                    data-dismiss="alert" 
+                    aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </sc-link>
+          <sc-link [fixedIconWidth]="true"
                    [routerLink]="['/testsuite', testSuite.root, 'configuration']"
                    [ngClass]="{'active': isActive(['/testsuite', testSuite.root, 'configuration'])}"
                    icon="fa-wrench"
@@ -69,6 +90,21 @@ import {Router} from "@angular/router";
                (click)="navigateToWorkspaceAssets()"
       >
         Files
+      </sc-link>
+      <sc-link [fixedIconWidth]="true"
+               *ngFor="let pinned of getPinnedFiles$(workspace$ | async) | async"
+               (click)="openFile(pinned.file)"
+               icon="fa-file-o"
+               class="d-flex justify-content-between"
+      >
+        <span class="hidden-xs-down link-text">{{pinned.file.name}}</span>
+        <button type="button"
+                class="close"
+                (click)="unPin($event, pinned.file)"
+                data-dismiss="alert"
+                aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </sc-link>
     </ul>
   `,
@@ -147,10 +183,14 @@ export class ScSidebarComponent {
   }
 
   constructor(
-    private store: Store<AppState>,
-    private router: Router
+    readonly store: Store<AppState>,
+    readonly router: Router,
+    readonly modal: ScModalService
   ) {}
 
+  getPinnedFiles$(context:string) {
+    return this.store.select(pinnedByContext(context));
+  }
 
   isOpen(item: SakuliTestSuite) {
     return this.selectionMap.get(item.root);
@@ -163,14 +203,27 @@ export class ScSidebarComponent {
       })
   }
 
+  openFile(file: FileResponse) {
+    this.modal.open(SaTextModalComponent, {file})
+  }
+
   testSuiteItemClick(testSuite: SakuliTestSuite, query: any) {
     const path = ['/testsuite', testSuite.root];
-    this.store.dispatch(new RouterGo({path, query}))
+    this.store.dispatch(new RouterGo({path, query}));
     this.selectionMap.set(testSuite.root, !this.selectionMap.get(testSuite.root));
   }
 
   isActive(path: any[]) {
     const tree = this.router.createUrlTree(path);
     return this.router.isActive(tree, false);
+  }
+
+  unPin($event: MouseEvent, file: FileResponse, testSuite?: SakuliTestSuite) {
+    $event.stopPropagation();
+    if(testSuite) {
+      this.store.dispatch(new AssetsUnpin(file, testSuite.root));
+    } else {
+      this.workspace$.first().subscribe(ws => this.store.dispatch(new AssetsUnpin(file, ws)))
+    }
   }
 }

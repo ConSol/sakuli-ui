@@ -11,8 +11,8 @@ export class ScModalService {
   }
 
   async open<T>(component: Type<T>, inputs: Partial<T>, onref?: (component: T) => void): Promise<any> {
-    const annotations = Reflect.getMetadata('annotations', component);
-    const {selector} = annotations.find(a => 'selector' in a);
+    const annotations = Reflect.getMetadata('annotations', component) || [];
+    const {selector} = annotations.find(a => 'selector' in a) || {selector: component.name};
     const {componentInstance, result} = this.modal.open(component, {
       windowClass: selector
     });

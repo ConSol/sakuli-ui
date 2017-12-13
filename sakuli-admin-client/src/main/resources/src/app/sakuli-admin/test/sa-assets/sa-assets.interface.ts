@@ -5,19 +5,26 @@ import {FileResponse} from "../../../sweetest-components/services/access/model/f
 
 export const ASSETS_FEATURE_NAME = 'assets';
 
+export interface PinnedAssetFile {
+  file: FileResponse,
+  context: string
+}
+
 export interface AssetsState {
   files: FileResponse[];
   currentFolder: string | null;
   basePath: string | null;
   uploading:string[],
   selectedFile: string | null;
+  pinned: PinnedAssetFile[]
 }
 export const AssetsStateInit: AssetsState = {
   files: [],
   currentFolder: null,
   basePath: '',
   uploading: [],
-  selectedFile: null
+  selectedFile: null,
+  pinned: []
 };
 
 export const assets = createFeatureSelector<AssetsState>(ASSETS_FEATURE_NAME);
@@ -58,6 +65,11 @@ export const currentChildren = createSelector(
 export const currentChildrenBy = (filter: (f:FileResponse) => boolean) => createSelector(
   currentChildren,
   c => c.filter(filter)
+);
+
+export const pinnedByContext = (context: string) => createSelector(
+  assets,
+  a => a.pinned.filter(p => p.context === context)
 );
 
 export const uploading = createSelector(assets, a => nothrow(() => a.uploading) || []);

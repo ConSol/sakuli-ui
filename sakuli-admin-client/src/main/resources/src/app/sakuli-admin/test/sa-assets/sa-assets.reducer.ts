@@ -2,12 +2,18 @@ import {AssetsState, AssetsStateInit, selectedFile} from "./sa-assets.interface"
 import {
   ASSETS_CLOSE_FILE,
   ASSETS_DELETE_SUCCESS,
-  ASSETS_LOAD_FOLDER_SUCCESS, ASSETS_OPEN_FILE, ASSETS_SET_CURRENT_FOLDER, ASSETS_UPLOAD, ASSETS_UPLOAD_ERROR,
+  ASSETS_LOAD_FOLDER_SUCCESS, ASSETS_OPEN_FILE, ASSETS_PIN, ASSETS_SET_CURRENT_FOLDER, ASSETS_UNPIN, ASSETS_UPLOAD,
+  ASSETS_UPLOAD_ERROR,
   ASSETS_UPLOAD_SUCCESS,
-  AssetsActions
+  AssetsActions, AssetsPin, AssetsUnpin
 } from "./sa-assets.action";
 import {uniq} from "../../../core/utils";
 import {absPath} from "../../../sweetest-components/services/access/model/file-response.interface";
+import * as update from 'immutability-helper';
+
+function getIndex(state:AssetsState, action: AssetsPin | AssetsUnpin) {
+  return state.pinned.findIndex(p => p.context === action.context && absPath(p.file) === absPath(action.file))
+}
 
 export function assetReducer(state:AssetsState = AssetsStateInit, action:AssetsActions) {
   switch (action.type) {
@@ -44,6 +50,14 @@ export function assetReducer(state:AssetsState = AssetsStateInit, action:AssetsA
     }
     case ASSETS_CLOSE_FILE: {
       return ({...state, selectedFile: null});
+    }
+    case ASSETS_PIN: {
+      const index = getIndex(state, action);
+      return index < 0 ? update(state, {pinned: {$push: [action]}}) : state;
+    }
+    case ASSETS_UNPIN: {
+      const index = getIndex(state, action);
+      return update(state, {pinned: {$splice:[[index, 1]]}})
     }
   }
 

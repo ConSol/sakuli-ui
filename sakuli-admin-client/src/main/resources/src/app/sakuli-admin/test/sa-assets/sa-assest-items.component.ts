@@ -31,6 +31,7 @@ import {Router} from "@angular/router";
         [basePath]="basePath"
         (click)="onSelect(file)"
         (delete)="onDelete(file)"
+        (pinFile)="onPin(file)"
       ></asset-item-text>
       <div *ngSwitchDefault="">
         <br />
@@ -67,6 +68,8 @@ export class SaAssetItemsComponent {
   @Output() select = new EventEmitter<FileResponse>();
   @Output() delete = new EventEmitter<FileResponse>();
 
+  @Output() pin = new EventEmitter<FileResponse>();
+
   @HostBinding('class')
   get cssClass() {
     return 'row'
@@ -80,6 +83,10 @@ export class SaAssetItemsComponent {
 
   onSelect(file: FileResponse) {
     this.select.next(file);
+  }
+
+  onPin(file: FileResponse) {
+    this.pin.next(file);
   }
 
   onDelete(file: FileResponse) {

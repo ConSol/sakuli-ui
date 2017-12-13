@@ -58,6 +58,7 @@ import {FileSelectorFile} from "../../../sweetest-components/components/presenta
           </label>
           <div *ngIf="config.type === types[types.DockerCompose]" class="config-area margin-y">
             <inplace-file-editor
+              [showNav]="true"
               [root]="workspace$ | async"
               [file]="dockerComposeFile"
               mode="yaml"
@@ -74,6 +75,7 @@ import {FileSelectorFile} from "../../../sweetest-components/components/presenta
           </label>
           <div *ngIf="config.type === types[types.Dockerfile]" class="config-area margin-y">
             <inplace-file-editor
+              [showNav]="true"
               [root]="workspace$ | async"
               [file]="dockerFile"
               mode="dockerfile"
