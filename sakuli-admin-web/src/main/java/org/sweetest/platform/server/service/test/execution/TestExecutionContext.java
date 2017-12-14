@@ -23,6 +23,7 @@ public class TestExecutionContext {
     public TestRunInfo executeStrategy(TestSuite testSuite, String workspace, Observer<TestExecutionEvent> testExecutionEventObserver) {
         this.strategy.setTestSuite(testSuite);
         this.strategy.setWorkspace(workspace);
+
         return strategy.execute(testExecutionEventObserver);
     }
 }

@@ -8,6 +8,7 @@ public class TestExecutionEvent {
     public final static String TYPE_FINISH = "finish";
     public final static String TYPE_STARTED = "started";
     public static final String TYPE_WARNING = "warning";
+    public static final String TYPE_ERROR = "error";
 
     String type;
     String message;

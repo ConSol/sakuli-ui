@@ -92,12 +92,15 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
                 containerToRunWithoutTag,
                 configuration.getTag().getName()
         );
-
-        if (isPullingRequired()) {
-            pullImage();
-        } else {
-            log.info(String.format("Image %s already exists", containerToRunWithTag));
-            next(readyToRun);
+        try {
+            if (isPullingRequired()) {
+                pullImage();
+            } else {
+                log.info(String.format("Image %s already exists", containerToRunWithTag));
+                next(readyToRun);
+            }
+        } catch(Exception e) {
+            subject.next(new TestExecutionErrorEvent(e.getMessage(), executionId));
         }
 
         return new TestRunInfo(
@@ -166,7 +169,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
 
     private void startContainer() {
         dockerClient.eventsCmd().exec(eventsResultCallback);
-        //subject.next(new TestExecutionStartEvent(executionId));
+        subject.next(new TestExecutionStartEvent(executionId));
         dockerClient.startContainerCmd(container.getId()).exec();
         Optional.ofNullable(container.getWarnings()).map(ReflectionToStringBuilder::toString)
                 .ifPresent(w -> {

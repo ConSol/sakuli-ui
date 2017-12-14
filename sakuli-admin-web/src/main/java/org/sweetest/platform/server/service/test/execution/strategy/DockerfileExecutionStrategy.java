@@ -65,11 +65,6 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
     @Override
     public TestRunInfo execute(Observer<TestExecutionEvent> testExecutionEventObserver) {
         subject.subscribe(testExecutionEventObserver);
-        subject.subscribe(e -> {
-            if (e.equals(readyToRun)) {
-
-            }
-        });
         executionId = UUID.randomUUID().toString();
         eventsResultCallback = new SakuliEventResultCallback(executionId, subject, dockerClient);
         readyToRun = new TestExecutionEvent(INTERNAL_READY_TO_RUN, "", executionId);
@@ -90,30 +85,34 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
             new Thread(() -> {
                 File file = maybeFile.get();
                 next(new DockerPullStartedEvent(executionId));
-                String imageId = dockerClient
-                        .buildImageCmd(file)
-                        .exec(new BuildImageResultCallback() {
-                            @Override
-                            public void onNext(BuildResponseItem item) {
-                                ObjectMapper mapper = new ObjectMapper();
-                                try {
-                                    String buildResponse = mapper.writeValueAsString(item);
-                                    next(new DockerPullProgressEvent(executionId, buildResponse));
-                                } catch (JsonProcessingException e) {
-                                    e.printStackTrace();
+                try {
+                    String imageId = dockerClient
+                            .buildImageCmd(file)
+                            .exec(new BuildImageResultCallback() {
+                                @Override
+                                public void onNext(BuildResponseItem item) {
+                                    ObjectMapper mapper = new ObjectMapper();
+                                    try {
+                                        String buildResponse = mapper.writeValueAsString(item);
+                                        next(new DockerPullProgressEvent(executionId, buildResponse));
+                                    } catch (JsonProcessingException e) {
+                                        e.printStackTrace();
+                                    }
+                                    super.onNext(item);
                                 }
-                                super.onNext(item);
-                            }
 
-                            @Override
-                            public void onComplete() {
-                                next(new DockerPullCompletedEvent(executionId));
-                                super.onComplete();
-                            }
-                        }).awaitImageId();
-                createContainer(imageId);
-                startContainer();
-                attachToContainer();
+                                @Override
+                                public void onComplete() {
+                                    next(new DockerPullCompletedEvent(executionId));
+                                    super.onComplete();
+                                }
+                            }).awaitImageId();
+                    createContainer(imageId);
+                    startContainer();
+                    attachToContainer();
+                } catch(Exception e) {
+                    next(new TestExecutionErrorEvent(e.getMessage(), executionId));
+                }
             }).start();
             return new TestRunInfo(
                     availableVncPort, availableVncWebPort, executionId

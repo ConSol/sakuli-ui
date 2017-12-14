@@ -34,12 +34,7 @@ public class LocalExecutionStrategy extends AbstractTestExecutionStrategy<LocalE
 
     private static Logger log = LoggerFactory.getLogger(LocalExecutionStrategy.class);
 
-    private String executionId;
-
     private TestExecutionSubject subject = new TestExecutionSubject();
-
-    @Autowired
-    private ProjectService projectService;
 
     @Autowired
     @Qualifier("rootDirectory")
@@ -47,7 +42,7 @@ public class LocalExecutionStrategy extends AbstractTestExecutionStrategy<LocalE
 
     @Override
     public TestRunInfo execute(Observer<TestExecutionEvent> testExecutionEventObserver) {
-        executionId = UUID.randomUUID().toString();
+        String executionId = UUID.randomUUID().toString();
         subject.subscribe(testExecutionEventObserver);
         ProcessBuilder processBuilder = new ProcessBuilder();
         Consumer<Map.Entry<String, String>> printE = e -> log.info(String.format("%s: %s", e.getKey(), e.getValue()));
@@ -59,22 +54,15 @@ public class LocalExecutionStrategy extends AbstractTestExecutionStrategy<LocalE
         pbEnv.put("GOOS", "linux");
         pbEnv.put("GOARCH", "386");
         processBuilder
-                .directory(Paths.get(rootDirectory, projectService.getActiveProject().getPath()).toFile())
+                .directory(Paths.get(rootDirectory, getTestSuite().getName()).toFile())
                 .command("/bin/bash", "-c", "-l", "sakuli run .");
 
         LocalCommand command = new LocalCommand(processBuilder);
-        new Thread(Unchecked.runnable(() -> {
-            // wait before emit the start of execution because
-            // otherwise some messages are published before client subscribes
-            // some queuing technique might be more elegant and resilient at this point
-            Thread.sleep(500);
-            subject.next(new TestExecutionStartEvent(executionId));
-            command.execute(
-                    s -> subject.next(new TestExecutionLogEvent(executionId, s)),
-                    s -> subject.next(new TestExecutionLogEvent(executionId, s))
-            ).waitFor();
-            subject.next(new TestExecutionCompletedEvent(executionId));
-        })).start();
+        new Thread(new CommandExecutorRunnable(
+                executionId,
+                command,
+                subject
+        )).start();
         return new TestRunInfo(5901, 6901, executionId);
     }
 }
