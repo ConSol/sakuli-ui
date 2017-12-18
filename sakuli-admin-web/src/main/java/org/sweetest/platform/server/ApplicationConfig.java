@@ -1,7 +1,11 @@
 package org.sweetest.platform.server;
 
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.boot.web.servlet.ErrorPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
@@ -27,6 +31,7 @@ public class ApplicationConfig {
     }
 
     @Bean(name = "defaultProject")
+    @Deprecated
     public static String getDefaultProject() {
         if(System.getProperty(PROJECT_DEFAULT) != null) {
             return System.getProperty(PROJECT_DEFAULT);
@@ -40,5 +45,15 @@ public class ApplicationConfig {
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public EmbeddedServletContainerCustomizer handle404Error() {
+        return new EmbeddedServletContainerCustomizer() {
+            @Override
+            public void customize(ConfigurableEmbeddedServletContainer configurableEmbeddedServletContainer) {
+                configurableEmbeddedServletContainer.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/"));
+            }
+        };
     }
 }

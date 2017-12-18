@@ -41,6 +41,9 @@ export const providers = [
       useFactory: ScHttpServiceProvider,
       deps: [XHRBackend, RequestOptions, TokenService, Store]
     }
+  ],
+  exports: [
+    ScLoginComponent
   ]
 })
 export class ScAccessModule {

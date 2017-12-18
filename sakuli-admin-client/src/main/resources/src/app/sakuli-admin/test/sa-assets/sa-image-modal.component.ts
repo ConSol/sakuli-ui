@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, HostListener, Input, OnInit, Optional} from "@angular/core";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {ModalAware} from "../../../sweetest-components/components/presentation/modal/sc-modal.service";
 
 interface ImageModalState {
   images: string[],
@@ -50,7 +51,10 @@ interface ImageModalState {
     }
   `]
 })
-export class SaImageModalComponent implements OnInit {
+export class SaImageModalComponent implements OnInit, ModalAware {
+  getActiveModal(): NgbActiveModal {
+    return this.activeModal;
+  }
   @Input() images: string[];
   @Input() selected: string;
   @Input() basePath: string;

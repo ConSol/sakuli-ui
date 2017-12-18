@@ -12,6 +12,7 @@ import {SaAppLogModule} from "./app-log/app-log.module";
 import {INITIAL_STATE} from "@ngrx/store";
 import {initStateFactory} from "./appstate.interface";
 import {BrowserModule} from "@angular/platform-browser";
+import {LoginComponent} from "./login.component";
 
 @NgModule({
   imports: [
@@ -34,6 +35,7 @@ import {BrowserModule} from "@angular/platform-browser";
     ProjectModule
   ],
   declarations: [
+    LoginComponent
   ]
 })
 export class SakuliAdminModule {}

@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Http, Headers} from "@angular/http";
 import {Observable} from "rxjs/Observable";
 import {FileResponse, FileWithContent} from "./model/file-response.interface";
+import {jsonOrDefault} from "./http.util";
 
 const projectUrl = '/api/files';
 
@@ -17,7 +18,7 @@ export class FileService {
   files(path: string = ''): Observable<FileResponse[]> {
     return this.http
       .get(`${projectUrl}/ls?path=${rmHeadSlash(path || '')}`)
-      .map(r => r.json() as FileResponse[])
+      .map(jsonOrDefault([]))
       .map(fr => fr
         .sort((a, b) => (a.name.toLowerCase() === b.name.toLowerCase()) ? 0 : (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1)
         .sort((a, b) => (a.directory && b.directory) ? 0 : (!a.directory && b.directory) ? 1 : -1)

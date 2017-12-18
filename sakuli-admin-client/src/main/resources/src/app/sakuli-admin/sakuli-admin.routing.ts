@@ -1,6 +1,5 @@
 import {RouterModule, Routes} from '@angular/router';
 import {NgModule} from '@angular/core';
-import {DashboardComponent} from './dashboard/dasboard.component';
 import {LocationStrategy, PathLocationStrategy} from "@angular/common";
 import {TestComponent} from "./test/test.component";
 import {SakuliProjectGuardService} from "./sakuli-project-guard.service";
@@ -11,12 +10,17 @@ import {SaReportComponent} from "./test/report/sa-report.component";
 import {AppLogComponent} from "./app-log/app-log.component";
 import {PreventRoutingGuardService} from "../sweetest-components/components/forms/prevent-routing-guard.service";
 import {DashboardConnectedComponent} from "./dashboard/dashboard-connected.component";
+import {LoginComponent} from "./login.component";
 
 export const routes: Routes = [
   {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'
+  },
+  {
+    path: 'login',
+    component: LoginComponent
   },
   {
     path: 'reports',

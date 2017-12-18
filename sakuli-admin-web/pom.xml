@@ -60,8 +60,6 @@
       </plugin>
     </plugins>
   </build>
-
-
   <dependencies>
     <dependency>
       <groupId>org.sweetest.platform</groupId>

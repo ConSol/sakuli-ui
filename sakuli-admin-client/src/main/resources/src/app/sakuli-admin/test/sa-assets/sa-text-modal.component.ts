@@ -4,6 +4,7 @@ import {absPath, FileResponse} from "../../../sweetest-components/services/acces
 import {InplaceFileEditorComponent} from "../../../sweetest-components/components/forms/inplace-file-editor.component";
 import {ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
 import {DangerToast, SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
+import {ModalAware} from "../../../sweetest-components/components/presentation/modal/sc-modal.service";
 
 @Component({
   selector: 'sa-text-modal',
@@ -39,7 +40,11 @@ import {DangerToast, SuccessToast} from "../../../sweetest-components/components
     }
   `]
 })
-export class SaTextModalComponent implements OnInit {
+export class SaTextModalComponent implements OnInit, ModalAware {
+
+  getActiveModal() {
+    return this.activeModal;
+  }
 
   @ViewChild(InplaceFileEditorComponent)
   inplaceFileEditor: InplaceFileEditorComponent;

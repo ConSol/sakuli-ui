@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {ModalAware} from "../modal/sc-modal.service";
 
 @Component({
   selector: 'sc-folder-picker-modal',
@@ -22,7 +23,10 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
     </ul>
   `
 })
-export class ScValuePickerModalComponent<T> implements OnInit{
+export class ScValuePickerModalComponent<T> implements OnInit, ModalAware {
+  getActiveModal(): NgbActiveModal {
+    return this.modal;
+  }
 
   @Input() values: T[];
 

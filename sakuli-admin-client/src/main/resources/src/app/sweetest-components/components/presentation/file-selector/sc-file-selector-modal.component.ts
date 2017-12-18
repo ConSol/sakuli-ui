@@ -4,6 +4,7 @@ import {Store} from "@ngrx/store";
 import {fileSelectorSelectors} from "./file-selector.state";
 import {FileSelectorFilter} from "./file-selector-filter.interface";
 import {absPath} from "../../../services/access/model/file-response.interface";
+import {ModalAware} from "../modal/sc-modal.service";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,7 +49,12 @@ import {absPath} from "../../../services/access/model/file-response.interface";
   `]
 })
 
-export class ScFileSelectorModalComponent {
+export class ScFileSelectorModalComponent implements ModalAware {
+  getActiveModal(): NgbActiveModal {
+    return this.modal;
+  }
+
+
   @Input() title: string = "Select a file";
   @Input() okButtonText: string = "Ok";
   @Input() root: string;

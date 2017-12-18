@@ -38,6 +38,7 @@ import {ScFormsModule} from "./components/forms/sc-forms.module";
 import {ScOpenFileModule} from "./components/presentation/open-file/sc-open-file.module";
 import {ScFileSelectorModule} from "./components/presentation/file-selector/sc-file-selector.module";
 import {RouterModule} from "@angular/router";
+import {ScLoginComponent} from "./services/access/auth/sc-login.component";
 
 
 export const SweetestComponentsAndDirectives  = [
@@ -112,7 +113,7 @@ export const SweetestComponentsAndDirectives  = [
     ScIconModule,
     ScLoadingModule,
     ScRouterModule,
-    ScFormsModule
+    ScFormsModule,
   ],
 })
 export class SweetestComponentsModule {

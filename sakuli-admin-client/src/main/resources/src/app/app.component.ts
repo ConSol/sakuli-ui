@@ -100,11 +100,6 @@ export class AppComponent {
           inactive: Filters.isFile()
         });
         this.store.dispatch(new OpenWorkspace(file));
-        this.store.select(testSuiteSelectors.selectTotal)
-          .filter(t => t > 0)
-          .first()
-          .subscribe(() => this.store.dispatch(new RouterGo({path:['/dashboard']})))
-
       } catch(e) {
         console.warn(e, new OpenWorkspace(null));
       }
