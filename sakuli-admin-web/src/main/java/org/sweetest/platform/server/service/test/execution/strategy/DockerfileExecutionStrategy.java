@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
@@ -61,6 +62,9 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
     private Ports ports;
     private CreateContainerResponse container;
     private SakuliEventResultCallback eventsResultCallback;
+
+    @Value("${docker.userid:1000}")
+    private String dockerUserId;
 
     @Override
     public TestRunInfo execute(Observer<TestExecutionEvent> testExecutionEventObserver) {
@@ -139,6 +143,7 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
                 .withCmd("run", "/" + testSuite.getRoot())
                 .withExposedPorts(vncPort, vncWebPort)
                 .withPortBindings(ports)
+                .withUser(dockerUserId)
                 .withPublishAllPorts(true)
                 .withVolumes(volume)
                 .withBinds(new Bind(Paths.get(rootDirectory, mountPath).toString(), volume))

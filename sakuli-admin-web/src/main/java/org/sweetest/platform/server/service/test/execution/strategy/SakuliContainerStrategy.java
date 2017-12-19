@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,9 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
 
     private static final Logger log = LoggerFactory.getLogger(SakuliContainerStrategy.class);
     private static final String INTERNAL_READY_TO_RUN = "internal.ready-to-run";
+
+    @Value("${docker.userid:1000}")
+    private String dockerUserId;
 
     @Autowired
     private DockerClient dockerClient;
@@ -186,6 +190,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
                 .withCmd("run", "/" + testSuite.getRoot())
                 .withExposedPorts(vncPort, vncWebPort)
                 .withPortBindings(ports)
+                .withUser(dockerUserId)
                 .withPublishAllPorts(true)
                 .withVolumes(volume)
                 .withBinds(new Bind(Paths.get(rootDirectory, mountPath).toString(), volume))
