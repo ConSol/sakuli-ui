@@ -1,11 +1,9 @@
 package org.sweetest.platform.server.api.file;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -27,15 +25,12 @@ public class MimeTypeMap extends HashMap<String, List<String>> {
 
     private MimeTypeMap() {
         try {
-            File mimeFile = null;
-            mimeFile = new File(getClass().getResource("mime.types").toURI());
-
-            FileUtils.readLines(mimeFile, FileSystemService.Charset).stream()
+            IOUtils.readLines(getClass().getResourceAsStream("mime.types"), FileSystemService.Charset).stream()
                     .map(s -> s.split(" "))
                     .filter(s -> s.length > 1)
                     .forEach(s -> put(s[0], Arrays.asList(Arrays.copyOfRange(s, 1, s.length))));
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException("Can't parse class resource 'mime.types'", e);
         }
     }
 
@@ -45,7 +40,7 @@ public class MimeTypeMap extends HashMap<String, List<String>> {
 
     public Optional<String> getMimeForPath(String path) {
         String[] parts = path.split("\\.");
-        if(parts.length > 0) {
+        if (parts.length > 0) {
             String ext = parts[parts.length - 1];
             return getMimeFor(ext);
         } else {
