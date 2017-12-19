@@ -71,6 +71,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
                 startContainer();
                 attachToContainer();
             }
+            //TODO show TestExecutionErrorEvent on UI
         });
         executionId = UUID.randomUUID().toString();
         eventsResultCallback = new SakuliEventResultCallback(executionId, subject, dockerClient);
@@ -100,6 +101,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
                 next(readyToRun);
             }
         } catch(Exception e) {
+            log.error(e.getClass().getSimpleName(), e);
             subject.next(new TestExecutionErrorEvent(e.getMessage(), executionId));
         }
 
