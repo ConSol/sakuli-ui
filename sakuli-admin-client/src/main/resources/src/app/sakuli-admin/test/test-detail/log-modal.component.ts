@@ -114,8 +114,9 @@ export class LogModalComponent {
               private sanitizer: DomSanitizer) {
 
     this.testRunInfo$ = this.store.select(s => s.test.testRunInfo).filter(notNull).first();
+    //TODO get current host instead of localhost
     this.vncSrc$ = this.testRunInfo$
-      .map(tri => `http://localhost:${tri.vncWebPort}?password=sakuli`)
+      .map(tri => `http://localhost:${tri.vncWebPort}?password=sakuli&view_only=true`)
       .map(url => this.sanitizer.bypassSecurityTrustResourceUrl(url));
 
     this.vncExtern$ = this.testRunInfo$
