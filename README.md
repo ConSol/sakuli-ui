@@ -6,7 +6,7 @@ A (web-based) UI to manage, edit and run Tests with [Sakuli E2E](https://github.
 
 ## Development 
 
-To develop or extend Sakuli-UI we recommend to start seperate server (Spring Boot) and client (Angular2) development worksflows to archieve to best development experience
+To develop or extend Sakuli-UI we recommend to start separate server (Spring Boot) and client (Angular2) development worksflows to archieve to best development experience
 
 ### Server development
 
@@ -20,7 +20,7 @@ The port is configurable with the server.port parameter e.g.
 
 ### Client Development 
 
-For faster feedback cycles during client development, you need to run the angular-cli development server from the clietn project root
+For faster feedback cycles during client development, you need to run the angular-cli development server from the client project root
 
 ``` bash
 cd sakuli-admin/src/main/resources
