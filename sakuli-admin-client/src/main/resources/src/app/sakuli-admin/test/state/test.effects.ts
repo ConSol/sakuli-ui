@@ -26,7 +26,7 @@ import {CreateToast, ErrorMessage,} from "../../../sweetest-components/component
 import {AppState} from "../../appstate.interface";
 import {Store} from "@ngrx/store";
 import {LoadTestsuiteSuccess, testSuiteSelectors} from "./testsuite.state";
-import {SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
+import {DangerToast, SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
 import {log, notNull} from "../../../core/redux.util";
 import {workpaceSelectors} from "../../workspace/state/project.interface";
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
@@ -34,11 +34,9 @@ import {TestSuiteResult} from "../../../sweetest-components/services/access/mode
 @Injectable()
 export class TestEffects {
 
-
   @Effect() runTest$ = this.actions$.ofType(RUN_TEST)
     .withLatestFrom(this.store.select(workpaceSelectors.workspace))
     .mergeMap(([rt, workspace]: [RunTest, string]) => this.testService.run(rt.testSuite, workspace).map(tri => new SetTestRunInfo(tri)));
-
 
   @Effect() runTestLoading$ = this.loading.registerLoadingActions(
     'runTest',
@@ -64,7 +62,8 @@ export class TestEffects {
           gtee$.map(se => new DockerPullProgress(se.processId, JSON.parse(se.message)))
             .filter(dpg => !!dpg.info.stream)
             .map(dpg => new DockerPullStream(dpg.id, dpg.info))),
-        'test.pull.completed': () => ({processId}) => new DockerPullCompleted(processId)
+        'test.pull.completed': () => ({processId}) => new DockerPullCompleted(processId),
+        'error': () => gtee$.map((se:any) => new CreateToast(new DangerToast(se.message, se.stacktrace)))
       })[gtee$.key] || noop)();
     })
     .catch(ErrorMessage('Unable to proceed server event'));
