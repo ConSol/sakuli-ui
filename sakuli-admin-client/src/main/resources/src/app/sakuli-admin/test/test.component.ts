@@ -11,6 +11,7 @@ import {log, notNull} from "../../core/redux.util";
 import {LoadTestsuite, testSuiteSelectors} from "./state/testsuite.state";
 import {ActivatedRoute} from "@angular/router";
 import {RunTestSuiteComponent} from "./run-test-suite.component";
+import {TestExecutionEntity, testExecutionSelectors} from "./state/testexecution.state";
 
 @Component({
   selector: 'sa-project-open',
@@ -38,7 +39,7 @@ export class TestComponent implements OnInit {
   runTestSuiteComponent: RunTestSuiteComponent;
 
   testSuite$: Observable<SakuliTestSuite>;
-  testRunInfo$: Observable<TestRunInfo>;
+  testRunInfo$: Observable<TestExecutionEntity>;
   subTitle$: Observable<string>;
   title$: Observable<string>;
   testCases$: Observable<SakuliTestCase[]>;
@@ -53,7 +54,9 @@ export class TestComponent implements OnInit {
     this.title$ = this.testSuite$.map(ts => ts ? ts.configuration.id : '');
     this.subTitle$ = this.testSuite$.map(ts => ts ? ts.configuration.name : '');
     this.testCases$ = this.testSuite$.map(ts => ts.testCases);
-    this.testRunInfo$ = this.store.select(s => s.test.testRunInfo);
+    this.testRunInfo$ = this.testSuite$.mergeMap(ts => {
+      return this.store.select(testExecutionSelectors.latestByTestSuite(ts));
+    })
 
   }
 
