@@ -1,13 +1,23 @@
-import {Component, ElementRef, HostBinding, ViewChild} from "@angular/core";
+import {
+  ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChange, SimpleChanges,
+  ViewChild
+} from "@angular/core";
 import {TestRunInfo} from "../../../sweetest-components/services/access/model/test-run-info.interface";
 import {Store} from "@ngrx/store";
 import {AppState} from "../../appstate.interface";
 import {Observable} from "rxjs/Observable";
 import {log, notNull} from "../../../core/redux.util";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
-import {logsForCurrentRunInfo} from "../state/test.interface";
+import {
+  TestExecutionLogMessageEntity, testExecutionLogReducer,
+  testExecutionLogSelectors
+} from "../state/test-execution-log.state";
+import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
+import {testExecutionSelectors, TestExecutionEntity} from "../state/testexecution.state";
+import {testSuiteSelectId} from "../state/testsuite.state";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'sa-log-card', // TODO: refactor filenames
   template: `
     <div class="card-header d-flex justify-content-between">
@@ -81,17 +91,24 @@ import {logsForCurrentRunInfo} from "../state/test.interface";
     }
   `]
 })
-export class LogModalComponent {
+export class LogModalComponent implements OnInit, OnChanges {
+
+  @Input() testSuite: SakuliTestSuite;
 
   @ViewChild('iframe') iframe: ElementRef;
   @ViewChild('logs') logs: ElementRef;
 
-  testRunInfo$: Observable<TestRunInfo>;
-  vncSrc$: Observable<SafeResourceUrl>;
-  vncExtern$: Observable<SafeResourceUrl>;
+  testRunInfo$: Observable<TestExecutionEntity>;
+
+  testRunLogs$: Observable<string[]>;
+
   vncReady$: Observable<boolean>;
 
   view: "vnc" | "log" = "log";
+  vncExtern$: Observable<SafeResourceUrl>;
+
+  //TODO get current host instead of localhost
+  vncSrc$: Observable<SafeResourceUrl>;
 
   fullScreen() {
     const elementRef = this.view === 'log' ? this.logs : this.iframe;
@@ -112,9 +129,37 @@ export class LogModalComponent {
 
   constructor(private store: Store<AppState>,
               private sanitizer: DomSanitizer) {
+  }
 
-    this.testRunInfo$ = this.store.select(s => s.test.testRunInfo).filter(notNull).first();
-    //TODO get current host instead of localhost
+  ngOnInit() {
+    this.initObservablesWithTestSuite(this.testSuite);
+  }
+
+  ngOnChanges(change: SimpleChanges) {
+    const tsChanges = change.testSuite;
+    if(tsChanges) {
+      const curr = tsChanges.currentValue;
+      const prev = tsChanges.previousValue;
+      if((!prev && curr) || testSuiteSelectId(curr) !== testSuiteSelectId(prev)) {
+        this.initObservablesWithTestSuite(curr);
+      }
+    }
+  }
+
+  initObservablesWithTestSuite(testSuite:SakuliTestSuite) {
+    this.testRunLogs$ = this.store
+      .select(testExecutionLogSelectors.latestForTestSuite(testSuite))
+      .debounceTime(150)
+      .map(logs => logs.map(log => log.message));
+
+    this.vncReady$ = this
+      .testRunLogs$
+      .map(lines => !!lines.find(l => l.includes('noVNC HTML client started')));
+
+    this.vncReady$.filter(r => r === true).take(1).subscribe(ready => this.view = 'vnc');
+
+    this.testRunInfo$ = this.store.select(testExecutionSelectors.latestByTestSuite(this.testSuite)).filter(notNull).first();
+
     this.vncSrc$ = this.testRunInfo$
       .map(tri => `http://localhost:${tri.vncWebPort}?password=sakuli&view_only=true`)
       .map(url => this.sanitizer.bypassSecurityTrustResourceUrl(url));
@@ -122,18 +167,6 @@ export class LogModalComponent {
     this.vncExtern$ = this.testRunInfo$
       .map(tri => `vnc://sakuli@localhost:${tri.vncPort}`)
       .map(url => this.sanitizer.bypassSecurityTrustResourceUrl(url));
-
-    this.vncReady$ = this
-      .testRunLogs$
-      .map(lines => !!lines.find(l => l.includes('noVNC HTML client started')))
-    //.takeWhile(hasVnc => !hasVnc)
-    ;
-    this.vncReady$.filter(r => r === true).take(1).subscribe(ready => this.view = 'vnc')
-}
-
-
-  get testRunLogs$(): Observable<string[]> {
-    return this.store.select(logsForCurrentRunInfo);
   }
 
 }

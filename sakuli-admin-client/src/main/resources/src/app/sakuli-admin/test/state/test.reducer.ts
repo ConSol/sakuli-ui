@@ -3,29 +3,8 @@ import * as Actions from './test.actions';
 
 export function testReducer(state: TestState = TestStateInit, action: Actions.AllTypes): TestState {
   switch (action.type) {
-    case Actions.SET_TEST_RUN_INFO: {
-      const {testRunInfo} = action;
-      return ({
-        ...state,
-        testRunInfo,
-        testRunInfoLogs: {...state.testRunInfoLogs, [testRunInfo.containerId]: []}
-      })
-    }
     case Actions.LOAD_TESTRESULTS_SUCCESS: {
       return ({...state, testResults: action.results})
-    }
-    case Actions.APPEND_TEST_RUN_INFO_LOG: {
-      const {testExecutionEvent} = action;
-      return ({
-        ...state,
-        testRunInfoLogs: {
-          ...state.testRunInfoLogs,
-          [testExecutionEvent.processId]: [...(state.testRunInfoLogs[testExecutionEvent.processId] || []), testExecutionEvent.message.trim()]
-        }
-      })
-    }
-    case Actions.CLEAR_LOG: {
-      return {...state};
     }
     case Actions.DOCKER_PULL_STARTED: {
       return ({
@@ -75,6 +54,9 @@ export function testReducer(state: TestState = TestStateInit, action: Actions.Al
           .filter(k => k !== action.id)
           .reduce((dpsNew, k) => ({...dpsNew, [k]: dockerPullInfo[k]}), {})
       })
+    }
+    case Actions.DOCKER_PULL_PROGRESS_BATCH: {
+      return action.actions.reduce(testReducer, state);
     }
     default:
       return state

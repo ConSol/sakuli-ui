@@ -106,7 +106,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
             }
         } catch(Exception e) {
             log.error(e.getClass().getSimpleName(), e);
-            subject.next(new TestExecutionErrorEvent(e.getMessage(), executionId));
+            subject.next(new TestExecutionErrorEvent(e.getMessage(), executionId, e));
         }
 
         return new TestRunInfo(

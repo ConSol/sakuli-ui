@@ -22,6 +22,8 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {TestSuiteFeatureName, testsuiteReducer} from "./state/testsuite.state";
 import {TestsuiteEffects} from "./state/testsuite.effects";
 import {TestEditorFeatureName, testEditorReducer} from "./state/test-editor.interface";
+import {TestExecutionFeatureName, testExecutionReducer} from "./state/testexecution.state";
+import {TestExecutionLogFeatureName, testExecutionLogReducer} from "./state/test-execution-log.state";
 
 export const DeclareAndExport = [
   TestComponent,
@@ -42,6 +44,8 @@ export const DeclareAndExport = [
     StoreModule.forFeature(TestSuiteFeatureName, testsuiteReducer),
     StoreModule.forFeature('test', testReducer),
     StoreModule.forFeature(TestEditorFeatureName, testEditorReducer),
+    StoreModule.forFeature(TestExecutionFeatureName, testExecutionReducer),
+    StoreModule.forFeature(TestExecutionLogFeatureName, testExecutionLogReducer),
     EffectsModule.forFeature([
       TestsuiteEffects,
       TestEffects,

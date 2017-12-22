@@ -32,7 +32,7 @@ public class CommandExecutorRunnable implements Runnable {
             ).waitFor();
             subject.next(new TestExecutionCompletedEvent(executionId));
         } catch (Exception e) {
-            subject.next(new TestExecutionErrorEvent(e.getMessage(), executionId));
+            subject.next(new TestExecutionErrorEvent(e.getMessage(), executionId, e));
             e.printStackTrace();
         }
     }

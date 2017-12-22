@@ -115,7 +115,7 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
                     startContainer();
                     attachToContainer();
                 } catch(Exception e) {
-                    next(new TestExecutionErrorEvent(e.getMessage(), executionId));
+                    next(new TestExecutionErrorEvent(e.getMessage(), executionId, e));
                 }
             }).start();
             return new TestRunInfo(
