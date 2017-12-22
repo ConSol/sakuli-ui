@@ -86,8 +86,8 @@ export class RemoveAllTestsuites implements Action {
   constructor() {}
 }
 
-const selectors = testSuiteEntityAdapter.getSelectors(createFeatureSelector<TestSuiteState>('testsuite'));
 const testSuiteState = createFeatureSelector<TestSuiteState>(TestSuiteFeatureName);
+const selectors = testSuiteEntityAdapter.getSelectors(testSuiteState);
 
 function testCasesFor(testSuite: SakuliTestSuite) {
   return createSelector(

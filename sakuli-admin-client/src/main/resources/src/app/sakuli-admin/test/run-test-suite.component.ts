@@ -1,10 +1,8 @@
-import {Component, Input} from "@angular/core";
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from "@angular/core";
 import {AppState} from "../appstate.interface";
 import {Store} from "@ngrx/store";
-import {RunTest} from "./state/test.actions";
-import {SakuliTestCase, SakuliTestSuite} from "../../sweetest-components/services/access/model/sakuli-test-model";
+import {SakuliTestSuite} from "../../sweetest-components/services/access/model/sakuli-test-model";
 import {animate, style, transition, trigger} from "@angular/animations";
-import {ProjectModel} from "../../sweetest-components/services/access/model/project.model";
 import {
   RunConfiguration, RunConfigurationSelect, SakuliContainer
 } from "./run-configuration/run-configuration.interface";
@@ -19,11 +17,14 @@ import {notNull} from "../../core/redux.util";
 import {Actions} from "@ngrx/effects";
 import {
   DockerPullInfo, dockerPullInfoForCurrentRunInfoAsArray, dockerPullStreamForCurrentRunInfo,
-  logsForCurrentRunInfo
 } from "./state/test.interface";
 import {ActivatedRoute} from "@angular/router";
+import {RunTest} from "./state/testexecution.state";
+import {testExecutionLogSelectors} from "./state/test-execution-log.state";
+import {testSuiteSelectId} from "./state/testsuite.state";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'run-test-suite',
   animations: [
     trigger('openConfig', [
@@ -77,16 +78,16 @@ import {ActivatedRoute} from "@angular/router";
           (containerChange)="onContainerChange($event)"
         ></run-configuration>
       </div>
-      <div class="card-block" *ngIf="isDockerPullStream$ | async" [@openConfig]="isDockerPullStream$ | async">
+      <div class="card-block" *ngIf="dockerPullStream$ | async; let dockerPullStream">
         <h4>Building Docker image</h4>
         <sc-logs>
-          <ng-container *ngFor="let stream of dockerPullStream$ | async">{{stream}}</ng-container>
+          <ng-container *ngFor="let stream of dockerPullStream">{{stream}}</ng-container>
         </sc-logs>
       </div>
-      <div class="card-block" *ngIf="isDockerPull$ | async" [@openConfig]="isDockerPull$ | async">
+      <div class="card-block" *ngIf="dockerPullInfo$ | async; let dockerPullInfos">
         <h4>Pulling Docker image</h4>
         <ng-container
-          *ngFor="let dockerPullInfo of dockerPullInfo$ | async "
+          *ngFor="let dockerPullInfo of dockerPullInfos"
         >
           <docker-pull-info-component
             [dockerPullInfo]="dockerPullInfo"
@@ -97,7 +98,9 @@ import {ActivatedRoute} from "@angular/router";
     </div>
     <div class="row" *ngIf="hasLogs$ | async">
       <div class="col-12">
-        <sa-log-card></sa-log-card>
+        <sa-log-card
+          [testSuite]="testSuite"
+        ></sa-log-card>
       </div>
     </div>
   `,
@@ -111,10 +114,22 @@ import {ActivatedRoute} from "@angular/router";
     }
   `]
 })
-export class RunTestSuiteComponent {
+export class RunTestSuiteComponent implements OnInit, OnChanges {
+
+  private debounceTime = 250;
+
   @Input() testSuite: SakuliTestSuite;
 
   showConfiguration = false;
+
+  runConfiguration$: Observable<RunConfiguration>;
+  sakuliContainer$: Observable<SakuliContainer[]>;
+  containerTags$: Observable<SakuliContainer[]>;
+  dockerPullInfo$: Observable<DockerPullInfo[]>;
+  dockerPullStream$: Observable<string[]>;
+  isDockerPull$: Observable<boolean>;
+  isDockerPullStream$: Observable<boolean>;
+  hasLogs$: Observable<boolean>;
 
   constructor(
     private store: Store<AppState>,
@@ -131,7 +146,37 @@ export class RunTestSuiteComponent {
     this.dispatchLoadRunConfiguration();
     this.store.dispatch(new LoadSakuliContainer());
     this.actions$.ofType(SAVE_RUN_CONFIGURATION_SUCCESS).subscribe(_ => this.showConfiguration = false);
+    this.runConfiguration$ = this.store.select(RunConfigurationSelect.runConfiguration).filter(notNull);
+    this.sakuliContainer$ = this.store.select(RunConfigurationSelect.container);
+    this.containerTags$ = this.store.select(RunConfigurationSelect.tagsForSelectedContainer);
+    this.initObservablesWithTestSuite(this.testSuite);
   }
+
+  ngOnChanges(change: SimpleChanges) {
+    const tsChanges = change.testSuite;
+    if(tsChanges) {
+      const curr = tsChanges.currentValue;
+      const prev = tsChanges.previousValue;
+      if((!prev && curr) || testSuiteSelectId(curr) !== testSuiteSelectId(prev)) {
+        this.initObservablesWithTestSuite(curr);
+      }
+    }
+  }
+
+  private initObservablesWithTestSuite(testSuite: SakuliTestSuite) {
+    this.dockerPullInfo$ = this.store
+      .select(dockerPullInfoForCurrentRunInfoAsArray(testSuite))
+      .debounceTime(this.debounceTime);
+    this.isDockerPull$ = this.dockerPullInfo$.map(s => !!s);
+    this.dockerPullStream$ = this.store
+      .select(dockerPullStreamForCurrentRunInfo(testSuite))
+      .debounceTime(this.debounceTime);
+    this.isDockerPullStream$ = this.dockerPullStream$.map(s => !!s && !!s.length).distinctUntilChanged();
+    this.hasLogs$ = this.store.select(
+      testExecutionLogSelectors.latestForTestSuite(testSuite)
+    ).map(l => !!l && !!l.length);
+  }
+
 
   runSuite(testSuite: SakuliTestSuite) {
     this.store.dispatch(new RunTest(testSuite));
@@ -157,37 +202,6 @@ export class RunTestSuiteComponent {
     this.store.dispatch(new SelectSakuliContainer($event));
   }
 
-  get runConfiguration$(): Observable<RunConfiguration> {
-    return this.store.select(RunConfigurationSelect.runConfiguration).filter(notNull);
-  }
-
-  get sakuliContainer$(): Observable<SakuliContainer[]> {
-    return this.store.select(RunConfigurationSelect.container);
-  }
-
-  get containerTags$(): Observable<SakuliContainer[]> {
-    return this.store.select(RunConfigurationSelect.tagsForSelectedContainer);
-  }
-
-  get dockerPullInfo$(): Observable<DockerPullInfo[]> {
-    return this.store.select(dockerPullInfoForCurrentRunInfoAsArray);
-  }
-
-  get isDockerPull$(): Observable<boolean> {
-    return this.dockerPullInfo$.map(s => !!s);
-  }
-
-  get dockerPullStream$(): Observable<string[]> {
-    return this.store.select(dockerPullStreamForCurrentRunInfo);
-  }
-
-  get isDockerPullStream$(): Observable<boolean> {
-    return this.dockerPullStream$.map(s => !!s && !!s.length).distinctUntilChanged();
-  }
-
-  get hasLogs$(): Observable<boolean> {
-    return this.store.select(logsForCurrentRunInfo).map(l => !!l && !!l.length).distinctUntilChanged();
-  }
 
   get runWithText() {
     return this.runConfiguration$.map(rc => {
@@ -204,4 +218,5 @@ export class RunTestSuiteComponent {
       return `Cannot map ${rc.type}`;
     })
   }
+
 }

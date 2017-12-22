@@ -23,49 +23,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>io.fabric8</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <images>
-            <image>
-              <name>hello/sub/project/java:${project.version}</name>
-              <alias>${project.name}-${project.version}</alias>
-              <build>
-                <from>openjdk:latest</from>
-                <assembly>
-                  <descriptorRef>artifact-with-dependencies</descriptorRef>
-                </assembly>
-                <cmd><![CDATA[ls /maven && java -jar /maven/${project.name}-${project.version}-executable.war]]></cmd>
-              </build>
-              <run>
-                <wait>
-                  <log>Tomcat started on port(s):</log>
-                  <time>10000</time>
-                </wait>
-              </run>
-            </image>
-          </images>
-        </configuration>
-        <executions>
-          <execution>
-            <id>start</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>build</goal>
-              <goal>start</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>stop</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>stop</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>

@@ -2,21 +2,13 @@ import {Injectable} from '@angular/core';
 import {Actions, Effect} from '@ngrx/effects';
 import {TestService} from "../../../sweetest-components/services/access/test.service";
 import {
-  AppendTestRunInfoLog,
   DockerPullCompleted,
-  DockerPullProgress,
+  DockerPullProgress, DockerPullProgressBatch,
   DockerPullStarted,
   DockerPullStream,
   LOAD_TESTRESULTS,
   LOAD_TESTRESULTS_SUCCESS,
   LoadTestResultsSuccess,
-  RUN_TEST,
-  RunTest,
-  SET_TEST_RUN_INFO,
-  SetTestRunInfo,
-  TEST_EXECUTION_COMPLETED,
-  TestExecutionCompleted,
-  TestExecutionStarted
 } from "./test.actions";
 import {SET_PROJECT, SetProject} from "../../workspace/state/project.actions";
 
@@ -27,16 +19,21 @@ import {AppState} from "../../appstate.interface";
 import {Store} from "@ngrx/store";
 import {LoadTestsuiteSuccess, testSuiteSelectors} from "./testsuite.state";
 import {DangerToast, SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
-import {log, notNull} from "../../../core/redux.util";
+import {notNull} from "../../../core/redux.util";
 import {workpaceSelectors} from "../../workspace/state/project.interface";
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
+import {
+  RUN_TEST, RunTest, SET_TEST_RUN_INFO, SetTestRunInfo, TEST_EXECUTION_COMPLETED, TestExecutionCompleted,
+  TestExecutionStarted
+} from "./testexecution.state";
+import {AppendTestRunInfoLog} from "./test-execution-log.state";
 
 @Injectable()
 export class TestEffects {
 
   @Effect() runTest$ = this.actions$.ofType(RUN_TEST)
     .withLatestFrom(this.store.select(workpaceSelectors.workspace))
-    .mergeMap(([rt, workspace]: [RunTest, string]) => this.testService.run(rt.testSuite, workspace).map(tri => new SetTestRunInfo(tri)));
+    .mergeMap(([rt, workspace]: [RunTest, string]) => this.testService.run(rt.testSuite, workspace).map(tri => new SetTestRunInfo(tri, rt.testSuite)));
 
   @Effect() runTestLoading$ = this.loading.registerLoadingActions(
     'runTest',
@@ -48,7 +45,7 @@ export class TestEffects {
     .mergeMap((tri: SetTestRunInfo) => this.testService.testRunLogs(tri.testRunInfo.containerId))
     .groupBy(tee => tee.type)
     .mergeMap(gtee$ => {
-      const noop = () => Observable.of({type: '_'});
+      const noop = () => Observable.of({type: '_', 'debugKey': gtee$.key});
       return (({
         'test.log': () => gtee$.map(se => new AppendTestRunInfoLog(se)),
         'test.lifecycle.started': () => gtee$.map(({processId}) => new TestExecutionStarted(processId)),
@@ -57,8 +54,9 @@ export class TestEffects {
         'docker.pull.progress': () => Observable.merge(
           gtee$.map(se => new DockerPullProgress(se.processId, JSON.parse(se.message)))
             .filter(dpg => !!dpg.info.id && !!dpg.info.status)
-            .groupBy(dpg => dpg.info.id)
-            .mergeMap(dpgg$ => dpgg$.throttleTime(250)),
+            .bufferTime(350)
+            .map((actions: DockerPullProgress[]) => new DockerPullProgressBatch(actions))
+          ,
           gtee$.map(se => new DockerPullProgress(se.processId, JSON.parse(se.message)))
             .filter(dpg => !!dpg.info.stream)
             .map(dpg => new DockerPullStream(dpg.id, dpg.info))),
