@@ -1,20 +1,17 @@
 import {
-  ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChange, SimpleChanges,
+  ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChanges,
   ViewChild
 } from "@angular/core";
-import {TestRunInfo} from "../../../sweetest-components/services/access/model/test-run-info.interface";
 import {Store} from "@ngrx/store";
 import {AppState} from "../../appstate.interface";
 import {Observable} from "rxjs/Observable";
 import {log, notNull} from "../../../core/redux.util";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
-import {
-  TestExecutionLogMessageEntity, testExecutionLogReducer,
-  testExecutionLogSelectors
-} from "../state/test-execution-log.state";
+import {testExecutionLogSelectors} from "../state/test-execution-log.state";
 import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
-import {testExecutionSelectors, TestExecutionEntity} from "../state/testexecution.state";
+import {TestExecutionEntity, testExecutionSelectors} from "../state/testexecution.state";
 import {testSuiteSelectId} from "../state/testsuite.state";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,13 +38,19 @@ import {testSuiteSelectId} from "../state/testsuite.state";
         <sc-icon icon="fa-expand"></sc-icon>
       </button>
     </div>
-      <sc-logs #logs class="card-block logs col" *ngIf="view === 'log'" [follow]="true" [messages]="testRunLogs$ | async">
-      </sc-logs>
-      <div #iframe class="card-block vnc col" *ngIf="view === 'vnc'">
-        <iframe allowfullscreen #iframe [src]="vncSrc$ | async">
-          No iframe support...
-        </iframe>
-      </div>
+    <sc-logs #logs class="card-block p-0 logs col" *ngIf="view === 'log'" [follow]="true" [messages]="testRunLogs$ | async">
+    </sc-logs>
+    <div #iframe class="card-block vnc col p-0" *ngIf="view === 'vnc'">
+      <iframe allowfullscreen #iframe [src]="vncSrc$ | async">
+        No iframe support...
+      </iframe>
+    </div>
+    <div class="p-3 card-block">
+      <label class="form-check-label">
+        <input type="checkbox" (change)="toggleInteractiveMode(interactiveToggle.checked)" #interactiveToggle  class="interactiveToggle">
+        Interactive mode
+      </label>
+    </div>
   `,
   styles: [`
     .card-header {
@@ -55,7 +58,7 @@ import {testSuiteSelectId} from "../state/testsuite.state";
       padding-top: 0;
       background-color: white;
     }
-    
+
     .vnc iframe {
       width: 100%;
       height: 100%;
@@ -72,7 +75,6 @@ import {testSuiteSelectId} from "../state/testsuite.state";
 
     .card-block {
       overflow: auto;
-      padding: 0;
       display: flex;
       flex-direction: row;
     }
@@ -80,12 +82,12 @@ import {testSuiteSelectId} from "../state/testsuite.state";
     .btn-fs:hover /deep/ .fa {
       transform: scale(1.2, 1.2) !important;
     }
-    
+
     .nav-link {
       border-radius: 0;
       border-top: 0;
     }
-    
+
     .nav-link:focus {
       outline: none;
     }
@@ -109,6 +111,8 @@ export class LogModalComponent implements OnInit, OnChanges {
 
   //TODO get current host instead of localhost
   vncSrc$: Observable<SafeResourceUrl>;
+
+  interactiveMode$ = new BehaviorSubject<boolean>(false);
 
   fullScreen() {
     const elementRef = this.view === 'log' ? this.logs : this.iframe;
@@ -137,16 +141,20 @@ export class LogModalComponent implements OnInit, OnChanges {
 
   ngOnChanges(change: SimpleChanges) {
     const tsChanges = change.testSuite;
-    if(tsChanges) {
+    if (tsChanges) {
       const curr = tsChanges.currentValue;
       const prev = tsChanges.previousValue;
-      if((!prev && curr) || testSuiteSelectId(curr) !== testSuiteSelectId(prev)) {
+      if ((!prev && curr) || testSuiteSelectId(curr) !== testSuiteSelectId(prev)) {
         this.initObservablesWithTestSuite(curr);
       }
     }
   }
 
-  initObservablesWithTestSuite(testSuite:SakuliTestSuite) {
+  toggleInteractiveMode(isInteractive: boolean) {
+    this.interactiveMode$.next(isInteractive);
+  }
+
+  initObservablesWithTestSuite(testSuite: SakuliTestSuite) {
     this.testRunLogs$ = this.store
       .select(testExecutionLogSelectors.latestForTestSuite(testSuite))
       .debounceTime(150)
@@ -161,10 +169,11 @@ export class LogModalComponent implements OnInit, OnChanges {
     this.testRunInfo$ = this.store.select(testExecutionSelectors.latestByTestSuite(this.testSuite)).filter(notNull).first();
 
     this.vncSrc$ = this.testRunInfo$
-      .map(tri => `http://localhost:${tri.vncWebPort}?password=sakuli&view_only=true`)
+      .combineLatest(this.interactiveMode$.map(t => t ? 'false': 'true'))
+      .map(([tri, viewOnly]) => `http://localhost:${tri.vncWebPort}?password=sakuli&view_only=${viewOnly}`)
       .map(url => this.sanitizer.bypassSecurityTrustResourceUrl(url));
 
-    this.vncExtern$ = this.testRunInfo$
+    this.vncExtern$ =  this.testRunInfo$
       .map(tri => `vnc://sakuli@localhost:${tri.vncPort}`)
       .map(url => this.sanitizer.bypassSecurityTrustResourceUrl(url));
   }

@@ -5,10 +5,12 @@ import {
   ToastStateInit
 } from "../sweetest-components/components/presentation/toast/toast-state.interface";
 import {AssetsState, AssetsStateInit} from "./test/sa-assets/sa-assets.interface";
-import {testEditorEntityAdapter, TestEditorState, testEditorStateInit} from "./test/state/test-editor.interface";
+import {TestEditorState, testEditorStateInit} from "./test/state/test-editor.interface";
 import {TestSuiteState, testSuiteStateInit} from "./test/state/testsuite.state";
 import {ScLoadingState} from "../sweetest-components/components/presentation/loading/sc-loading.state";
 import {MenuState, menuStateInit} from "../sweetest-components/components/layout/menu/menu.state";
+import {TestExecutionLogFeatureName} from "./test/state/test-execution-log.state";
+import {TestExecutionFeatureName} from "./test/state/testexecution.state";
 
 export interface AppStateBase {
   project: WorkspaceState,
@@ -18,6 +20,7 @@ export interface AppStateBase {
   testsuite: TestSuiteState,
   scLoading: ScLoadingState,
   scMenu: MenuState,
+
 }
 
 export type AppState = AppStateBase & ToastAppState;
@@ -33,13 +36,15 @@ export function initStateFactory() {
     scLoading: {},
     scMenu: menuStateInit
   };
-  const dehydrationProps: (keyof AppState)[] = [
+  const dehydrationProps: string[] = [
     'project',
     'test',
     'assets',
     'testsuite',
     'testEditor',
-    'scMenu'
+    'scMenu',
+    TestExecutionLogFeatureName,
+    TestExecutionFeatureName
   ];
   const state = JSON.parse(sessionStorage.getItem('sakuli-admin-state')) || {} as AppState;
 
