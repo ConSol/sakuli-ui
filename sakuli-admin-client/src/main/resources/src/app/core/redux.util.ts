@@ -33,3 +33,12 @@ export const mapEntities = <T>(map:(T) => T, state: EntityState<T>, selectId:Map
     entities
   });
 };
+
+export const logTiming = <T extends Function>(fn: T) => {
+  return (...args: any[]) => {
+    console.time(fn.name);
+    const r = fn(...args);
+    console.timeEnd(fn.name);
+    return r;
+  }
+};

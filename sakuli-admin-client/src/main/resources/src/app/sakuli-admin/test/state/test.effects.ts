@@ -2,13 +2,8 @@ import {Injectable} from '@angular/core';
 import {Actions, Effect} from '@ngrx/effects';
 import {TestService} from "../../../sweetest-components/services/access/test.service";
 import {
-  DockerPullCompleted,
-  DockerPullProgress, DockerPullProgressBatch,
-  DockerPullStarted,
-  DockerPullStream,
-  LOAD_TESTRESULTS,
-  LOAD_TESTRESULTS_SUCCESS,
-  LoadTestResultsSuccess,
+  DockerPullCompleted, DockerPullProgress, DockerPullProgressBatch, DockerPullStarted, DockerPullStream,
+  LOAD_TESTRESULTS, LOAD_TESTRESULTS_SUCCESS, LoadTestResultsSuccess,
 } from "./test.actions";
 import {SET_PROJECT, SetProject} from "../../workspace/state/project.actions";
 
@@ -24,9 +19,9 @@ import {workpaceSelectors} from "../../workspace/state/project.interface";
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
 import {
   RUN_TEST, RunTest, SET_TEST_RUN_INFO, SetTestRunInfo, TEST_EXECUTION_COMPLETED, TestExecutionCompleted,
-  TestExecutionStarted
+  TestExecutionSetVncReady, TestExecutionStarted
 } from "./testexecution.state";
-import {AppendTestRunInfoLog} from "./test-execution-log.state";
+import {APPEND_TEST_RUN_INFO_LOG, AppendTestRunInfoLog} from "./test-execution-log.state";
 
 @Injectable()
 export class TestEffects {
@@ -40,6 +35,15 @@ export class TestEffects {
     RUN_TEST,
     SET_TEST_RUN_INFO
   );
+
+  @Effect() vncReady$ = this.actions$.ofType(APPEND_TEST_RUN_INFO_LOG)
+    .filter((a: AppendTestRunInfoLog) => {
+      return a.testExecutionEvent.message.includes('noVNC HTML client started')
+    })
+    .map((a: AppendTestRunInfoLog) => new TestExecutionSetVncReady(
+      a.testExecutionEvent.processId,
+      true)
+    );
 
   @Effect() fetchLogs$ = this.actions$.ofType(SET_TEST_RUN_INFO)
     .mergeMap((tri: SetTestRunInfo) => this.testService.testRunLogs(tri.testRunInfo.containerId))
@@ -61,7 +65,7 @@ export class TestEffects {
             .filter(dpg => !!dpg.info.stream)
             .map(dpg => new DockerPullStream(dpg.id, dpg.info))),
         'test.pull.completed': () => ({processId}) => new DockerPullCompleted(processId),
-        'error': () => gtee$.map((se:any) => new CreateToast(new DangerToast(se.message, se.stacktrace)))
+        'error': () => gtee$.map((se: any) => new CreateToast(new DangerToast(se.message, se.stacktrace)))
       })[gtee$.key] || noop)();
     })
     .catch(ErrorMessage('Unable to proceed server event'));

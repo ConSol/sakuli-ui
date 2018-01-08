@@ -169,6 +169,8 @@
         <groupId>external.atlassian.jgitflow</groupId>
         <artifactId>jgitflow-maven-plugin</artifactId>
         <configuration>
+          <username>${git.user}</username>
+          <password>${git.password}</password>
           <flowInitContext>
             <!-- default git flow prefixes -->
             <masterBranchName>master</masterBranchName>

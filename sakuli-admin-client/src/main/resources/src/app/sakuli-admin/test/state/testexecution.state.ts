@@ -1,14 +1,15 @@
 import {createEntityAdapter, EntityState} from "@ngrx/entity";
 import {TestRunInfo} from "../../../sweetest-components/services/access/model/test-run-info.interface";
-import {Action, createFeatureSelector, createSelector} from "@ngrx/store";
+import {Action, createFeatureSelector, createSelector, MemoizedSelector} from "@ngrx/store";
 import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
-import {uniqueName} from "../../../core/redux.util";
+import {notNull, uniqueName} from "../../../core/redux.util";
 import {testSuiteSelectId} from "./testsuite.state";
 
 export interface TestExecutionEntity extends TestRunInfo {
   isRunning: boolean,
   timestamp: number,
-  testSuite: string
+  testSuite: string,
+  vncReady: boolean
 }
 
 export interface TestExecutionState extends EntityState<TestExecutionEntity> {
@@ -63,10 +64,20 @@ export class TestExecutionCompleted implements Action {
   }
 }
 
+export const TEST_EXECUTION_SET_VNC_READY = '[TEST_EXECUTION] SET_VNC_READY';
+export class TestExecutionSetVncReady implements Action {
+  readonly type = TEST_EXECUTION_SET_VNC_READY;
+  constructor(
+    readonly executionId: string,
+    readonly vncReady: boolean
+  ) {}
+}
+
 export type TestExecutionActionTypes = RunTest
   | SetTestRunInfo
   | TestExecutionStarted
   | TestExecutionCompleted
+  | TestExecutionSetVncReady
 
 const state = createFeatureSelector<TestExecutionState>(TestExecutionFeatureName);
 const selectors = testExecutionEntityAdapter.getSelectors(state);
@@ -74,18 +85,24 @@ const selectors = testExecutionEntityAdapter.getSelectors(state);
 export const testExecutionSelectors = {
   state,
   ...selectors,
-  byTestSuite(testsuite: SakuliTestSuite) {
+  byTestSuite(testsuite: SakuliTestSuite): MemoizedSelector<any, TestExecutionEntity[]> {
     return createSelector(
       selectors.selectAll,
-      execs => (execs || []).filter(exec => exec.testSuite === testSuiteSelectId(testsuite))
+      execs =>  {
+        return (execs || [])
+          .filter(notNull)
+          .filter(exec => exec.testSuite === testSuiteSelectId(testsuite))
+      }
       )
   },
   latestByTestSuite(testsuite: SakuliTestSuite) {
     return createSelector(
-      selectors.selectAll,
-      execs => (execs || []).filter(exec => exec.testSuite === testSuiteSelectId(testsuite))[0]
-    )
-  }
+      this.byTestSuite(testsuite),
+      (execs: TestExecutionEntity[])=>  {
+        return (execs || []).reduce((min, c) => min.timestamp >= c.timestamp ? min : c, execs[0])
+      }
+    );
+  },
 };
 
 export function testExecutionReducer(state: TestExecutionState = testExecutionStateInit, action: TestExecutionActionTypes) {
@@ -95,13 +112,24 @@ export function testExecutionReducer(state: TestExecutionState = testExecutionSt
         ...action.testRunInfo,
         timestamp: action.timestamp,
         isRunning: true,
-        testSuite: testSuiteSelectId(action.testSuite)
+        testSuite: testSuiteSelectId(action.testSuite),
+        vncReady: false
       }, state);
+    }
+    case TEST_EXECUTION_SET_VNC_READY: {
+      const {executionId, vncReady} = action;
+      return testExecutionEntityAdapter.updateOne({
+        id: executionId,
+        changes: {vncReady}
+      }, state)
     }
     case TEST_EXECUTION_COMPLETED: {
       return testExecutionEntityAdapter.updateOne({
         id: action.id,
-        changes: {isRunning: false}
+        changes: {
+          isRunning: false,
+          vncReady: false
+        }
       }, state);
     }
   }

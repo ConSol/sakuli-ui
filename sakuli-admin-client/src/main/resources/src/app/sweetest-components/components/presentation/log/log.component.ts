@@ -1,10 +1,10 @@
 import {
-  ChangeDetectionStrategy,
-  Component, ElementRef, HostListener, Input, OnInit, ViewChild
+  AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, NgZone,
+  ViewChild
 } from "@angular/core";
 import {LogMessage} from "../../../../sakuli-admin/test/state/test.interface";
 import {AnsiColorPipe} from "./ansi-color.pipe";
-
+import {Observable} from "rxjs/Observable";
 
 
 @Component({
@@ -12,7 +12,7 @@ import {AnsiColorPipe} from "./ansi-color.pipe";
   selector: 'sc-logs',
   template: `
     <div class="pre" #pre>
-      <div [attr.data-line-number]="formatLineNumber(i, messages.length)" class="line"
+      <div class="line"
            *ngFor="let message of messages; let i = index"
            [innerHTML]="message | ansiColors | safeHtml"
       >
@@ -21,7 +21,6 @@ import {AnsiColorPipe} from "./ansi-color.pipe";
   `,
   styles: [`
     :host {
-      overflow-x: scroll;
       background: rgb(30, 30, 30);
       display: flex;
     }
@@ -33,14 +32,19 @@ import {AnsiColorPipe} from "./ansi-color.pipe";
     }
 
     .line:before {
-      content: attr(data-line-number);
       color: yellow;
+    }
+    
+    .line {
+      background: rgb(30, 30, 30);
+      white-space: pre;
     }
   `,
   AnsiColorPipe.Styles
   ]
 })
-export class ScLogComponent implements OnInit {
+export class ScLogComponent implements AfterViewInit, AfterViewChecked {
+
   @ViewChild('pre') pre: ElementRef;
 
   @Input() follow: boolean;
@@ -49,7 +53,6 @@ export class ScLogComponent implements OnInit {
 
   private latestScrollPosition = 0;
 
-  @HostListener('scroll', ['$event'])
   onHostScroll() {
     if (this.latestScrollPosition > this.scrollTop) {
       this.follow = false;
@@ -80,24 +83,24 @@ export class ScLogComponent implements OnInit {
     return this.elRef.nativeElement;
   }
 
-  formatLineNumber(i: number, max: number) {
-    const digits = `${max}`.length;
-    const lPad = (str: string, m: number) => str.length < m ? `0${lPad(str, m - 1)}` : str;
-    return lPad(`${i}`, digits) + ' ';
+  constructor(
+    readonly elRef: ElementRef,
+    readonly zone: NgZone
+  ) {
   }
 
-  constructor(readonly elRef: ElementRef) {
-  }
-
-  ngOnInit(): void {
-    const mo = new MutationObserver(m => this.followScroll());
-    mo.observe(this.pre.nativeElement, {
-      characterData: true,
-      subtree: true,
+  ngAfterViewInit() {
+    console.log('....');
+    this.zone.runOutsideAngular(() => {
+      Observable.fromEvent(this.elRef.nativeElement, 'scroll')
+        .debounceTime(50)
+        .subscribe(_ => this.onHostScroll())
     })
   }
 
-
+  ngAfterViewChecked() {
+    this.followScroll();
+  }
 
   followScroll() {
     if (this.follow) {

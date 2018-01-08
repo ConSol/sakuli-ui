@@ -4,11 +4,11 @@ import {Store} from "@ngrx/store";
 import {SakuliTestSuite} from "../../sweetest-components/services/access/model/sakuli-test-model";
 import {animate, style, transition, trigger} from "@angular/animations";
 import {
-  RunConfiguration, RunConfigurationSelect, SakuliContainer
+  RunConfiguration, RunConfigurationSelect,
+  SakuliContainer
 } from "./run-configuration/run-configuration.interface";
 import {
-  LoadRunConfiguration, LoadSakuliContainer, SAVE_RUN_CONFIGURATION_SUCCESS,
-  SaveRunConfiguration,
+  LoadRunConfiguration, LoadSakuliContainer, SAVE_RUN_CONFIGURATION_SUCCESS, SaveRunConfiguration,
   SelectSakuliContainer
 } from "./run-configuration/run-configuration.actions";
 import {Observable} from "rxjs/Observable";
@@ -16,10 +16,11 @@ import {RunConfigurationTypes} from "./run-configuration/run-configuration-types
 import {notNull} from "../../core/redux.util";
 import {Actions} from "@ngrx/effects";
 import {
-  DockerPullInfo, dockerPullInfoForCurrentRunInfoAsArray, dockerPullStreamForCurrentRunInfo,
+  DockerPullInfo, dockerPullInfoForCurrentRunInfoAsArray,
+  dockerPullStreamForCurrentRunInfo,
 } from "./state/test.interface";
 import {ActivatedRoute} from "@angular/router";
-import {RunTest} from "./state/testexecution.state";
+import {RunTest, testExecutionSelectors} from "./state/testexecution.state";
 import {testExecutionLogSelectors} from "./state/test-execution-log.state";
 import {testSuiteSelectId} from "./state/testsuite.state";
 
@@ -27,6 +28,17 @@ import {testSuiteSelectId} from "./state/testsuite.state";
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'run-test-suite',
   animations: [
+    trigger('onVnc', [
+      transition(':enter', [
+        style({
+          transform: 'scale(0,0)'
+        }),
+        animate(".25s ease-in", style({transform:'scale(1,1)'}))
+      ]),
+      transition(':leave', [
+        animate(".25s ease-in", style({transform:'scale(0,0)'}))
+      ])
+    ]),
     trigger('openConfig', [
       transition(':enter', [
         style({
@@ -97,6 +109,11 @@ import {testSuiteSelectId} from "./state/testsuite.state";
       </div>
     </div>
     <div class="row" *ngIf="hasLogs$ | async">
+      <div class="col-12 mb-2" *ngIf="vncReady$ | async" [@onVnc]="vncReady$ | async">
+        <sa-vnc-card
+          [testSuite]="testSuite"
+        ></sa-vnc-card>
+      </div>
       <div class="col-12">
         <sa-log-card
           [testSuite]="testSuite"
@@ -108,7 +125,7 @@ import {testSuiteSelectId} from "./state/testsuite.state";
     sa-log-card {
       height: 400px;
     }
-    
+
     .card-block {
       padding: .5rem;
     }
@@ -130,12 +147,12 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
   isDockerPull$: Observable<boolean>;
   isDockerPullStream$: Observable<boolean>;
   hasLogs$: Observable<boolean>;
+  vncReady$: Observable<boolean>;
 
-  constructor(
-    private store: Store<AppState>,
-    readonly route: ActivatedRoute,
-    readonly actions$: Actions
-  ) {}
+  constructor(private store: Store<AppState>,
+              readonly route: ActivatedRoute,
+              readonly actions$: Actions) {
+  }
 
   dispatchLoadRunConfiguration() {
     this.route.params.map(p => p['suite'])
@@ -154,16 +171,20 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
 
   ngOnChanges(change: SimpleChanges) {
     const tsChanges = change.testSuite;
-    if(tsChanges) {
+    if (tsChanges) {
       const curr = tsChanges.currentValue;
       const prev = tsChanges.previousValue;
-      if((!prev && curr) || testSuiteSelectId(curr) !== testSuiteSelectId(prev)) {
+      if ((!prev && curr) || testSuiteSelectId(curr) !== testSuiteSelectId(prev)) {
         this.initObservablesWithTestSuite(curr);
       }
     }
   }
 
   private initObservablesWithTestSuite(testSuite: SakuliTestSuite) {
+    this.vncReady$ = this.store
+      .select(testExecutionSelectors.latestByTestSuite(testSuite))
+      .map(te => te.vncReady)
+    ;
     this.dockerPullInfo$ = this.store
       .select(dockerPullInfoForCurrentRunInfoAsArray(testSuite))
       .debounceTime(this.debounceTime);
@@ -184,7 +205,7 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
 
   toggleConfiguration() {
     this.showConfiguration = !this.showConfiguration;
-    if(this.showConfiguration) {
+    if (this.showConfiguration) {
       this.dispatchLoadRunConfiguration();
     }
   }
@@ -205,7 +226,7 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
 
   get runWithText() {
     return this.runConfiguration$.map(rc => {
-      switch(rc.type as any) {
+      switch (rc.type as any) {
         case RunConfigurationTypes[RunConfigurationTypes.DockerCompose]:
           return `with docker-compose`;
         case RunConfigurationTypes[RunConfigurationTypes.Dockerfile]:

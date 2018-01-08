@@ -3,8 +3,7 @@ import {Action, createFeatureSelector, createSelector} from "@ngrx/store";
 import {uniqueName} from "../../../core/redux.util";
 import {TestExecutionEvent} from "../../../sweetest-components/services/access/model/test-execution-event.interface";
 import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
-import {testExecutionSelectId, testExecutionSelectors, TestExecutionEntity} from "./testexecution.state";
-import {IdMap} from "./test.interface";
+import {TestExecutionEntity, testExecutionSelectors} from "./testexecution.state";
 
 export interface TestExecutionLogMessageEntity {
   executionId: string
@@ -62,13 +61,13 @@ export const testExecutionLogSelectors = {
     return createSelector(
       selectors.selectAll,
       testExecutionSelectors.latestByTestSuite(testSuite),
-      (entities:TestExecutionLogMessageEntity[], te:TestExecutionEntity) => {
+      ((entities:TestExecutionLogMessageEntity[], te:TestExecutionEntity) => {
         return (testSuite && te)
           ? (entities || [])
             .filter(e => e.executionId === te.containerId)
           : []
       }
-    )
+    ))
   }
 };
 

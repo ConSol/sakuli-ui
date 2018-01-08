@@ -10,9 +10,9 @@ import {RouterModule} from "@angular/router";
 import {TestDetailComponent} from "./test-detail/test-detail.component";
 import {SaSourceComponent} from "./test-detail/tabs/source.component";
 import {RunTestSuiteComponent} from "./run-test-suite.component";
-import {LogModalComponent} from "./test-detail/log-modal.component";
+import {SaLogCard} from "./test-detail/sa-log-card.component";
 import {SaAssetsModule} from "./sa-assets/sa-assets.module";
-import {NgbModule, NgbTooltip, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {TestDetailConnectedComponent} from "app/sakuli-admin/test/test-detail/test-detail-connected.component";
 import {SaConfigurationComponent} from "./configuration/sa-configuration.component";
 import {RunConfigurationModule} from "./run-configuration/run-configuration.module";
@@ -24,17 +24,21 @@ import {TestsuiteEffects} from "./state/testsuite.effects";
 import {TestEditorFeatureName, testEditorReducer} from "./state/test-editor.interface";
 import {TestExecutionFeatureName, testExecutionReducer} from "./state/testexecution.state";
 import {TestExecutionLogFeatureName, testExecutionLogReducer} from "./state/test-execution-log.state";
+import {SaVncCard} from "./test-detail/sa-vnc-card.component";
 
 export const DeclareAndExport = [
   TestComponent,
   TestDetailComponent,
   SaSourceComponent,
   RunTestSuiteComponent,
-  LogModalComponent,
+  SaLogCard,
+  SaVncCard,
   TestDetailConnectedComponent,
   SaConfigurationComponent,
   SaDockerPullInfoComponent
 ];
+
+console.log(DeclareAndExport)
 
 @NgModule({
   imports: [
@@ -57,7 +61,7 @@ export const DeclareAndExport = [
     ReactiveFormsModule
   ],
   entryComponents: [
-    LogModalComponent
+    SaLogCard
   ],
   providers: [
     TestEffects,
