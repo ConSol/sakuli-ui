@@ -78,6 +78,14 @@ export const testResults = createSelector(
   nothrowFn(ts => ts.testResults, [])
 );
 
+export const testResultsFor = (testSuite: SakuliTestSuite) => {
+  return createSelector(
+    testResults,
+    nothrowFn((results: TestSuiteResult[]) => results
+      .filter(r =>  (r.testSuiteFolder || '').endsWith(testSuite.root)))
+  );
+}
+
 export const testSelectors = {
   testState,
   openTests,
@@ -86,5 +94,6 @@ export const testSelectors = {
   dockerPullStream,
   dockerPullStreamForCurrentRunInfo,
   dockerPullInfoForCurrentRunInfoAsArray,
-  testResults
+  testResults,
+  testResultsFor
 }

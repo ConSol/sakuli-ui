@@ -6,11 +6,9 @@ import {StompConnection, StompService} from "./stomp.service";
 import {TestExecutionEvent} from "./model/test-execution-event.interface";
 import {TestSuiteResult} from "./model/test-result.interface";
 import {FileService} from "./file.service";
-import {ProjectService} from "./project.service";
 import {absPath} from "./model/file-response.interface";
 import {DateUtil} from "../../utils";
 import {SakuliTestSuite} from "./model/sakuli-test-model";
-import {log} from "../../../core/redux.util";
 
 const testUrl = `api/testsuite`;
 
@@ -62,12 +60,16 @@ export class TestService {
       .mergeMap(files => {
         if(files.length) {
           return Observable
-            .forkJoin(...files.map(file => this.files.read(absPath(file))))
+            .forkJoin(...files.map(file => {
+              return this.files
+                .read(absPath(file))
+                .map(JSON.parse.bind(JSON))
+                .map(res => ({...res, sourceFile: file.name}))
+            }))
         } else {
           return Observable.of([]);
         }
       })
-      .map(raw => raw.map(JSON.parse.bind(JSON)))
   }
 
   testResults(testSuitePath: string): Observable<TestSuiteResult[]> {

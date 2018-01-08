@@ -4,6 +4,8 @@ import {Store} from "@ngrx/store";
 import {testResults} from "../state/test.interface";
 import {LoadTestResults} from "../state/test.actions";
 import {BoundIndexIterator} from "../../../sweetest-components/utils";
+import {ActivatedRoute} from "@angular/router";
+import {NavigateToResultReport} from "./sa-report.actions";
 
 @Component({
   selector: 'sa-report',
@@ -35,23 +37,45 @@ export class SaReportComponent implements OnInit {
 
   index = 0;
 
-  constructor(private store: Store<AppState>) {
+  constructor(
+    readonly store: Store<AppState>,
+    readonly route: ActivatedRoute
+  ) {
   }
 
   prev() {
-    this.indexIterator.prev();
+    this.navigate(-1);
   }
+
 
   next() {
-    this.indexIterator.next();
+    this.navigate(+1);
   }
 
+  private navigate(offSet: number) {
+    return this
+      .testResults$
+      .combineLatest(this.route.paramMap.filter(m => m.has('report')).map(m => m.get('report')).first())
+      .map(([trs, pReport]) => {
+        const i = trs.findIndex(tr => tr.sourceFile === pReport);
+        const it = new BoundIndexIterator(trs.length, i);
+        const ni = offSet < 0 ? it.prev() : it.next();
+        return trs[ni];
+      })
+      .first()
+      .subscribe(tr => {
+        this.store.dispatch(new NavigateToResultReport(tr))
+      })
+  }
   get testResults$() {
     return this.store.select(testResults);
   }
 
   get currentResult$() {
-    return this.testResults$.map(trs => trs[this.indexIterator.current]);
+    return this
+      .testResults$
+      .combineLatest(this.route.paramMap.filter(m => m.has('report')).map(m => m.get('report')))
+      .map(([trs, pReport]) => trs.find(tr => tr.sourceFile === pReport));
   }
 
   ngOnInit() {

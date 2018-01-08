@@ -11,6 +11,7 @@ import {AppLogComponent} from "./app-log/app-log.component";
 import {PreventRoutingGuardService} from "../sweetest-components/components/forms/prevent-routing-guard.service";
 import {DashboardConnectedComponent} from "./dashboard/dashboard-connected.component";
 import {LoginComponent} from "./login.component";
+import {SaReportOverviewComponent} from "./test/report/sa-report-overview.component";
 
 export const routes: Routes = [
   {
@@ -24,9 +25,17 @@ export const routes: Routes = [
   },
   {
     path: 'reports',
-    component: SaReportComponent,
     canActivate: [
       SakuliProjectGuardService
+    ],
+    children: [
+      {
+        path: '',
+        component: SaReportOverviewComponent,
+      },
+      {
+        path: ':report', component: SaReportComponent
+      }
     ]
   },
   {

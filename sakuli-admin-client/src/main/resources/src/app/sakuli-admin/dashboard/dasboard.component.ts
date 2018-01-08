@@ -36,20 +36,10 @@ import * as moment from "moment";
                   *ngIf="!isTableView(testSuite)"
                 >
                 </testsuite-stats-component>
-                <table *ngIf="isTableView(testSuite)" class="table">
-                  <tr>
-                    <th>State</th>
-                    <th>Started</th>
-                    <th>Duration (s)</th>
-                  </tr>
-                  <tr *ngFor="let result of getResultsForSuite(testSuite)">
-                    <td>
-                      <span class="badge" [ngClass]="badgeClass(result.state)">{{result.state}}</span>
-                    </td>
-                    <td>{{result.startDate|moment:'DD.MM.YYYY hh:mm'}}</td>
-                    <td>{{duration(result.startDate, result.stopDate)}}</td>
-                  </tr>
-                </table>
+                <sc-result-table
+                  *ngIf="isTableView(testSuite)"
+                  [results]="getResultsForSuite(testSuite)">
+                </sc-result-table>
               </div>
               <div
                 class="p-3 footer d-flex flex-row justify-content-end border border-primary border-left-0 border-right-0 border-bottom-0">

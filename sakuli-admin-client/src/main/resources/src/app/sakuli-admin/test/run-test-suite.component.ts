@@ -13,16 +13,19 @@ import {
 } from "./run-configuration/run-configuration.actions";
 import {Observable} from "rxjs/Observable";
 import {RunConfigurationTypes} from "./run-configuration/run-configuration-types.enum";
-import {notNull} from "../../core/redux.util";
+import {log, notNull} from "../../core/redux.util";
 import {Actions} from "@ngrx/effects";
 import {
-  DockerPullInfo, dockerPullInfoForCurrentRunInfoAsArray,
-  dockerPullStreamForCurrentRunInfo,
+  DockerPullInfo, dockerPullInfoForCurrentRunInfoAsArray, dockerPullStreamForCurrentRunInfo,
+  testSelectors,
 } from "./state/test.interface";
 import {ActivatedRoute} from "@angular/router";
 import {RunTest, TestExecutionEntity, testExecutionSelectors} from "./state/testexecution.state";
 import {testExecutionLogSelectors} from "./state/test-execution-log.state";
 import {testSuiteSelectId} from "./state/testsuite.state";
+import {TestSuiteResult} from "../../sweetest-components/services/access/model/test-result.interface";
+import {LoadTestResults} from "./state/test.actions";
+import {RouterGo} from "../../sweetest-components/services/router/router.actions";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -110,6 +113,13 @@ import {testSuiteSelectId} from "./state/testsuite.state";
         </div>
       </div>
     </ng-template>
+    <sa-report-navigation
+      *ngIf="latestResult$; let latestResult"
+      class="cursor-pointer"
+      (click)="navigateToResult(latestResult)"
+      [testResult]="latestResult"
+      [navigation]="false"
+    ></sa-report-navigation>
     <div *ngIf="suiteIsRunning$ | async; else runCard" class="card p-3 mb-3">
       <div class="card-content">
         <sc-icon icon="fa-spinner" [spin]="true"></sc-icon>
@@ -158,6 +168,7 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
   vncReady$: Observable<boolean>;
   suiteIsRunning$: Observable<boolean>;
   testSuiteExecutionInfo$: Observable<TestExecutionEntity>;
+  latestResult$: Observable<TestSuiteResult>;
 
   constructor(private store: Store<AppState>,
               readonly route: ActivatedRoute,
@@ -171,6 +182,7 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.dispatchLoadRunConfiguration();
+    this.store.dispatch(new LoadTestResults());
     this.store.dispatch(new LoadSakuliContainer());
     this.actions$.ofType(SAVE_RUN_CONFIGURATION_SUCCESS).subscribe(_ => this.showConfiguration = false);
     this.runConfiguration$ = this.store.select(RunConfigurationSelect.runConfiguration).filter(notNull);
@@ -191,6 +203,12 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
   }
 
   private initObservablesWithTestSuite(testSuite: SakuliTestSuite) {
+    this.latestResult$ = this.store
+      .select(testSelectors.testResultsFor(testSuite))
+      .do(log(this.testSuite.id))
+      .filter(r => !!r && !!r.length)
+      .map(r => r[0]);
+
     this.testSuiteExecutionInfo$ = this.store
       .select(testExecutionSelectors.latestByTestSuite(testSuite))
       .filter(notNull);
@@ -256,4 +274,7 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
     })
   }
 
+  navigateToResult(result: TestSuiteResult) {
+    this.store.dispatch(new RouterGo({path: ['/reports', result.sourceFile]}))
+  }
 }
