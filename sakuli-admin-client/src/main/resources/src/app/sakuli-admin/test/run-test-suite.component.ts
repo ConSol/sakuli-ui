@@ -20,7 +20,7 @@ import {
   dockerPullStreamForCurrentRunInfo,
 } from "./state/test.interface";
 import {ActivatedRoute} from "@angular/router";
-import {RunTest, testExecutionSelectors} from "./state/testexecution.state";
+import {RunTest, TestExecutionEntity, testExecutionSelectors} from "./state/testexecution.state";
 import {testExecutionLogSelectors} from "./state/test-execution-log.state";
 import {testSuiteSelectId} from "./state/testsuite.state";
 
@@ -33,10 +33,10 @@ import {testSuiteSelectId} from "./state/testsuite.state";
         style({
           transform: 'scale(0,0)'
         }),
-        animate(".25s ease-in", style({transform:'scale(1,1)'}))
+        animate(".25s ease-in", style({transform: 'scale(1,1)'}))
       ]),
       transition(':leave', [
-        animate(".25s ease-in", style({transform:'scale(0,0)'}))
+        animate(".25s ease-in", style({transform: 'scale(0,0)'}))
       ])
     ]),
     trigger('openConfig', [
@@ -65,47 +65,55 @@ import {testSuiteSelectId} from "./state/testsuite.state";
     ])
   ],
   template: `
-    <div class="card margin-y">
-      <div class="card-block d-flex justify-content-between align-items-center">
-        <div>
-          <button [disabled]="!testSuite" class="btn btn-success" (click)="runSuite(testSuite)">
-            <sc-icon icon="fa-play-circle">Run {{runWithText | async}}</sc-icon>
-          </button>
-          <sc-loading for="runTest" displayAs="spinner">
-            Preparing execution.
-          </sc-loading>
+    <ng-template #runCard>
+      <div class="card margin-y">
+        <div class="card-block d-flex justify-content-between align-items-center">
+          <div>
+            <button [disabled]="!testSuite" class="btn btn-success" (click)="runSuite(testSuite)">
+              <sc-icon icon="fa-play-circle">Run {{runWithText | async}}</sc-icon>
+            </button>
+            <sc-loading for="runTest" displayAs="spinner">
+              Preparing execution.
+            </sc-loading>
+          </div>
+          <div *ngIf="!showConfiguration">
+            <button class="btn btn-link" (click)="toggleConfiguration()">Configure</button>
+          </div>
         </div>
-        <div *ngIf="!showConfiguration">
-          <button class="btn btn-link" (click)="toggleConfiguration()">Configure</button>
+        <div class="card-block" *ngIf="showConfiguration" [@openConfig]="showConfiguration">
+          <run-configuration
+            [testSuite]="testSuite"
+            [config]="runConfiguration$ | async"
+            [containerTags]="containerTags$ | async"
+            [sakuliContainers]="sakuliContainer$ | async"
+            (cancel)="onCancelConfiguration()"
+            (save)="onSaveConfiguration($event)"
+            (containerChange)="onContainerChange($event)"
+          ></run-configuration>
         </div>
-      </div>
-      <div class="card-block" *ngIf="showConfiguration" [@openConfig]="showConfiguration">
-        <run-configuration
-          [testSuite]="testSuite"
-          [config]="runConfiguration$ | async"
-          [containerTags]="containerTags$ | async"
-          [sakuliContainers]="sakuliContainer$ | async"
-          (cancel)="onCancelConfiguration()"
-          (save)="onSaveConfiguration($event)"
-          (containerChange)="onContainerChange($event)"
-        ></run-configuration>
-      </div>
-      <div class="card-block" *ngIf="dockerPullStream$ | async; let dockerPullStream">
-        <h4>Building Docker image</h4>
-        <sc-logs>
-          <ng-container *ngFor="let stream of dockerPullStream">{{stream}}</ng-container>
-        </sc-logs>
-      </div>
-      <div class="card-block" *ngIf="dockerPullInfo$ | async; let dockerPullInfos">
-        <h4>Pulling Docker image</h4>
-        <ng-container
-          *ngFor="let dockerPullInfo of dockerPullInfos"
-        >
-          <docker-pull-info-component
-            [dockerPullInfo]="dockerPullInfo"
+        <div class="card-block" *ngIf="dockerPullStream$ | async; let dockerPullStream">
+          <h4>Building Docker image</h4>
+          <sc-logs>
+            <ng-container *ngFor="let stream of dockerPullStream">{{stream}}</ng-container>
+          </sc-logs>
+        </div>
+        <div class="card-block" *ngIf="dockerPullInfo$ | async; let dockerPullInfos">
+          <h4>Pulling Docker image</h4>
+          <ng-container
+            *ngFor="let dockerPullInfo of dockerPullInfos"
           >
-          </docker-pull-info-component>
-        </ng-container>
+            <docker-pull-info-component
+              [dockerPullInfo]="dockerPullInfo"
+            >
+            </docker-pull-info-component>
+          </ng-container>
+        </div>
+      </div>
+    </ng-template>
+    <div *ngIf="suiteIsRunning$ | async; else runCard" class="card p-3 mb-3">
+      <div class="card-content">
+        <sc-icon icon="fa-spinner" [spin]="true"></sc-icon>
+        Test suite is running in container {{(testSuiteExecutionInfo$ | async)?.containerId}}
       </div>
     </div>
     <div class="row" *ngIf="hasLogs$ | async">
@@ -148,6 +156,8 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
   isDockerPullStream$: Observable<boolean>;
   hasLogs$: Observable<boolean>;
   vncReady$: Observable<boolean>;
+  suiteIsRunning$: Observable<boolean>;
+  testSuiteExecutionInfo$: Observable<TestExecutionEntity>;
 
   constructor(private store: Store<AppState>,
               readonly route: ActivatedRoute,
@@ -181,9 +191,15 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
   }
 
   private initObservablesWithTestSuite(testSuite: SakuliTestSuite) {
-    this.vncReady$ = this.store
+    this.testSuiteExecutionInfo$ = this.store
       .select(testExecutionSelectors.latestByTestSuite(testSuite))
+      .filter(notNull);
+
+    this.vncReady$ = this.testSuiteExecutionInfo$
       .map(te => te.vncReady)
+    ;
+    this.suiteIsRunning$ = this.testSuiteExecutionInfo$
+      .map(te => te.isRunning)
     ;
     this.dockerPullInfo$ = this.store
       .select(dockerPullInfoForCurrentRunInfoAsArray(testSuite))

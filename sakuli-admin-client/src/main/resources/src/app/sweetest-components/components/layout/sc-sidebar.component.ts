@@ -15,11 +15,26 @@ import {ScModalService} from "../presentation/modal/sc-modal.service";
 import {SaTextModalComponent} from "../../../sakuli-admin/test/sa-assets/sa-text-modal.component";
 import {FileResponse} from "../../services/access/model/file-response.interface";
 import {AssetsUnpin} from "../../../sakuli-admin/test/sa-assets/sa-assets.action";
+import {testExecutionSelectors} from "../../../sakuli-admin/test/state/testexecution.state";
+import {log} from "../../../core/redux.util";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'sc-sidebar',
   template: `
+    <ng-template #isRunning>
+      <a
+        class="run-button disabled ml-1 btn btn-sm rounded btn-primary"
+        [ngbTooltip]="'Suite is running'"
+        placement="right"
+        container="body"
+      >
+        <sc-icon
+          icon="fa-spinner"
+          [spin]="true"
+        ></sc-icon>
+      </a>
+    </ng-template>
     <ul class="nav flex-column">
       <ng-container *ngFor="let testSuite of testSuites$ | async">
         <sc-link [fixedIconWidth]="true"
@@ -28,14 +43,15 @@ import {AssetsUnpin} from "../../../sakuli-admin/test/sa-assets/sa-assets.action
                  [ngClass]="{'active': isActive(['/testsuite', testSuite.root])}"
         >
           <span class="hidden-md-down link-text">
-            {{testSuite.id}}
+            {{testSuite.id}} {{canRun$(testSuite) | async | json}}
           </span>
-          <span class="actions mr-lg-0 mr-sm-3">
+          <span class="actions mr-lg-0">
             <a
               class="run-button ml-1 btn btn-sm rounded btn-success"
               [ngbTooltip]="'Run ' + testSuite.id"
               placement="right"
               container="body"
+              *ngIf="canRun$(testSuite) | async; else isRunning"
             >
               <sc-icon
                 icon="fa-play"
@@ -67,10 +83,10 @@ import {AssetsUnpin} from "../../../sakuli-admin/test/sa-assets/sa-assets.action
                    class="d-flex justify-content-between"
           >
             <span class="hidden-xs-down link-text">{{pinned.file.name}}</span>
-            <button type="button" 
-                    class="close" 
+            <button type="button"
+                    class="close"
                     (click)="unPin($event, pinned.file, testSuite)"
-                    data-dismiss="alert" 
+                    data-dismiss="alert"
                     aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -225,5 +241,11 @@ export class ScSidebarComponent {
     } else {
       this.workspace$.first().subscribe(ws => this.store.dispatch(new AssetsUnpin(file, ws)))
     }
+  }
+
+  canRun$(testSuite: SakuliTestSuite) {
+    return this.store.select(testExecutionSelectors.latestByTestSuite(testSuite))
+      .do(log(testSuite.id))
+      .map(i => i == null ? true : !i.isRunning)
   }
 }
