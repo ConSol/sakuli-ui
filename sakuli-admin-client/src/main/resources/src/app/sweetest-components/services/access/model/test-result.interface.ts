@@ -23,6 +23,7 @@ export interface TestSuiteResult extends BaseResult {
   testSuiteFolder: string;
   testSuiteFile: string;
   testCases: {[name:string]:TestCaseResult};
+  sourceFile: string;
 }
 
 export interface TestCaseResult extends BaseResult {

@@ -1,4 +1,4 @@
-import {NgModule, ModuleWithProviders} from '@angular/core';
+import {ModuleWithProviders, NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ScLayoutComponent} from './components/layout/sc-layout.component';
 import {ScHeadingComponent, ScHxComponent} from './components/presentation/text/sc-heading.component';
@@ -15,7 +15,6 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ScTreeComponent} from './components/presentation/tree/sc-tree.component';
 import {ScTreeItemComponent} from './components/presentation/tree/sc-tree-item.component';
 import {ScTableComponent} from "./components/presentation/table/table.component";
-import {ScEditorComponent} from "./components/forms/editor/sc-editor.component";
 import {FormsModule} from "@angular/forms";
 import {ScToastModule} from "./components/presentation/toast/toast.module";
 import {AbsPathPipe, FileNamePipe, PathPipe} from "./components/common/file.pipes";
@@ -38,7 +37,7 @@ import {ScFormsModule} from "./components/forms/sc-forms.module";
 import {ScOpenFileModule} from "./components/presentation/open-file/sc-open-file.module";
 import {ScFileSelectorModule} from "./components/presentation/file-selector/sc-file-selector.module";
 import {RouterModule} from "@angular/router";
-import {ScLoginComponent} from "./services/access/auth/sc-login.component";
+import {ScResultTableComponent} from "./components/layout/sc-result-table.component";
 
 
 export const SweetestComponentsAndDirectives  = [
@@ -49,6 +48,7 @@ export const SweetestComponentsAndDirectives  = [
   ScContentComponent,
   ScLinkComponent,
   ScCircleIndicatorComponent,
+  ScResultTableComponent,
   ScHxComponent,
   PrimaryContextDirective,
   ScCounterComponent,
