@@ -4,6 +4,8 @@ import {IMenuItem} from "./menu-item.interface";
 import {SelectionState} from "../../../model/tree";
 import {castStringArray, mapEntities, uniqueName} from "../../../../core/redux.util";
 
+export const ScMenuFeatureName = 'scMenu';
+
 export const menuSelectId = (menuItem: IMenuItem) => menuItem.id;
 
 export interface MenuState extends EntityState<IMenuItem> {}
@@ -45,7 +47,16 @@ export class RemoveMenuitem implements Action {
   ) {}
 }
 
-const _menuSelectors = menuEntityAdapter.getSelectors(createFeatureSelector<MenuState>('scMenu'));
+export const INVOKE_MENUITEM = '[MENUITEM] INVOKE';
+export class InvokeMenuitem implements Action {
+  readonly type = INVOKE_MENUITEM;
+  constructor(
+    readonly item: IMenuItem
+  ) {}
+}
+
+
+const _menuSelectors = menuEntityAdapter.getSelectors(createFeatureSelector<MenuState>(ScMenuFeatureName));
 
 const byParent = (parent: string) => createSelector(
   _menuSelectors.selectAll,

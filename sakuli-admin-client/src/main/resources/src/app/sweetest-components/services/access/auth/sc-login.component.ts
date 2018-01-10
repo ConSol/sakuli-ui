@@ -1,11 +1,6 @@
-import {Component, EventEmitter, OnInit, Optional, Output} from '@angular/core';
-import {FormBuilder} from "@angular/forms";
+import {Component, EventEmitter, Output} from '@angular/core';
 import {LoginForm} from "./login.form";
-import {ScAuthenticationService} from "../sc-authentication.service";
-import {ScToastService} from "../../../components/presentation/toast/toast.service";
-import {DangerToast, SuccessToast} from "../../../components/presentation/toast/toast.model";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {ModalAware} from "../../../components/presentation/modal/sc-modal.service";
+import {ScAuthenticationService} from "./sc-authentication.service";
 
 @Component({
   moduleId: module.id,
@@ -33,39 +28,19 @@ import {ModalAware} from "../../../components/presentation/modal/sc-modal.servic
   `
 })
 
-export class ScLoginComponent implements ModalAware{
-  getActiveModal(): NgbActiveModal {
-    return this.modal;
-  }
+export class ScLoginComponent {
 
   readonly loginForm = new LoginForm();
 
   @Output() success = new EventEmitter();
 
-  constructor(readonly authService: ScAuthenticationService,
-              readonly toastService: ScToastService,
-              @Optional() readonly modal: NgbActiveModal) {
-  }
+  constructor(readonly authService: ScAuthenticationService
+  ) {  }
 
   doLogin() {
     const user = this.loginForm.user;
     const password = this.loginForm.password;
     this.authService.login(user, password)
-      .subscribe(
-        t => {
-          this.toastService.create(new SuccessToast('Successfully logged in'));
-          this.close();
-        },
-        e => this.toastService.create(new DangerToast('Failed to login', e))
-      );
   }
-
-  close() {
-    if(this.modal) {
-      this.modal.close();
-    }
-    this.success.next();
-  }
-
 
 }

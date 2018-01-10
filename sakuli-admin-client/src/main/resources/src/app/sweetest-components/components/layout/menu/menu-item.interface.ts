@@ -1,11 +1,13 @@
 import {FontawesomeIcon} from "../../presentation/icon/fontawesome-icon.utils";
-import {SelectionState, ITreeItem} from "../../../model/tree";
+import {ITreeItem, SelectionState} from "../../../model/tree";
+import {Action} from "@ngrx/store";
 
 export interface IMenuItem extends ITreeItem {
   icon: FontawesomeIcon,
   label: string,
-  link: string[],
+  link?: string[],
   order: number;
+  action?: Action
   queryParams: {[key:string]:string}
 }
 
@@ -13,10 +15,11 @@ export class MenuItem implements IMenuItem{
   readonly parent: string;
   readonly link: string[];
   readonly queryParams: {};
+  readonly action;
   constructor(
     readonly id: string,
     readonly label: string,
-    readonly _link: string | string[],
+    readonly _link: string | string[] | Action,
     readonly icon: FontawesomeIcon = 'fa-external-link',
     parentItem: IMenuItem | string,
     readonly selected: SelectionState = SelectionState.UnSelected,
@@ -29,8 +32,10 @@ export class MenuItem implements IMenuItem{
     }
     if(typeof _link === 'string') {
       this.link = [_link];
-    } else {
+    } else if(Array.isArray(_link)) {
       this.link = _link;
+    } else {
+      this.action = _link;
     }
   }
 

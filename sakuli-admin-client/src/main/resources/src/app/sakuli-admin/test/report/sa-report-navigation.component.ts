@@ -1,7 +1,4 @@
-import {
-  ChangeDetectionStrategy, Component, EventEmitter, HostBinding, HostListener, Input, OnInit,
-  Output
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output} from '@angular/core';
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
 import {resultStateMap} from "./result-state-map.const";
 
@@ -10,8 +7,8 @@ import {resultStateMap} from "./result-state-map.const";
   selector: 'sa-report-navigation',
   template: `
     <div [class]="cardClass" *ngIf="testResult">
-      <div [class]="'d-flex flex-row justify-content-between align-items-center ' + stateClass">
-        <button class="btn btn-link cursor-pointer" (click)="prev()" *ngIf="navigation">
+      <div [class]="'d-flex flex-row justify-content-between align-items-center p-2 ' + stateClass">
+        <button class="btn btn-link cursor-pointer p-0" (click)="prev()" *ngIf="navigation">
           <sc-icon icon="fa-chevron-left"></sc-icon>
         </button>
         <div style="flex-grow: 1" class="text-center">
@@ -24,7 +21,7 @@ import {resultStateMap} from "./result-state-map.const";
           {{testResult.id}} |
           {{testResult.state}}
         </div>
-        <button class="btn btn-link cursor-pointer" (click)="next()" *ngIf="navigation">
+        <button class="btn btn-link cursor-pointer p-0" (click)="next()" *ngIf="navigation">
           <sc-icon icon="fa-chevron-right"></sc-icon>
         </button>
       </div>

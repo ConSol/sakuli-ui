@@ -1,5 +1,4 @@
 import {Injectable} from "@angular/core";
-import {Headers, Http} from "@angular/http";
 import {Observable} from "rxjs/Observable";
 import {TestRunInfo} from "./model/test-run-info.interface";
 import {StompConnection, StompService} from "./stomp.service";
@@ -9,33 +8,37 @@ import {FileService} from "./file.service";
 import {absPath} from "./model/file-response.interface";
 import {DateUtil} from "../../utils";
 import {SakuliTestSuite} from "./model/sakuli-test-model";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 
 const testUrl = `api/testsuite`;
 
 @Injectable()
 export class TestService {
 
-  constructor(private http: Http,
+  constructor(private http: HttpClient,
               private files: FileService,
               private stomp: StompService) {
   }
 
   testSuite(path: string): Observable<SakuliTestSuite> {
-    return this.http.get(`${testUrl}?path=${path}`)
-      .map(r => r.json() as SakuliTestSuite);
+    return this.http.get<SakuliTestSuite>(`${testUrl}?path=${path}`)
   }
 
   putTestSuite(testSuite: SakuliTestSuite) {
     return this.http.put(
       `${testUrl}`,
       JSON.stringify(testSuite),
-      {headers: new Headers({'Content-Type': 'application/json'})}
-    ).map(r => r.text());
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        }),
+        responseType: 'text'
+      }
+    )
   }
 
   run(testSuite: SakuliTestSuite, workspace: string): Observable<TestRunInfo> {
-    return this.http.post(`${testUrl}/run?workspace=${workspace}`, testSuite)
-      .map(r => r.json());
+    return this.http.post<TestRunInfo>(`${testUrl}/run?workspace=${workspace}`, testSuite)
   }
 
   testRunLogs(processId: string): Observable<TestExecutionEvent> {
@@ -51,14 +54,13 @@ export class TestService {
   }
 
   testResultsFromLogs(testSuitePath: string): Observable<TestSuiteResult[]> {
-    return this.http.get(`${testUrl}/results?path=${testSuitePath}`)
-      .map(r => r.json())
+    return this.http.get<TestSuiteResult[]>(`${testUrl}/results?path=${testSuitePath}`)
   }
 
   testResultsFromJson(testSuitePath: string): Observable<TestSuiteResult[]> {
     return this.files.files(`${testSuitePath}/_logs/_json`)
       .mergeMap(files => {
-        if(files.length) {
+        if (files.length) {
           return Observable
             .forkJoin(...files.map(file => {
               return this.files

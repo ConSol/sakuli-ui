@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, HostBinding, Input, OnInit, Output, ViewChild} from "@angular/core";
+import {Component, EventEmitter, HostBinding, Input, Output} from "@angular/core";
 import {Theme} from "../theme";
 import {IMenuItem} from "./menu/menu-item.interface";
 
@@ -16,13 +16,13 @@ import {IMenuItem} from "./menu/menu-item.interface";
         <img *ngIf="brandLogo" [src]="brandLogo"/>
         <span *ngIf="brandName">{{brandName}}</span>
       </a>
-      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <ul class="navbar-nav primary">
         <sc-link *ngFor="let menuItem of primaryMenuItems" [icon]="menuItem.icon" (click)="onLinkClick(menuItem)">
           {{menuItem.label}}
         </sc-link>
         <ng-content select="sc-link, sc-link.primary"></ng-content>
       </ul>
-      <ul class="navbar-nav align-self-end">
+      <ul class="navbar-nav align-self-end secondary">
         <sc-link *ngFor="let menuItem of secondaryMenuItems" [icon]="menuItem.icon" (click)="onLinkClick(menuItem)">
           {{menuItem.label}}
         </sc-link>
@@ -31,6 +31,10 @@ import {IMenuItem} from "./menu/menu-item.interface";
     </div>
   `,
   styles: [`
+    .navbar-nav.primary {
+      flex-grow: 1;
+    }
+    
     :host {
       background-color: ${Theme.colors.primary};
       color: white !important;

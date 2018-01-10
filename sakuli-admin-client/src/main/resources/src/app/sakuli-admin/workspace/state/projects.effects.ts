@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, Effect} from '@ngrx/effects';
-import {ProjectService} from '../../../sweetest-components/services/access/project.service';
 import {
-  AppendChildren, LOAD_PATH, LoadPath, OPEN_WORKSPACE, OpenWorkspace, REFRESH_PROJECT, SetProject, TOGGLE_OPEN,
+  AppendChildren, LOAD_PATH, LoadPath, OPEN_WORKSPACE, OpenWorkspace, TOGGLE_OPEN,
   ToggleOpen
 } from './project.actions';
 import {of} from 'rxjs/observable/of';
@@ -11,20 +10,9 @@ import {FileService} from "../../../sweetest-components/services/access/file.ser
 import {ErrorMessage} from "../../../sweetest-components/components/presentation/toast/toast.actions";
 import {Observable} from "rxjs/Observable";
 import {LoadTestsuite} from "../../test/state/testsuite.state";
-import {AddMenuItem} from "../../../sweetest-components/components/layout/menu/menu.state";
-import {MenuItem} from "../../../sweetest-components/components/layout/menu/menu-item.interface";
-import {LayoutMenuService} from "../../../sweetest-components/components/layout/menu/layout-menu.service";
-import {FontawesomeIcons} from "../../../sweetest-components/components/presentation/icon/fontawesome-icon.utils";
-import {SelectionState} from "../../../sweetest-components/model/tree";
 
 @Injectable()
 export class ProjectEffects {
-
-  @Effect() refresh$ = this.actions$.ofType(REFRESH_PROJECT)
-    .mergeMap(a => this.projectService.activeProject())
-    .map(p => new SetProject(p))
-    .catch(ErrorMessage('Error while fetching current testSuite'));
-
 
   @Effect() open$ = this.actions$.ofType(LOAD_PATH)
     .mergeMap((loadPath: LoadPath) => {
@@ -57,7 +45,6 @@ export class ProjectEffects {
     .map(fr => new LoadTestsuite(fr.path));
 
   constructor(
-    private projectService: ProjectService,
     private fileService: FileService,
     private actions$: Actions
   ) {}

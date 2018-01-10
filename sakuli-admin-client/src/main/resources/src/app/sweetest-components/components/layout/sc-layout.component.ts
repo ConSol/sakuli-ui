@@ -1,8 +1,7 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from "@angular/core";
+import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {Observable} from "rxjs/Observable";
 import {IMenuItem} from "./menu/menu-item.interface";
 import {LayoutMenuService} from "./menu/layout-menu.service";
-import {log} from "../../../core/redux.util";
 
 @Component({
   selector: 'sc-layout',
@@ -14,10 +13,10 @@ import {log} from "../../../core/redux.util";
                  [secondaryMenuItems]="secondaryMenuItems$ | async"
                  (menuItemSelected)="onMenuItemSelected($event)"
       ></sc-header>
-      <div class="flex-row" [style.display]="'flex'">
+      <div class="flex-row d-flex">
         <sc-sidebar
-        [menuItems]="sidebarMenuItems$ | async"
-        (menuItemSelected)="onMenuItemSelected($event)"
+          [menuItems]="sidebarMenuItems$ | async"
+          (menuItemSelected)="onMenuItemSelected($event)"
         ></sc-sidebar>
         <div class="content-outlet">
           <ng-content></ng-content>
@@ -26,8 +25,7 @@ import {log} from "../../../core/redux.util";
       <sc-toast-container></sc-toast-container>
     </main>
   `,
-  styles: [`
-
+  styles: [`    
     sc-sidebar {
       flex: 0 1 100%;
     }

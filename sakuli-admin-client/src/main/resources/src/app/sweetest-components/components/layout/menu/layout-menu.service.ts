@@ -3,10 +3,11 @@ import {IMenuItem} from "./menu-item.interface";
 import {Observable} from "rxjs/Observable";
 import 'rxjs/Rx'
 import {Store} from "@ngrx/store"
-import {AddMenuItem, menuSelectors, MenuState, SelectMenuItem} from "./menu.state";
+import {AddMenuItem, INVOKE_MENUITEM, InvokeMenuitem, menuSelectors, MenuState, SelectMenuItem} from "./menu.state";
 import {Actions, Effect} from "@ngrx/effects";
 import {ROUTER_NAVIGATION, RouterNavigationAction} from "@ngrx/router-store";
 import {Router} from "@angular/router";
+import {RouterGo} from "../../../services/router/router.actions";
 
 @Injectable()
 export class LayoutMenuService {
@@ -49,5 +50,19 @@ export class LayoutMenuService {
       .skipWhile(menuItems => menuItems == null)
       .first()
     )
-    .map((m: IMenuItem) => new SelectMenuItem(m.id))
+    .map((m: IMenuItem) => new SelectMenuItem(m.id));
+
+
+  @Effect() invocation$ = this.actions$
+    .ofType(INVOKE_MENUITEM)
+    .map((a: InvokeMenuitem) => {
+      if(a.item.action) {
+        return a.item.action
+      } else {
+        return new RouterGo({
+          path: a.item.link,
+          query: a.item.queryParams || {}
+        })
+      }
+    })
 }

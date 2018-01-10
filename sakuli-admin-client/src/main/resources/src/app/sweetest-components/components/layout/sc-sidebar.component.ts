@@ -43,7 +43,7 @@ import {log} from "../../../core/redux.util";
                  [ngClass]="{'active': isActive(['/testsuite', testSuite.root])}"
         >
           <span class="hidden-md-down link-text">
-            {{testSuite.id}} {{canRun$(testSuite) | async | json}}
+            {{testSuite.id}}
           </span>
           <span class="actions mr-lg-0">
             <a

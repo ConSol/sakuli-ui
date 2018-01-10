@@ -9,6 +9,7 @@ import {TestEditorState, testEditorStateInit} from "./test/state/test-editor.int
 import {TestSuiteState, testSuiteStateInit} from "./test/state/testsuite.state";
 import {ScLoadingState} from "../sweetest-components/components/presentation/loading/sc-loading.state";
 import {MenuState, menuStateInit} from "../sweetest-components/components/layout/menu/menu.state";
+import {AuthFeatureName} from "../sweetest-components/services/access/auth/auth.state";
 
 export interface AppStateBase {
   project: WorkspaceState,
@@ -23,17 +24,19 @@ export interface AppStateBase {
 
 export type AppState = AppStateBase & ToastAppState;
 
+export const stateInit: AppState = {
+  project: WorkspaceStateInit,
+  test: TestStateInit,
+  assets: AssetsStateInit,
+  scToast: ToastStateInit,
+  testEditor: testEditorStateInit,
+  testsuite: testSuiteStateInit,
+  scLoading: {},
+  scMenu: menuStateInit
+};
+
 export function initStateFactory() {
-  const stateInit: AppState = {
-    project: WorkspaceStateInit,
-    test: TestStateInit,
-    assets: AssetsStateInit,
-    scToast: ToastStateInit,
-    testEditor: testEditorStateInit,
-    testsuite: testSuiteStateInit,
-    scLoading: {},
-    scMenu: menuStateInit
-  };
+
   const dehydrationProps: string[] = [
     'project',
     'test',
@@ -41,6 +44,7 @@ export function initStateFactory() {
     'testsuite',
     'testEditor',
     'scMenu',
+    AuthFeatureName
     //TestExecutionLogFeatureName,
     //TestExecutionFeatureName
   ];
