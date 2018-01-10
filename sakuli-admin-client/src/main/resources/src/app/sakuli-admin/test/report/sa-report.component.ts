@@ -6,17 +6,36 @@ import {LoadTestResults} from "../state/test.actions";
 import {BoundIndexIterator} from "../../../sweetest-components/utils";
 import {ActivatedRoute} from "@angular/router";
 import {NavigateToResultReport} from "./sa-report.actions";
+import {animate, group, query, style, transition, trigger} from "@angular/animations";
 
 @Component({
   selector: 'sa-report',
+  animations: [
+    trigger('pageTurn', [
+      transition(':increment', group([
+        query(':enter', [
+          style({transform: 'translateX(100%)'}),
+          animate('.5s ease-out', style('*'))
+        ]),
+        query(':leave', [
+          style({transform: 'translateY(-105%)', boxShadow: 'none'}),
+          animate('.5s ease-out', style({transform: 'translateX(-100%) translateY(-105%)', boxShadow: 'none'}))
+        ])
+      ])),
+      transition(':decrement', group([
+        query(':enter', [
+          style({transform: 'translateX(-100%)'}),
+          animate('.5s ease-out', style('*'))
+        ]),
+        query(':leave', [
+          style({transform: 'translateY(-105%)', boxShadow: 'none'}),
+          animate('.5s ease-out', style({transform: 'translateX(100%) translateY(-105%)', boxShadow: 'none'}))
+        ])
+      ]))
+    ])
+  ],
   template: `
     <sc-content>
-      <!--
-      <sc-heading
-        icon="fa-tasks"
-        title="Reports"
-      ></sc-heading>
-      -->
       <article class="d-flex flex-column">
         <sc-loading displayAs="progressbar" for="loadingTestResults"></sc-loading>
         <sa-report-navigation [testResult]="currentResult$ | async"
@@ -24,12 +43,27 @@ import {NavigateToResultReport} from "./sa-report.actions";
                               (prev)="prev()"
                               [navigation]="true"
         ></sa-report-navigation>
-        <sa-report-content
-          [testResult]="currentResult$ | async"
-        ></sa-report-content>
+        <div class="paging-wrapper">
+          <div class="d-flex align-items-start flex-nowrap">
+            <sa-report-content
+              [@pageTurn]="index"
+              [testResult]="currentResult$ | async"
+            ></sa-report-content>
+          </div>
+        </div>
       </article>
     </sc-content>
-  `
+  `,
+  styles: [`
+    .paging-wrapper {
+      overflow: hidden;
+    }
+
+    sa-report-content {
+      width: 100%;
+      float: left;
+    }
+  `]
 })
 export class SaReportComponent implements OnInit {
 
@@ -37,10 +71,8 @@ export class SaReportComponent implements OnInit {
 
   index = 0;
 
-  constructor(
-    readonly store: Store<AppState>,
-    readonly route: ActivatedRoute
-  ) {
+  constructor(readonly store: Store<AppState>,
+              readonly route: ActivatedRoute) {
   }
 
   prev() {
@@ -53,6 +85,7 @@ export class SaReportComponent implements OnInit {
   }
 
   private navigate(offSet: number) {
+    this.index += offSet;
     return this
       .testResults$
       .combineLatest(this.route.paramMap.filter(m => m.has('report')).map(m => m.get('report')).first())
@@ -67,6 +100,7 @@ export class SaReportComponent implements OnInit {
         this.store.dispatch(new NavigateToResultReport(tr))
       })
   }
+
   get testResults$() {
     return this.store.select(testResults);
   }

@@ -114,7 +114,7 @@ import {RouterGo} from "../../sweetest-components/services/router/router.actions
       </div>
     </ng-template>
     <sa-report-navigation
-      *ngIf="latestResult$; let latestResult"
+      *ngIf="latestResult$ | async; let latestResult"
       class="cursor-pointer"
       (click)="navigateToResult(latestResult)"
       [testResult]="latestResult"
@@ -217,7 +217,7 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
       .map(te => te.vncReady)
     ;
     this.suiteIsRunning$ = this.testSuiteExecutionInfo$
-      .map(te => te.isRunning)
+      .map(te => !!te ? false : te.isRunning)
     ;
     this.dockerPullInfo$ = this.store
       .select(dockerPullInfoForCurrentRunInfoAsArray(testSuite))

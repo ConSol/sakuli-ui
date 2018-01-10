@@ -9,8 +9,6 @@ import {TestEditorState, testEditorStateInit} from "./test/state/test-editor.int
 import {TestSuiteState, testSuiteStateInit} from "./test/state/testsuite.state";
 import {ScLoadingState} from "../sweetest-components/components/presentation/loading/sc-loading.state";
 import {MenuState, menuStateInit} from "../sweetest-components/components/layout/menu/menu.state";
-import {TestExecutionLogFeatureName} from "./test/state/test-execution-log.state";
-import {TestExecutionFeatureName} from "./test/state/testexecution.state";
 
 export interface AppStateBase {
   project: WorkspaceState,
@@ -43,8 +41,8 @@ export function initStateFactory() {
     'testsuite',
     'testEditor',
     'scMenu',
-    TestExecutionLogFeatureName,
-    TestExecutionFeatureName
+    //TestExecutionLogFeatureName,
+    //TestExecutionFeatureName
   ];
   const state = JSON.parse(sessionStorage.getItem('sakuli-admin-state')) || {} as AppState;
 

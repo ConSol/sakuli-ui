@@ -7,7 +7,7 @@ import {ContainerTag, RunConfigurationState, SakuliContainer} from "./run-config
 function getDefaultTag(currentTag: ContainerTag, tags: ContainerTag[] = []) {
   let r: ContainerTag;
   if (currentTag) {
-    r = tags.find(t => currentTag.name === t.name)
+    r = (tags || []).find(t => currentTag.name === t.name)
   }
   if (!r) {
     r = tags.find(t => t.name === 'latest');
