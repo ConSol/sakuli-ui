@@ -23,7 +23,7 @@ import {NavigateToResultReport} from "./sa-report.actions";
 })
 
 export class SaReportOverviewComponent implements OnInit {
-  private results$: Observable<TestSuiteResult[]>;
+  results$: Observable<TestSuiteResult[]>;
 
   constructor(readonly store: Store<AppState>) {
   }
