@@ -32,11 +32,12 @@ public class LocalFileSystemService implements FileSystemService {
     }
 
     public Path normalizePath(String path) {
-        if(path.startsWith("/")) {
-            return Paths.get(path);
-        } else {
-            return Paths.get(getRootDirectory(), path);
+        //TODO throw error if path is absolute or outside of the root directory
+        final Path p = Paths.get(path);
+        if (p.isAbsolute()){
+            return p.toAbsolutePath().normalize();
         }
+        return Paths.get(getRootDirectory(), path).normalize();
     }
 
     @Override

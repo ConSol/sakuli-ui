@@ -48,14 +48,13 @@ public class LocalExecutionStrategy extends AbstractTestExecutionStrategy<LocalE
         Consumer<Map.Entry<String, String>> printE = e -> log.info(String.format("%s: %s", e.getKey(), e.getValue()));
         String sakuliHome = Optional
                 .ofNullable(System.getenv("SAKULI_HOME"))
+                //TODO throw error to the client
                 .orElse("/Applications/sakuli/sakuli-v1.0.2");
         Map<String,String> pbEnv = processBuilder.environment();
         pbEnv.put("Path", pbEnv.get("Path") + ":" + sakuliHome + "/bin");
-        pbEnv.put("GOOS", "linux");
-        pbEnv.put("GOARCH", "386");
         processBuilder
                 .directory(Paths.get(rootDirectory, getTestSuite().getName()).toFile())
-                .command("/bin/bash", "-c", "-l", "sakuli run .");
+                .command("sakuli","run", ".");
 
         LocalCommand command = new LocalCommand(processBuilder);
         new Thread(new CommandExecutorRunnable(
