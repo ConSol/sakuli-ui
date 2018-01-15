@@ -22,7 +22,9 @@ public interface FileSystemService {
 
     final static Predicate<File> hiddenFiles = f -> !f.isHidden();
     final static Function<String, Function<File, FileModel>> toFileModel = basePath -> f -> new FileModel(
-            Paths.get(basePath).toString(),
+            // Necessary to send paths in URL complient format from the client to server.
+            // Java Path class will normalize this on the way back.
+            Paths.get(basePath).toString().replace("\\","/"),
             f.getName(),
             f.isDirectory()
     );
