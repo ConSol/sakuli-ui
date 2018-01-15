@@ -1,6 +1,7 @@
 package org.sweetest.platform.server.api.test;
+import org.sweetest.platform.server.api.test.execution.strategy.TestExecutionSubject;
 
-public class TestRunInfo {
+public class TestRunInfo extends TestExecutionSubject {
 
     private int vncPort;
     private int vncWebPort;

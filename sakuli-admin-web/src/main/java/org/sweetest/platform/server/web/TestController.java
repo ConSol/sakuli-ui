@@ -4,11 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.sweetest.platform.server.api.file.FileSystemService;
 import org.sweetest.platform.server.api.project.ProjectService;
-import org.sweetest.platform.server.api.runconfig.RunConfiguration;
 import org.sweetest.platform.server.api.test.TestRunInfo;
 import org.sweetest.platform.server.api.test.TestService;
 import org.sweetest.platform.server.api.test.TestSuite;
@@ -17,7 +17,6 @@ import org.sweetest.platform.server.service.sakuli.SakuliTestSuite;
 import org.sweetest.platform.server.service.test.execution.TestExecutionStrategyFactory;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.ws.rs.QueryParam;
 import java.util.List;
 
 /**
@@ -86,5 +85,13 @@ public class TestController {
                 .orElse(false);
         return success ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
+
+    @MessageMapping("/execution/stop/{id}")
+    public void stopExecution(
+            @DestinationVariable String id) {
+        log.info("Will stop this thing: " + id);
+        testService.stopTestExecution(id);
+    }
+
 
 }

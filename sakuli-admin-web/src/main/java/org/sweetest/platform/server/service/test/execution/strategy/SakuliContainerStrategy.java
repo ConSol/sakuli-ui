@@ -7,6 +7,7 @@ import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.command.AttachContainerResultCallback;
 import com.github.dockerjava.core.command.PullImageResultCallback;
+import com.github.dockerjava.core.command.WaitContainerResultCallback;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +19,14 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.util.SocketUtils;
 import org.springframework.web.context.WebApplicationContext;
+import org.sweetest.platform.server.api.common.Observer;
 import org.sweetest.platform.server.api.runconfig.SakuliExecutionConfiguration;
 import org.sweetest.platform.server.api.test.TestRunInfo;
 import org.sweetest.platform.server.api.test.execution.strategy.AbstractTestExecutionStrategy;
 import org.sweetest.platform.server.api.test.execution.strategy.TestExecutionEvent;
 import org.sweetest.platform.server.api.test.execution.strategy.TestExecutionSubject;
 import org.sweetest.platform.server.api.test.execution.strategy.events.*;
-import org.sweetest.platform.server.api.common.*;
+
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.UUID;
@@ -65,6 +67,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
     private String containerToRunWithTag;
 
     private TestExecutionEvent readyToRun;
+    private AttachContainerResultCallback callback;
 
     @Override
     public TestRunInfo execute(Observer<TestExecutionEvent> testExecutionEventObserver) {
@@ -104,17 +107,43 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
                 log.info(String.format("Image %s already exists", containerToRunWithTag));
                 next(readyToRun);
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             log.error(e.getClass().getSimpleName(), e);
             subject.next(new TestExecutionErrorEvent(e.getMessage(), executionId, e));
         }
 
-        return new TestRunInfo(
+        final TestRunInfo tri = new TestRunInfo(
                 availableVncPort,
                 availableVncWebPort,
                 executionId
         );
+        tri.subscribe(e -> {
+            if (e instanceof TestExecutionStopEvent) {
+                stop();
+            }
+        });
+        return tri;
+    }
 
+    public void stop() {
+        log.info("Will stop container " + container.getId());
+        try {
+            if(callback != null) {
+                callback.close();
+            }
+            dockerClient.stopContainerCmd(container.getId()).exec();
+            dockerClient.waitContainerCmd(container.getId()).exec(new WaitContainerResultCallback() {
+                @Override
+                public void onNext(WaitResponse waitResponse) {
+                    log.info(ReflectionToStringBuilder.toString(waitResponse));
+                    super.onNext(waitResponse);
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            next(new TestExecutionErrorEvent("Cannot stop container " + container.getId(), executionId, e));
+        }
     }
 
     private boolean isPullingRequired() {
@@ -154,7 +183,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
     }
 
     private void attachToContainer() {
-        dockerClient
+        callback = dockerClient
                 .logContainerCmd(container.getId())
                 .withStdOut(true)
                 .withStdErr(true)
@@ -171,6 +200,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
                         super.onNext(item);
                     }
                 });
+
     }
 
     private void startContainer() {

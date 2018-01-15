@@ -3,7 +3,7 @@ import {Actions, Effect} from '@ngrx/effects';
 import {TestService} from "../../../sweetest-components/services/access/test.service";
 import {
   DockerPullCompleted, DockerPullProgress, DockerPullProgressBatch, DockerPullStarted, DockerPullStream,
-  LOAD_TESTRESULTS, LOAD_TESTRESULTS_SUCCESS, LoadTestResults, LoadTestResultsSuccess,
+  LOAD_TESTRESULTS, LOAD_TESTRESULTS_SUCCESS, LoadTestResults, LoadTestResultsSuccess, STOP_TEST_EXECUTION, StopTestExecution,
 } from "./test.actions";
 import {SET_PROJECT, SetProject} from "../../workspace/state/project.actions";
 
@@ -18,8 +18,8 @@ import {notNull} from "../../../core/redux.util";
 import {workpaceSelectors} from "../../workspace/state/project.interface";
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
 import {
-  RUN_TEST, RunTest, SET_TEST_RUN_INFO, SetTestRunInfo, TEST_EXECUTION_COMPLETED, TestExecutionCompleted,
-  TestExecutionSetVncReady, TestExecutionStarted
+  RUN_TEST, RunTest, SET_TEST_RUN_INFO, SetTestRunInfo, TEST_EXECUTION_COMPLETED, TEST_EXECUTION_STOPPED,
+  TestExecutionCompleted, TestExecutionSetVncReady, TestExecutionStarted, TestExecutionStopped
 } from "./testexecution.state";
 import {APPEND_TEST_RUN_INFO_LOG, AppendTestRunInfoLog} from "./test-execution-log.state";
 
@@ -54,6 +54,7 @@ export class TestEffects {
         'test.log': () => gtee$.map(se => new AppendTestRunInfoLog(se)),
         'test.lifecycle.started': () => gtee$.map(({processId}) => new TestExecutionStarted(processId)),
         'test.lifecycle.completed': () => gtee$.map(({processId}) => new TestExecutionCompleted(processId)),
+        'test.lifecycle.stop': () => gtee$.map(({processId}) => new TestExecutionStopped(processId)),
         'docker.pull.started': () => gtee$.map(({processId}) => new DockerPullStarted(processId)),
         'docker.pull.progress': () => Observable.merge(
           gtee$.map(se => new DockerPullProgress(se.processId, JSON.parse(se.message)))
@@ -76,6 +77,9 @@ export class TestEffects {
       new LoadTestResults()
     ]);
 
+  @Effect() testExecutionStopped$ = this.actions$.ofType(TEST_EXECUTION_STOPPED)
+    .map(_ => new CreateToast(new SuccessToast('Test execution stopped')));
+
   @Effect() projectOpen = this.actions$.ofType(SET_PROJECT)
     .map((sp: SetProject) => new LoadTestsuiteSuccess(sp.project.testSuite));
 
@@ -96,6 +100,13 @@ export class TestEffects {
     LOAD_TESTRESULTS,
     LOAD_TESTRESULTS_SUCCESS
   );
+
+  @Effect({dispatch: false}) stopTestExecution$ = this.actions$.ofType(STOP_TEST_EXECUTION)
+    .do((ste: StopTestExecution) => {
+      console.log('Effect captured');
+      this.testService.stop(ste.containerId)
+    });
+
 
   constructor(readonly testService: TestService,
               readonly store: Store<AppState>,
