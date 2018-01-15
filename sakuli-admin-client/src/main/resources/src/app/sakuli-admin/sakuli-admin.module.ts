@@ -9,10 +9,9 @@ import {SakuliProjectGuardService} from "./sakuli-project-guard.service";
 import {FormsModule} from "@angular/forms";
 import {DashboardModule} from "./dashboard/dashboard.module";
 import {SaAppLogModule} from "./app-log/app-log.module";
-import {INITIAL_STATE} from "@ngrx/store";
-import {initStateFactory} from "./appstate.interface";
 import {BrowserModule} from "@angular/platform-browser";
 import {LoginComponent} from "./login.component";
+import {SakuliAuthGuardService} from "./sakuli-auth-guard.service";
 
 @NgModule({
   imports: [
@@ -29,6 +28,7 @@ import {LoginComponent} from "./login.component";
   ],
   providers: [
     SakuliProjectGuardService,
+    SakuliAuthGuardService
   ],
   exports: [
     SakuliAdminRoutingModule,

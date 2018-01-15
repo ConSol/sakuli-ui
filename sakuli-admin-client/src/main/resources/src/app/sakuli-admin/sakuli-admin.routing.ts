@@ -12,6 +12,7 @@ import {PreventRoutingGuardService} from "../sweetest-components/components/form
 import {DashboardConnectedComponent} from "./dashboard/dashboard-connected.component";
 import {LoginComponent} from "./login.component";
 import {SaReportOverviewComponent} from "./test/report/sa-report-overview.component";
+import {SakuliAuthGuardService} from "./sakuli-auth-guard.service";
 
 export const routes: Routes = [
   {
@@ -26,6 +27,7 @@ export const routes: Routes = [
   {
     path: 'reports',
     canActivate: [
+      SakuliAuthGuardService,
       SakuliProjectGuardService
     ],
     children: [
@@ -42,12 +44,14 @@ export const routes: Routes = [
     path: 'dashboard',
     component: DashboardConnectedComponent,
     canActivate: [
+      SakuliAuthGuardService,
       SakuliProjectGuardService
     ]
   },
   {
     path: 'testsuite',
     canActivate: [
+      SakuliAuthGuardService,
       SakuliProjectGuardService
     ],
     children: [

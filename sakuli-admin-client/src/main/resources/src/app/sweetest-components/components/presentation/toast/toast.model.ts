@@ -33,6 +33,12 @@ export class SuccessToast extends Toast {
   }
 }
 
+export class WarningToast extends Toast {
+  constructor(readonly message: string) {
+    super(message, 'warning', 'fa-warning')
+  }
+}
+
 export interface DangerMoreInfo {
   name: string;
   message: string;

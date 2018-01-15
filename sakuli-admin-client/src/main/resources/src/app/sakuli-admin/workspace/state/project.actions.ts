@@ -1,6 +1,6 @@
 import {Action} from "@ngrx/store";
 import {FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
-import {Tree, TreeItem} from "../../../sweetest-components/components/presentation/tree/tree.interface";
+import {Tree} from "../../../sweetest-components/components/presentation/tree/tree.interface";
 import {ProjectModel} from "../../../sweetest-components/services/access/model/project.model";
 import {uniqueName} from "../../../core/redux.util";
 
@@ -45,6 +45,12 @@ export class OpenWorkspace implements Action {
   ) {}
 }
 
+export const OPEN_WORKSPACE_DIALOG = '[testSuite] OPEN_WORKSPACE_DIALOG';
+export class OpenWorkspaceDialog implements Action {
+  readonly type = OPEN_WORKSPACE_DIALOG;
+  constructor() {}
+}
+
 export const SET_PROJECT = uniqueName('[testSuite] setproject');
 export class SetProject implements Action {
   readonly type = SET_PROJECT;
@@ -59,4 +65,4 @@ export class RefreshProject implements Action {
   constructor() {}
 }
 
-export type All = LoadPath | AppendChildren | ToggleOpen | SelectFile | SetProject | OpenWorkspace;
+export type All = LoadPath | AppendChildren | ToggleOpen | SelectFile | SetProject | OpenWorkspace | OpenWorkspaceDialog;

@@ -1,6 +1,6 @@
 import {uniqueName} from "../../../../core/redux.util";
 import {Action} from "@ngrx/store";
-import {DangerToast, IToast} from "./toast.model";
+import {DangerToast, IToast, WarningToast} from "./toast.model";
 import {Observable} from "rxjs/Observable";
 
 export const CREATE_TOAST = uniqueName('[sc-toast] CREATE_TOAST');
@@ -22,6 +22,11 @@ export class RemoveToast implements Action {
 export type ToastActions = CreateToast | RemoveToast;
 
 export const ErrorMessage = (message: string) => (e: Error) => {
-  console.warn('Error caugth', e);
+  console.warn('Error caught', e);
   return Observable.of(new CreateToast(new DangerToast(message, e)));
+};
+
+export const WarnMessage = (message: string) => (e: Error) => {
+  console.warn('Error caught', e);
+  return Observable.of(new CreateToast(new WarningToast(message)));
 };

@@ -1,15 +1,19 @@
 import {Injectable} from '@angular/core';
 import {Actions, Effect} from '@ngrx/effects';
 import {
-  AppendChildren, LOAD_PATH, LoadPath, OPEN_WORKSPACE, OpenWorkspace, TOGGLE_OPEN,
+  AppendChildren, LOAD_PATH, LoadPath, OPEN_WORKSPACE, OPEN_WORKSPACE_DIALOG, OpenWorkspace, TOGGLE_OPEN,
   ToggleOpen
 } from './project.actions';
 import {of} from 'rxjs/observable/of';
 import {absPath} from "../../../sweetest-components/services/access/model/file-response.interface";
 import {FileService} from "../../../sweetest-components/services/access/file.service";
-import {ErrorMessage} from "../../../sweetest-components/components/presentation/toast/toast.actions";
+import {ErrorMessage, WarnMessage} from "../../../sweetest-components/components/presentation/toast/toast.actions";
 import {Observable} from "rxjs/Observable";
 import {LoadTestsuite} from "../../test/state/testsuite.state";
+import {Filters} from "../../../sweetest-components/components/presentation/file-selector/file-selector-filter.interface";
+import {ScFileSelectorService} from "../../../sweetest-components/components/presentation/file-selector/sc-file-selector.service";
+import {log} from "../../../core/redux.util";
+import {NavigateToDashboard} from "../../dashboard/dashboard.state";
 
 @Injectable()
 export class ProjectEffects {
@@ -28,6 +32,22 @@ export class ProjectEffects {
     })
     .catch(ErrorMessage(`Error while opening path`));
 
+  @Effect() openDialog$ = this.actions$.ofType(OPEN_WORKSPACE_DIALOG)
+    .do(log('Will open'))
+    .mergeMap(_ => {
+      return Observable.fromPromise(this.fileSelector.openModal({
+        title: 'Select a workspace',
+        root: '',
+        inactive: Filters.isFile()
+      }))
+        .map(f => f[0])
+        .mergeMap(f => [
+          new OpenWorkspace(f),
+          new NavigateToDashboard()
+        ])
+        .catch(WarnMessage('No file selected'))
+    })
+  ;
 
   @Effect() open = this.actions$.ofType(OPEN_WORKSPACE)
     .map((open: OpenWorkspace) => open.file)
@@ -46,7 +66,8 @@ export class ProjectEffects {
 
   constructor(
     private fileService: FileService,
-    private actions$: Actions
+    private actions$: Actions,
+    readonly fileSelector: ScFileSelectorService
   ) {}
 
 }

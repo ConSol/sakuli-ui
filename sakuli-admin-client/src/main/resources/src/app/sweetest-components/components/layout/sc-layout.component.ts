@@ -15,6 +15,7 @@ import {LayoutMenuService} from "./menu/layout-menu.service";
       ></sc-header>
       <div class="flex-row d-flex">
         <sc-sidebar
+          *ngIf="sideBar"
           [menuItems]="sidebarMenuItems$ | async"
           (menuItemSelected)="onMenuItemSelected($event)"
         ></sc-sidebar>
@@ -46,6 +47,8 @@ export class ScLayoutComponent implements OnInit {
 
   @Input() brandName: string;
   @Input() brandLogo: string;
+
+  @Input() sideBar: boolean = false;
 
   @Output() menuItemSelected = new EventEmitter<IMenuItem>();
 

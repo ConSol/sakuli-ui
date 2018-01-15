@@ -11,17 +11,17 @@ import {
   SelectMenuItem
 } from "./sweetest-components/components/layout/menu/menu.state";
 import {SelectionState} from "./sweetest-components/model/tree";
-import {ScFileSelectorService} from "./sweetest-components/components/presentation/file-selector/sc-file-selector.service";
-import {OpenWorkspace} from "./sakuli-admin/workspace/state/project.actions";
-import {Filters} from "./sweetest-components/components/presentation/file-selector/file-selector-filter.interface";
+import {OpenWorkspaceDialog} from "./sakuli-admin/workspace/state/project.actions";
 import {Actions} from "@ngrx/effects";
 import {authSelectors, Logout} from "./sweetest-components/services/access/auth/auth.state";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'app-root',
   template: `
     <sc-layout brandLogo="assets/sakuli_logo_small.png"
                (menuItemSelected)="onLink($event)"
+               [sideBar]="showSideBar$ | async"
     >
       <router-outlet></router-outlet>
     </sc-layout>
@@ -29,13 +29,15 @@ import {authSelectors, Logout} from "./sweetest-components/services/access/auth/
 })
 export class AppComponent implements OnInit {
 
+  showSideBar$: Observable<boolean>;
+
   ngOnInit(): void {
-    this.store.select(authSelectors.token())
+    this.showSideBar$ = this.store.select(authSelectors.isLoggedIn());
+    this.showSideBar$
       .distinctUntilChanged()
-      .subscribe(token => {
-        console.log(token);
+      .subscribe(loggedIn => {
         const actions = [];
-        if(token) {
+        if(loggedIn) {
           actions.push(new RemoveMenuitem(this.logInButton.id));
           actions.push(new AddMenuItem(this.logOutButton));
         } else {
@@ -79,7 +81,6 @@ export class AppComponent implements OnInit {
               readonly router: Router,
               readonly store: Store<AppState>,
               readonly modal: NgbModal,
-              readonly fileSelector: ScFileSelectorService,
               readonly actions: Actions) {
 
     this.menuService.addMenuItems(
@@ -104,7 +105,7 @@ export class AppComponent implements OnInit {
         new MenuItem(
           'primary.open',
           'Open',
-          'testSuite/open',
+          new OpenWorkspaceDialog(),
           FontawesomeIcons.folderO,
           LayoutMenuService.Menus.PRIMARY,
           SelectionState.UnSelected,
@@ -131,20 +132,6 @@ export class AppComponent implements OnInit {
 
   async onLink(item: IMenuItem) {
     this.store.dispatch(new SelectMenuItem(item.id));
-    /* TODO: refactor to effect */
-    if (item.link[0] === 'testSuite/open') {
-      try {
-        const [file] = await this.fileSelector.openModal({
-          title: 'Select a workspace',
-          root: '',
-          inactive: Filters.isFile()
-        });
-        this.store.dispatch(new OpenWorkspace(file));
-      } catch (e) {
-        console.warn(e, new OpenWorkspace(null));
-      }
-    } else {
-      this.store.dispatch(new InvokeMenuitem(item));
-    }
+    this.store.dispatch(new InvokeMenuitem(item));
   }
 }

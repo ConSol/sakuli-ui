@@ -55,11 +55,20 @@ export class NavigateToLogin extends RouterGo {
 
 const state = createFeatureSelector<AuthState>(AuthFeatureName);
 
+function token() {
+  return createSelector(state, s => s ? s.token : null)
+}
+
+function isLoggedIn() {
+  return createSelector(token(), t =>  {
+    return !!t
+  })
+}
+
 export const authSelectors = {
   state,
-  token() {
-    return createSelector(state, s => s ? s.token : null)
-  }
+  token,
+  isLoggedIn
 };
 
 export type AuthActions = Login | Logout | LoginSuccess | LogoutSuccess;
