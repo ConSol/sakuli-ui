@@ -13,11 +13,11 @@ export class RunConfigurationService {
   ) {}
 
   getRunConfiguration(path: string): Observable<RunConfiguration> {
-    return this.http.get<RunConfiguration>(`${runConfigUrl}?path=${path}`)
+    return this.http.get<RunConfiguration>(`${runConfigUrl}?path=${encodeURIComponent(path)}`)
   }
 
   saveRunConfiguration(path: string, runConfiguration: RunConfiguration): Observable<any> {
-    return this.http.post(`${runConfigUrl}?path=${path}`, runConfiguration)
+    return this.http.post(`${runConfigUrl}?path=${encodeURIComponent(path)}`, runConfiguration)
       .catch(_ => Observable.of({}))
   }
 

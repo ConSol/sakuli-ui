@@ -15,7 +15,7 @@ export class FileService {
 
   files(path: string = ''): Observable<FileResponse[]> {
     return this.http
-      .get<FileResponse[]>(`${projectUrl}/ls?path=${rmHeadSlash(path || '')}`)
+      .get<FileResponse[]>(`${projectUrl}/ls?path=${encodeURIComponent(rmHeadSlash(path || ''))}`)
       .map(fr => fr
         .sort((a, b) => (a.name.toLowerCase() === b.name.toLowerCase()) ? 0 : (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1)
         .sort((a, b) => (a.directory && b.directory) ? 0 : (!a.directory && b.directory) ? 1 : -1)
@@ -31,7 +31,7 @@ export class FileService {
   read(path: string): Observable<string> {
     return this.http
       .get(
-        `${projectUrl}?path=${rmHeadSlash(path)}`,
+        `${projectUrl}?path=${encodeURIComponent(rmHeadSlash(path))}`,
         {responseType: 'text'}
       )
   }
@@ -41,7 +41,7 @@ export class FileService {
     formData.append('file', file);
     return this.http
       .post(
-        `${projectUrl}?path=${rmHeadSlash(path)}/${file.name}`,
+        `${projectUrl}?path=${encodeURIComponent(rmHeadSlash(path))}/${file.name}`,
         formData,
         {responseType: 'text'}
       )
@@ -50,7 +50,7 @@ export class FileService {
   delete(file: string) {
     return this.http
       .delete(
-        `${projectUrl}?path=${file}`,
+        `${projectUrl}?path=${encodeURIComponent(file)}`,
         {responseType: 'text'}
       )
 
