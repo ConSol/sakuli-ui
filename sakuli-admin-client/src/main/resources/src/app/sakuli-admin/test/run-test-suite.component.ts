@@ -94,23 +94,6 @@ import {RouterGo} from "../../sweetest-components/services/router/router.actions
             (containerChange)="onContainerChange($event)"
           ></run-configuration>
         </div>
-        <div class="card-block" *ngIf="dockerPullStream$ | async; let dockerPullStream">
-          <h4>Building Docker image</h4>
-          <sc-logs>
-            <ng-container *ngFor="let stream of dockerPullStream">{{stream}}</ng-container>
-          </sc-logs>
-        </div>
-        <div class="card-block" *ngIf="dockerPullInfo$ | async; let dockerPullInfos">
-          <h4>Pulling Docker image</h4>
-          <ng-container
-            *ngFor="let dockerPullInfo of dockerPullInfos"
-          >
-            <docker-pull-info-component
-              [dockerPullInfo]="dockerPullInfo"
-            >
-            </docker-pull-info-component>
-          </ng-container>
-        </div>
       </div>
     </ng-template>
     <div *ngIf="suiteIsRunning$ | async; else runCard" class="card p-3 mb-3">
@@ -118,6 +101,23 @@ import {RouterGo} from "../../sweetest-components/services/router/router.actions
         <sc-icon icon="fa-spinner" [spin]="true"></sc-icon>
         Test suite is running in container {{(testSuiteExecutionInfo$ | async)?.containerId}}
       </div>
+    </div>
+    <div class="card-block" *ngIf="dockerPullStream$ | async; let dockerPullStream">
+      <h4>Building Docker image</h4>
+      <sc-logs>
+        <ng-container *ngFor="let stream of dockerPullStream">{{stream}}</ng-container>
+      </sc-logs>
+    </div>
+    <div class="card-block" *ngIf="dockerPullInfo$ | async; let dockerPullInfos">
+      <h4>Pulling Docker image</h4>
+      <ng-container
+        *ngFor="let dockerPullInfo of dockerPullInfos"
+      >
+        <docker-pull-info-component
+          [dockerPullInfo]="dockerPullInfo"
+        >
+        </docker-pull-info-component>
+      </ng-container>
     </div>
     <ng-container *ngIf="suiteIsNotRunning$ | async">
       <sa-report-navigation
@@ -236,9 +236,12 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
       .select(dockerPullStreamForCurrentRunInfo(testSuite))
       .debounceTime(this.debounceTime);
     this.isDockerPullStream$ = this.dockerPullStream$.map(s => !!s && !!s.length).distinctUntilChanged();
+
     this.hasLogs$ = this.store.select(
       testExecutionLogSelectors.latestForTestSuite(testSuite)
-    ).map(l => !!l && !!l.length);
+    )
+      .do(log('Logs'))
+      .map(l => !!l && !!l.length);
   }
 
 

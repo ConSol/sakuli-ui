@@ -77,6 +77,7 @@ export class TestService {
   testResults(testSuitePath: string): Observable<TestSuiteResult[]> {
     return this.testResultsFromJson(testSuitePath)
       .catch(e => this.testResultsFromLogs(testSuitePath))
+      .catch((e):Observable<TestSuiteResult[]> => Observable.of([]))
       .map((results) => results
         .sort(DateUtil
           .createComparator(
