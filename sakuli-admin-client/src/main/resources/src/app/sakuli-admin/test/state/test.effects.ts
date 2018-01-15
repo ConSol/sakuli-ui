@@ -3,7 +3,7 @@ import {Actions, Effect} from '@ngrx/effects';
 import {TestService} from "../../../sweetest-components/services/access/test.service";
 import {
   DockerPullCompleted, DockerPullProgress, DockerPullProgressBatch, DockerPullStarted, DockerPullStream,
-  LOAD_TESTRESULTS, LOAD_TESTRESULTS_SUCCESS, LoadTestResultsSuccess,
+  LOAD_TESTRESULTS, LOAD_TESTRESULTS_SUCCESS, LoadTestResults, LoadTestResultsSuccess,
 } from "./test.actions";
 import {SET_PROJECT, SetProject} from "../../workspace/state/project.actions";
 
@@ -71,7 +71,10 @@ export class TestEffects {
     .catch(ErrorMessage('Unable to proceed server event'));
 
   @Effect() fetchLogFinish$ = this.actions$.ofType(TEST_EXECUTION_COMPLETED)
-    .map(_ => new CreateToast(new SuccessToast('Finished test execution')));
+    .mergeMap(_ => [
+      new CreateToast(new SuccessToast('Finished test execution')),
+      new LoadTestResults()
+    ]);
 
   @Effect() projectOpen = this.actions$.ofType(SET_PROJECT)
     .map((sp: SetProject) => new LoadTestsuiteSuccess(sp.project.testSuite));

@@ -113,19 +113,25 @@ import {RouterGo} from "../../sweetest-components/services/router/router.actions
         </div>
       </div>
     </ng-template>
-    <sa-report-navigation
-      *ngIf="latestResult$ | async; let latestResult"
-      class="cursor-pointer"
-      (click)="navigateToResult(latestResult)"
-      [testResult]="latestResult"
-      [navigation]="false"
-    ></sa-report-navigation>
     <div *ngIf="suiteIsRunning$ | async; else runCard" class="card p-3 mb-3">
       <div class="card-content">
         <sc-icon icon="fa-spinner" [spin]="true"></sc-icon>
         Test suite is running in container {{(testSuiteExecutionInfo$ | async)?.containerId}}
       </div>
     </div>
+    <ng-container *ngIf="suiteIsNotRunning$ | async">
+      <sa-report-navigation
+        *ngIf="latestResult$ | async; let latestResult"
+        class="cursor-pointer"
+        (click)="navigateToResult(latestResult)"
+        [testResult]="latestResult"
+        [navigation]="false"
+      ></sa-report-navigation>
+      <sa-report-content
+        *ngIf="latestResult$ | async; let latestResult"
+        [testResult]="latestResult">
+      </sa-report-content>
+    </ng-container>
     <div class="row" *ngIf="hasLogs$ | async">
       <div class="col-12 mb-2" *ngIf="vncReady$ | async" [@onVnc]="vncReady$ | async">
         <sa-vnc-card
@@ -169,6 +175,7 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
   suiteIsRunning$: Observable<boolean>;
   testSuiteExecutionInfo$: Observable<TestExecutionEntity>;
   latestResult$: Observable<TestSuiteResult>;
+  suiteIsNotRunning$: Observable<boolean>;
 
   constructor(private store: Store<AppState>,
               readonly route: ActivatedRoute,
@@ -210,14 +217,16 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
       .map(r => r[0]);
 
     this.testSuiteExecutionInfo$ = this.store
-      .select(testExecutionSelectors.latestByTestSuite(testSuite))
-      .filter(notNull);
+      .select(testExecutionSelectors.latestByTestSuite(testSuite));
 
     this.vncReady$ = this.testSuiteExecutionInfo$
       .map(te => te.vncReady)
     ;
     this.suiteIsRunning$ = this.testSuiteExecutionInfo$
-      .map(te => !!te ? false : te.isRunning)
+      .map(te => te ? te.isRunning : false)
+    ;
+    this.suiteIsNotRunning$ = this.testSuiteExecutionInfo$
+      .map(ir => !ir)
     ;
     this.dockerPullInfo$ = this.store
       .select(dockerPullInfoForCurrentRunInfoAsArray(testSuite))
