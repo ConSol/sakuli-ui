@@ -173,7 +173,7 @@ export class SaVncCard implements OnInit, OnChanges {
 
     this.vncSrc$ = this.testRunInfo$
       .combineLatest(this.interactiveMode$.map(t => t ? 'false' : 'true'))
-      .map(([tri, viewOnly]) => `http://localhost:${tri.vncWebPort}?password=sakuli&view_only=${viewOnly}`)
+      .map(([tri, viewOnly]) => `http://localhost:${tri.vncWebPort}/vnc_auto.html?password=sakuli&view_only=${viewOnly}`)
       .map(url => this.sanitizer.bypassSecurityTrustResourceUrl(url));
 
     this.vncExtern$ = this.testRunInfo$
