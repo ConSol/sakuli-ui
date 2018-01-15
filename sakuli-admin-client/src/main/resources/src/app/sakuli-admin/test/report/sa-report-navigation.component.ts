@@ -13,7 +13,7 @@ import {resultStateMap} from "./result-state-map.const";
         </button>
         <div style="flex-grow: 1" class="text-center">
           <sc-icon icon="fa-calendar">
-            {{testResult.startDate | date:'dd-MM-y hh:mm:ss'}}
+            {{testResult.startDate | date:'dd-MM-y HH:mm:ss'}}
           </sc-icon> |
           <span><sc-icon icon="fa-clock-o">
             {{((testResult.stopDate|dateDiff:testResult.startDate) / 1000)|number}} sec
