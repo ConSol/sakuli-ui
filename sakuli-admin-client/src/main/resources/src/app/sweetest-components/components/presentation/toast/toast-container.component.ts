@@ -1,6 +1,6 @@
-import {Component, Input} from "@angular/core";
+import {Component} from "@angular/core";
 import {Observable} from "rxjs/Observable";
-import {selectToastId, ToastState} from "./toast-state.interface";
+import {selectToastId} from "./toast-state.interface";
 import {ScToastService} from "./toast.service";
 import {animate, style, transition, trigger} from "@angular/animations";
 import {IToast} from "./toast.model";
@@ -24,10 +24,9 @@ import {IToast} from "./toast.model";
     ])
   ],
   selector: 'sc-toast-container',
-  template: `
-    <sc-toast 
-      @toasts
-      *ngFor="let toast of toasts$ | async;let i = index"
+  template: `    
+    <sc-toast
+      *ngFor="let toast of toasts$ | async"
       [toast-type]="toast.type"
       [closeable]="true"
       (close)="closeToast(toast)"

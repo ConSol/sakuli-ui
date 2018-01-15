@@ -4,6 +4,7 @@ import {ToastTypes} from "./toast.model";
 @Component({
   selector: 'sc-toast',
   template: `
+    <ng-content></ng-content>
     <button *ngIf="closeable"
             (click)="close.next()" 
             type="button" 
@@ -12,18 +13,18 @@ import {ToastTypes} from "./toast.model";
             aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
-    <ng-content></ng-content>
   `,
   styles: [`
     :host() {
-      display: block;
+      display: flex;
+      flex-direction: row;
     }
   `]
 })
 export class ScToastComponent {
   @Input() message = '';
   @Input('toast-type') type: ToastTypes = 'info';
-  @Input() closeable = false
+  @Input() closeable = false;
 
   @Output() close = new EventEmitter<any>();
 

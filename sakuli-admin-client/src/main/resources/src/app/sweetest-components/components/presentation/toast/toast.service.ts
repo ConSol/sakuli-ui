@@ -10,14 +10,17 @@ import {CREATE_TOAST, CreateToast, RemoveToast} from "./toast.actions";
 @Injectable()
 export class ScToastService {
 
+  toasts$: Observable<IToast[]> = this
+    .store
+    .select(toastSelectors.selectAll);
+
   constructor(
     private store: Store<ToastAppState>,
     readonly actions$: Actions
-  ) {}
+  ) {
 
-  get toasts$(): Observable<IToast[]> {
-    return this.store.select(toastSelectors.selectAll);
   }
+
 
   get toastCount$() {
     return this.toasts$.map(toastSelectors.selectTotal);
