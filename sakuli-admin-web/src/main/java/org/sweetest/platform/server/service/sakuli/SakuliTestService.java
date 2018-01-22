@@ -1,5 +1,6 @@
 package org.sweetest.platform.server.service.sakuli;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.jooq.lambda.Unchecked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,6 +140,7 @@ public class SakuliTestService implements TestService {
                 .map(strategy -> {
                     testExecutionContext.setStrategy(strategy);
                     TestRunInfo testRunInfo = testExecutionContext.executeStrategy(testSuite, workspace, e -> {
+                        log.debug(ReflectionToStringBuilder.toString(e));
                         if(e instanceof TestExecutionCompletedEvent) {
                             testExecutionStrategyMap.remove(e.getProcessId());
                         }

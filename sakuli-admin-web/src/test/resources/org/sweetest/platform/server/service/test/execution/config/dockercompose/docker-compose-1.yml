@@ -1,0 +1,9 @@
+version: 1
+services:
+  test:
+    ports:
+      - "8080:9090"
+  test2:
+    ports:
+      - "3030:4040"
+      - "3020:4030"

@@ -11,6 +11,7 @@ import {Observable} from "rxjs/Observable";
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'sc-logs',
   template: `
+    {{follow}}
     <div class="pre" #pre>
       <div class="line"
            *ngFor="let message of messages; let i = index"
@@ -47,7 +48,7 @@ export class ScLogComponent implements AfterViewInit, AfterViewChecked {
 
   @ViewChild('pre') pre: ElementRef;
 
-  @Input() follow: boolean;
+  @Input() follow: boolean = true;
 
   @Input() messages: LogMessage[];
 

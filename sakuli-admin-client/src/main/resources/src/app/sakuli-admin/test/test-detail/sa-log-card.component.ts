@@ -23,8 +23,8 @@ import {testSuiteSelectId} from "../state/testsuite.state";
         <sc-icon icon="fa-expand"></sc-icon>
       </button>
     </div>
-    <div class="card-content">
-      <sc-logs #logs class="p-0" [follow]="true" [messages]="testRunLogs$ | async">
+    <div class="card-content" #logs>
+      <sc-logs  class="p-0" [follow]="true" [messages]="testRunLogs$ | async">
       </sc-logs>
     </div>
   `,
@@ -45,6 +45,7 @@ import {testSuiteSelectId} from "../state/testsuite.state";
       display: flex;
       flex-direction: row;
       background: rgb(30, 30, 30);
+      flex-grow: 1;
     }
 
     .btn-fs:hover /deep/ .fa {
@@ -66,12 +67,17 @@ export class SaLogCard implements OnInit, OnChanges {
   fullScreen() {
     const elementRef = this.logs;
     const e = elementRef.nativeElement;
+    console.log(
+      e.requestFullscreen,
+      e.mozRequestFullScreen,
+      e.webkitRequestFullScreen
+    )
     if (e.requestFullscreen) {
       e.requestFullscreen();
-    } else if (e.mozRequestFullscreen) {
-      e.mozRequestFullscreen();
-    } else if (e.webkitRequestFullscreen) {
-      e.webkitRequestFullscreen();
+    } else if (e.mozRequestFullScreen) {
+      e.mozRequestFullScreen();
+    } else if (e.webkitRequestFullScreen) {
+      e.webkitRequestFullScreen();
     }
   }
 

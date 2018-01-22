@@ -1,32 +1,38 @@
 package org.sweetest.platform.server.api.test;
 import org.sweetest.platform.server.api.test.execution.strategy.TestExecutionSubject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TestRunInfo extends TestExecutionSubject {
 
-    private int vncPort;
-    private int vncWebPort;
     private String containerId;
 
-    public TestRunInfo(int vncPort, int vncWebPort, String containerId) {
-        this.vncPort = vncPort;
-        this.vncWebPort = vncWebPort;
+    private List<TestRunInfoPorts> testRunInfoPortList = new ArrayList<>();
+
+    public TestRunInfo(String containerId) {
         this.containerId = containerId;
     }
 
-    public int getVncPort() {
-        return vncPort;
+    public TestRunInfo(int vncPort, int vncWebPort, String containerId) {
+        this.addTestRunInfoPorts(vncPort, vncWebPort);
+        this.containerId = containerId;
     }
 
-    public void setVncPort(int vncPort) {
-        this.vncPort = vncPort;
+    public List<TestRunInfoPorts> getTestRunInfoPortList() {
+        return testRunInfoPortList;
     }
 
-    public int getVncWebPort() {
-        return vncWebPort;
+    public void setTestRunInfoPortList(List<TestRunInfoPorts> testRunInfoPortList) {
+        this.testRunInfoPortList = testRunInfoPortList;
     }
 
-    public void setVncWebPort(int vncWebPort) {
-        this.vncWebPort = vncWebPort;
+    public void addTestRunInfoPorts(int vnc, int web) {
+        testRunInfoPortList.add(new TestRunInfoPorts(vnc, web));
+    }
+
+    public void addTestRunInfoPorts(TestRunInfoPorts testRunInfoPort) {
+        testRunInfoPortList.add(testRunInfoPort);
     }
 
     public String getContainerId() {

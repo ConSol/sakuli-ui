@@ -4,11 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.command.AttachContainerResultCallback;
 import com.github.dockerjava.core.command.PullImageResultCallback;
-import com.github.dockerjava.core.command.WaitContainerResultCallback;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,13 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
             if (e.equals(readyToRun)) {
                 createContainer();
                 startContainer();
+                Info i = dockerClient.infoCmd().exec();
+                InspectContainerResponse response = dockerClient.inspectContainerCmd(container.getId())
+                        .exec();
+                log.info(
+                        ReflectionToStringBuilder.toString(response, ToStringStyle.MULTI_LINE_STYLE)
+                      + ReflectionToStringBuilder.toString(i, ToStringStyle.MULTI_LINE_STYLE)
+                );
                 attachToContainer();
             }
             //TODO show TestExecutionErrorEvent on UI
@@ -117,11 +125,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
                 availableVncWebPort,
                 executionId
         );
-        tri.subscribe(e -> {
-            if (e instanceof TestExecutionStopEvent) {
-                stop();
-            }
-        });
+        tri.subscribe(invokeStopObserver(this));
         return tri;
     }
 
@@ -131,14 +135,10 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
             if(callback != null) {
                 callback.close();
             }
-            dockerClient.stopContainerCmd(container.getId()).exec();
-            dockerClient.waitContainerCmd(container.getId()).exec(new WaitContainerResultCallback() {
-                @Override
-                public void onNext(WaitResponse waitResponse) {
-                    log.info(ReflectionToStringBuilder.toString(waitResponse));
-                    super.onNext(waitResponse);
-                }
-            });
+            dockerClient
+                    .killContainerCmd(container.getId())
+                    .withSignal("9")
+                    .exec();
 
         } catch (Exception e) {
             e.printStackTrace();

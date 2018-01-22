@@ -20,6 +20,14 @@ public abstract class AbstractTestExecutionStrategy<T> implements TestExecutionS
         });
     }
 
+    protected Observer<TestExecutionEvent> invokeStopObserver(TestExecutionStrategy strategy) {
+        return e -> {
+          if(e instanceof TestExecutionStopEvent) {
+              strategy.stop();
+          }
+        };
+    }
+
     @Override
     public TestExecutionSubject getBackChannel() {
         return backChannel;

@@ -11,6 +11,7 @@ public class CommandExecutorRunnable implements Runnable {
     private TestExecutionSubject subject;
     private LocalCommand command;
     private String executionId;
+    private Process process;
 
     public CommandExecutorRunnable(String executionId, LocalCommand command, TestExecutionSubject subject) {
         this.subject = subject;
@@ -25,15 +26,23 @@ public class CommandExecutorRunnable implements Runnable {
             // otherwise some messages are published before client subscribes
             // some queuing technique might be more elegant and resilient at this point
             Thread.sleep(500);
+
             subject.next(new TestExecutionStartEvent(executionId));
-            command.execute(
+            process = command.execute(
                     s -> subject.next(new TestExecutionLogEvent(executionId, s)),
                     s -> subject.next(new TestExecutionLogEvent(executionId, s))
-            ).waitFor();
+            );
+            process.waitFor();
             subject.next(new TestExecutionCompletedEvent(executionId));
         } catch (Exception e) {
             subject.next(new TestExecutionErrorEvent(e.getMessage(), executionId, e));
             e.printStackTrace();
+        }
+    }
+
+    public void stop() {
+        if(process != null && process.isAlive()) {
+            process.destroy();
         }
     }
 }

@@ -3,6 +3,8 @@ package org.sweetest.platform.server.service.test.execution.strategy;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Event;
 import com.github.dockerjava.core.command.EventsResultCallback;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sweetest.platform.server.api.test.execution.strategy.TestExecutionSubject;
@@ -42,8 +44,9 @@ public class SakuliEventResultCallback extends EventsResultCallback{
             subject.next(new TestExecutionStopEvent(executionId));
         }
         if (ACTION_DISCONNECT.equals(action) || ACTION_KILL.equals(action)) {
+            log.info(ReflectionToStringBuilder.toString(item.getActor(), ToStringStyle.MULTI_LINE_STYLE));
             if(item.getActor().getAttributes() != null && item.getActor().getAttributes().containsKey("container")) {
-                String containerId = item.getActor().getAttributes().get("container");
+                String containerId = item.getActor().getAttributes().getOrDefault("container", item.getActor().getId());
                 log.info("Clean up and remove container " + containerId);
                 dockerClient.removeContainerCmd(containerId).exec();
             }

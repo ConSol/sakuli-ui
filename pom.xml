@@ -20,6 +20,7 @@
     <!-- This  is somehow neccessary to run spring-boot-tests -->
     <thymeleaf.version>3.0.3.RELEASE</thymeleaf.version>
     <thymeleaf-layout-dialect.version>2.2.1</thymeleaf-layout-dialect.version>
+    <jackson.version>2.9.3</jackson.version>
   </properties>
 
   <groupId>org.sweetest.platform</groupId>
@@ -248,19 +249,7 @@
         <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
         <version>2.2.0</version>
       </dependency>
-      <dependency>
-        <groupId>com.github.docker-java</groupId>
-        <artifactId>docker-java</artifactId>
-        <version>3.0.14</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-      </dependency>
+
     </dependencies>
   </dependencyManagement>
 

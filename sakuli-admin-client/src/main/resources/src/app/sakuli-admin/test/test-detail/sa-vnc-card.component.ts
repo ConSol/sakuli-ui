@@ -1,15 +1,7 @@
-import {
-  ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChanges,
-  ViewChild
-} from "@angular/core";
+import {ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input, OnInit, ViewChild} from "@angular/core";
 import {Store} from "@ngrx/store";
 import {AppState} from "../../appstate.interface";
-import {Observable} from "rxjs/Observable";
-import {notNull} from "../../../core/redux.util";
-import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
-import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
-import {TestExecutionEntity, testExecutionSelectors} from "../state/testexecution.state";
-import {testSuiteSelectId} from "../state/testsuite.state";
+import {DomSanitizer} from "@angular/platform-browser";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
 @Component({
@@ -34,15 +26,15 @@ import {BehaviorSubject} from "rxjs/BehaviorSubject";
                   }">
         </sc-icon>
       </label>
-      <div style="flex-grow: 1" *ngIf="testRunInfo$ | async; let testRunInfo">
-        <a [href]="vncExtern$ | async" target="_blank" class="mr-1">
+      <div style="flex-grow: 1">
+        <a [href]="vncSrc" target="_blank" class="mr-1">
           <sc-icon icon="fa-external-link">
-            VNC-Port: {{testRunInfo?.vncPort}}
+            VNC-Port: {{vncPort}}
           </sc-icon>
         </a>
-        <a [href]="vncSrc$ | async" target="_blank">
+        <a [href]="webSrc" target="_blank">
           <sc-icon icon="fa-external-link">
-            VNC-Web: {{testRunInfo?.vncWebPort}}
+            VNC-Web: {{webPort}}
           </sc-icon>
         </a>
       </div>
@@ -51,7 +43,7 @@ import {BehaviorSubject} from "rxjs/BehaviorSubject";
       </button>
     </div>
     <div class="card-content">
-      <iframe allowfullscreen #iframe [src]="vncSrc$ | async">
+      <iframe allowfullscreen #iframe [src]="webSrc">
         No iframe support...
       </iframe>
     </div>
@@ -75,12 +67,6 @@ import {BehaviorSubject} from "rxjs/BehaviorSubject";
       background-color: white;
     }
 
-    .col {
-      padding: 0;
-      margin: 0;
-      transition: all .35s ease-out;
-    }
-
     .card-content {
       overflow: auto;
       display: flex;
@@ -95,22 +81,15 @@ import {BehaviorSubject} from "rxjs/BehaviorSubject";
     }
   `]
 })
-export class SaVncCard implements OnInit, OnChanges {
+export class SaVncCard implements OnInit {
 
-  @Input() testSuite: SakuliTestSuite;
+  @Input() vncPort: number;
+  @Input() webPort: number;
 
   @ViewChild('iframe') iframe: ElementRef;
 
-  testRunInfo$: Observable<TestExecutionEntity>;
-
-  vncReady$: Observable<boolean>;
-
-  vncExtern$: Observable<SafeResourceUrl>;
-
-  //TODO get current host instead of localhost
-  vncSrc$: Observable<SafeResourceUrl>;
-
   interactiveMode$ = new BehaviorSubject<boolean>(false);
+  private viewOnly: 'true' | 'false';
 
   fullScreen() {
     const elementRef = this.iframe;
@@ -134,7 +113,7 @@ export class SaVncCard implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.initObservablesWithTestSuite(this.testSuite);
+    this.interactiveMode$.subscribe(im => this.viewOnly = im ? 'false' : 'true');
   }
 
   get interactiveToggleText$() {
@@ -144,41 +123,25 @@ export class SaVncCard implements OnInit, OnChanges {
     )
   }
 
-  ngOnChanges(change: SimpleChanges) {
-    const tsChanges = change.testSuite;
-    if (tsChanges) {
-      const curr = tsChanges.currentValue;
-      const prev = tsChanges.previousValue;
-      if ((!prev && curr) || testSuiteSelectId(curr) !== testSuiteSelectId(prev)) {
-        this.initObservablesWithTestSuite(curr);
-      }
-    }
-  }
-
   toggleInteractiveMode(isInteractive: boolean) {
-    console.log('test', isInteractive);
     this.interactiveMode$.next(isInteractive);
+
   }
 
   get lockIcon$() {
     return this.interactiveMode$.map(isI => isI ? 'fa-unlock-alt' : 'fa-lock')
   }
 
-  initObservablesWithTestSuite(testSuite: SakuliTestSuite) {
-    this.vncReady$ = this.store
-      .select(testExecutionSelectors.latestByTestSuite(testSuite))
-      .map(te => te.vncReady);
+  get webSrc() {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(
+      `http://localhost:${this.webPort}/vnc_auto.html?password=sakuli&view_only=${this.viewOnly}`
+    )
+  }
 
-    this.testRunInfo$ = this.store.select(testExecutionSelectors.latestByTestSuite(this.testSuite)).filter(notNull).first();
-
-    this.vncSrc$ = this.testRunInfo$
-      .combineLatest(this.interactiveMode$.map(t => t ? 'false' : 'true'))
-      .map(([tri, viewOnly]) => `http://localhost:${tri.vncWebPort}/vnc_auto.html?password=sakuli&view_only=${viewOnly}`)
-      .map(url => this.sanitizer.bypassSecurityTrustResourceUrl(url));
-
-    this.vncExtern$ = this.testRunInfo$
-      .map(tri => `vnc://sakuli@localhost:${tri.vncPort}`)
-      .map(url => this.sanitizer.bypassSecurityTrustResourceUrl(url));
+  get vncSrc() {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(
+      `vnc://sakuli@localhost:${this.vncPort}`
+    )
   }
 
 }

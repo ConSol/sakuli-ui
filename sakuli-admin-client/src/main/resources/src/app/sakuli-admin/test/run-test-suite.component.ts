@@ -94,32 +94,8 @@ import {RouterGo} from "../../sweetest-components/services/router/router.actions
             (containerChange)="onContainerChange($event)"
           ></run-configuration>
         </div>
-        <div class="card-block" *ngIf="dockerPullStream$ | async; let dockerPullStream">
-          <h4>Building Docker image</h4>
-          <sc-logs>
-            <ng-container *ngFor="let stream of dockerPullStream">{{stream}}</ng-container>
-          </sc-logs>
-        </div>
-        <div class="card-block" *ngIf="dockerPullInfo$ | async; let dockerPullInfos">
-          <h4>Pulling Docker image</h4>
-          <ng-container
-            *ngFor="let dockerPullInfo of dockerPullInfos"
-          >
-            <docker-pull-info-component
-              [dockerPullInfo]="dockerPullInfo"
-            >
-            </docker-pull-info-component>
-          </ng-container>
-        </div>
       </div>
     </ng-template>
-    <sa-report-navigation
-      *ngIf="latestResult$ | async; let latestResult"
-      class="cursor-pointer"
-      (click)="navigateToResult(latestResult)"
-      [testResult]="latestResult"
-      [navigation]="false"
-    ></sa-report-navigation>
     <div *ngIf="suiteIsRunning$ | async; else runCard" class="card p-3 mb-3">
       <div class="card-content" *ngIf="testSuiteExecutionInfo$ | async; let testSuiteExecutionInfo">
         <p>
@@ -131,11 +107,45 @@ import {RouterGo} from "../../sweetest-components/services/router/router.actions
         </button>
       </div>
     </div>
+    <div class="card-block" *ngIf="dockerPullStream$ | async; let dockerPullStream">
+      <h4>Building Docker image</h4>
+      <sc-logs>
+        <ng-container *ngFor="let stream of dockerPullStream">{{stream}}</ng-container>
+      </sc-logs>
+    </div>
+    <div class="card-block" *ngIf="dockerPullInfo$ | async; let dockerPullInfos">
+      <h4>Pulling Docker image</h4>
+      <ng-container
+        *ngFor="let dockerPullInfo of dockerPullInfos"
+      >
+        <docker-pull-info-component
+          [dockerPullInfo]="dockerPullInfo"
+        >
+        </docker-pull-info-component>
+      </ng-container>
+    </div>
+    <ng-container *ngIf="suiteIsNotRunning$ | async">
+      <h4>Latest report:</h4>
+      <sa-report-navigation
+        *ngIf="latestResult$ | async; let latestResult"
+        class="cursor-pointer"
+        (click)="navigateToResult(latestResult)"
+        [testResult]="latestResult"
+        [navigation]="false"
+      ></sa-report-navigation>
+      <sa-report-content
+        [testResult]="latestResult$ | async"
+        class="mb-3 d-block"
+      ></sa-report-content>
+    </ng-container>
     <div class="row" *ngIf="hasLogs$ | async">
       <div class="col-12 mb-2" *ngIf="vncReady$ | async" [@onVnc]="vncReady$ | async">
-        <sa-vnc-card
-          [testSuite]="testSuite"
-        ></sa-vnc-card>
+        <ng-container *ngFor="let ports of (testSuiteExecutionInfo$ | async)?.testRunInfoPortList">
+          <sa-vnc-card
+            [vncPort]="ports.vnc"
+            [webPort]="ports.web"
+          ></sa-vnc-card>
+        </ng-container>
       </div>
       <div class="col-12">
         <sa-log-card
@@ -223,7 +233,7 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
     this.suiteIsRunning$ = this.testSuiteExecutionInfo$
       .map(te => te ? te.isRunning : false)
     ;
-    this.suiteIsNotRunning$ = this.testSuiteExecutionInfo$
+    this.suiteIsNotRunning$ = this.suiteIsRunning$
       .map(ir => !ir)
     ;
     this.dockerPullInfo$ = this.store
@@ -238,6 +248,7 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
     this.hasLogs$ = this.store.select(
       testExecutionLogSelectors.latestForTestSuite(testSuite)
     )
+      .map(tr => !!tr.length)
 
   }
 
