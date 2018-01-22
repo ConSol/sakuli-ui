@@ -8,6 +8,8 @@ export class StompConnection extends Subject<StompConnection> {
   private socket: SockJS.Socket;
   private stompClient: Stomp.Client;
 
+  private applicationDestinationPrefix = '/api/socket';
+
   private topicMap = new Map <string, Subject<any>>();
 
   constructor(url: string) {
@@ -52,6 +54,10 @@ export class StompConnection extends Subject<StompConnection> {
     this.topicMap.forEach(s => s.complete());
     this.topicMap.clear();
     this.stompClient.disconnect(() => this.complete());
+  }
+
+  send<T extends object>(dest: string, value: T) {
+    this.stompClient.send(`${this.applicationDestinationPrefix}${dest}`, {}, JSON.stringify(value))
   }
 }
 

@@ -1,8 +1,5 @@
 import {Action} from "@ngrx/store";
 import {uniqueName} from "../../../core/redux.util";
-import {TestRunInfo} from "../../../sweetest-components/services/access/model/test-run-info.interface";
-import {TestExecutionEvent} from "../../../sweetest-components/services/access/model/test-execution-event.interface";
-import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
 import {DockerPullInfo} from "./test.interface";
 import {CloseTest, OpenTest} from "./test-editor.interface";
@@ -63,6 +60,14 @@ export class DockerPullCompleted implements Action {
   ) {}
 }
 
+export const STOP_TEST_EXECUTION = '[TEST_EXECUTION] STOP';
+export class StopTestExecution implements Action {
+  readonly type = STOP_TEST_EXECUTION;
+  constructor(
+    readonly containerId: string
+  ) {}
+}
+
 export type AllTypes =
   | OpenTest
   | CloseTest
@@ -72,4 +77,6 @@ export type AllTypes =
   | DockerPullProgress
   | DockerPullStream
   | DockerPullCompleted
-  | DockerPullProgressBatch;
+  | DockerPullProgressBatch
+  | StopTestExecution
+  ;

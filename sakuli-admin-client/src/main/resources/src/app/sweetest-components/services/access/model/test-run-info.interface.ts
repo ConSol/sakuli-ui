@@ -1,5 +1,9 @@
+export interface TestRunInfoPorts {
+  vnc: number;
+  web: number;
+}
+
 export interface TestRunInfo {
-  vncPort:number;
-  vncWebPort:number;
+  testRunInfoPortList: TestRunInfoPorts[];
   containerId:string;
 }

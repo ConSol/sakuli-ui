@@ -13,7 +13,7 @@ import {
 } from "./run-configuration/run-configuration.actions";
 import {Observable} from "rxjs/Observable";
 import {RunConfigurationTypes} from "./run-configuration/run-configuration-types.enum";
-import {log, notNull} from "../../core/redux.util";
+import {notNull} from "../../core/redux.util";
 import {Actions} from "@ngrx/effects";
 import {
   DockerPullInfo, dockerPullInfoForCurrentRunInfoAsArray, dockerPullStreamForCurrentRunInfo,
@@ -24,7 +24,7 @@ import {RunTest, TestExecutionEntity, testExecutionSelectors} from "./state/test
 import {testExecutionLogSelectors} from "./state/test-execution-log.state";
 import {testSuiteSelectId} from "./state/testsuite.state";
 import {TestSuiteResult} from "../../sweetest-components/services/access/model/test-result.interface";
-import {LoadTestResults} from "./state/test.actions";
+import {LoadTestResults, StopTestExecution} from "./state/test.actions";
 import {RouterGo} from "../../sweetest-components/services/router/router.actions";
 
 @Component({
@@ -97,9 +97,14 @@ import {RouterGo} from "../../sweetest-components/services/router/router.actions
       </div>
     </ng-template>
     <div *ngIf="suiteIsRunning$ | async; else runCard" class="card p-3 mb-3">
-      <div class="card-content">
-        <sc-icon icon="fa-spinner" [spin]="true"></sc-icon>
-        Test suite is running in container {{(testSuiteExecutionInfo$ | async)?.containerId}}
+      <div class="card-content" *ngIf="testSuiteExecutionInfo$ | async; let testSuiteExecutionInfo">
+        <p>
+          <sc-icon icon="fa-spinner" [spin]="true"></sc-icon>
+          <span>Test suite is running in container {{testSuiteExecutionInfo?.containerId}}</span>
+        </p>
+        <button class="btn btn-danger" (click)="stopExecution(testSuiteExecutionInfo?.containerId)">
+          <sc-icon icon="fa-ban"> Stop execution</sc-icon>
+        </button>
       </div>
     </div>
     <div class="card-block" *ngIf="dockerPullStream$ | async; let dockerPullStream">
@@ -120,6 +125,7 @@ import {RouterGo} from "../../sweetest-components/services/router/router.actions
       </ng-container>
     </div>
     <ng-container *ngIf="suiteIsNotRunning$ | async">
+      <h4>Latest report:</h4>
       <sa-report-navigation
         *ngIf="latestResult$ | async; let latestResult"
         class="cursor-pointer"
@@ -128,15 +134,18 @@ import {RouterGo} from "../../sweetest-components/services/router/router.actions
         [navigation]="false"
       ></sa-report-navigation>
       <sa-report-content
-        *ngIf="latestResult$ | async; let latestResult"
-        [testResult]="latestResult">
-      </sa-report-content>
+        [testResult]="latestResult$ | async"
+        class="mb-3 d-block"
+      ></sa-report-content>
     </ng-container>
     <div class="row" *ngIf="hasLogs$ | async">
       <div class="col-12 mb-2" *ngIf="vncReady$ | async" [@onVnc]="vncReady$ | async">
-        <sa-vnc-card
-          [testSuite]="testSuite"
-        ></sa-vnc-card>
+        <ng-container *ngFor="let ports of (testSuiteExecutionInfo$ | async)?.testRunInfoPortList">
+          <sa-vnc-card
+            [vncPort]="ports.vnc"
+            [webPort]="ports.web"
+          ></sa-vnc-card>
+        </ng-container>
       </div>
       <div class="col-12">
         <sa-log-card
@@ -212,7 +221,6 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
   private initObservablesWithTestSuite(testSuite: SakuliTestSuite) {
     this.latestResult$ = this.store
       .select(testSelectors.testResultsFor(testSuite))
-      .do(log(this.testSuite.id))
       .filter(r => !!r && !!r.length)
       .map(r => r[0]);
 
@@ -225,7 +233,7 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
     this.suiteIsRunning$ = this.testSuiteExecutionInfo$
       .map(te => te ? te.isRunning : false)
     ;
-    this.suiteIsNotRunning$ = this.testSuiteExecutionInfo$
+    this.suiteIsNotRunning$ = this.suiteIsRunning$
       .map(ir => !ir)
     ;
     this.dockerPullInfo$ = this.store
@@ -240,8 +248,8 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
     this.hasLogs$ = this.store.select(
       testExecutionLogSelectors.latestForTestSuite(testSuite)
     )
-      .do(log('Logs'))
-      .map(l => !!l && !!l.length);
+      .map(tr => !!tr.length)
+
   }
 
 
@@ -269,6 +277,9 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
     this.store.dispatch(new SelectSakuliContainer($event));
   }
 
+  stopExecution(containerId: string) {
+    this.store.dispatch(new StopTestExecution(containerId))
+  }
 
   get runWithText() {
     return this.runConfiguration$.map(rc => {

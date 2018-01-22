@@ -1,8 +1,8 @@
 package org.sweetest.platform.server.api.test.execution.strategy;
 
+import org.sweetest.platform.server.api.common.Observer;
 import org.sweetest.platform.server.api.test.TestRunInfo;
 import org.sweetest.platform.server.api.test.TestSuite;
-import org.sweetest.platform.server.api.common.*;
 
 public interface TestExecutionStrategy<T> {
 
@@ -15,5 +15,9 @@ public interface TestExecutionStrategy<T> {
     void setConfiguration(T config);
     T getConfiguration();
 
+    TestExecutionSubject getBackChannel();
+
     TestRunInfo execute(Observer<TestExecutionEvent> testExecutionEventObserver);
+
+    void stop();
 }

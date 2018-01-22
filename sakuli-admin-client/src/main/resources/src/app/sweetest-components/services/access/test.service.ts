@@ -37,6 +37,13 @@ export class TestService {
     )
   }
 
+  stop(containerId: string) {
+    this.stomp.connect('/api/socket')
+      .subscribe((c: StompConnection) => {
+        c.send(`/execution/stop/${containerId}`, {stop:true})
+      })
+  }
+
   run(testSuite: SakuliTestSuite, workspace: string): Observable<TestRunInfo> {
     return this.http.post<TestRunInfo>(`${testUrl}/run?workspace=${workspace}`, testSuite)
   }

@@ -18,11 +18,11 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.util.SocketUtils;
 import org.springframework.web.context.WebApplicationContext;
+import org.sweetest.platform.server.api.common.Observer;
 import org.sweetest.platform.server.api.file.FileSystemService;
 import org.sweetest.platform.server.api.runconfig.DockerFileExecutionConfiguration;
 import org.sweetest.platform.server.api.test.TestRunInfo;
 import org.sweetest.platform.server.api.test.execution.strategy.AbstractTestExecutionStrategy;
-import org.sweetest.platform.server.api.common.*;
 import org.sweetest.platform.server.api.test.execution.strategy.TestExecutionEvent;
 import org.sweetest.platform.server.api.test.execution.strategy.TestExecutionSubject;
 import org.sweetest.platform.server.api.test.execution.strategy.events.*;
@@ -65,6 +65,7 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
 
     @Value("${docker.userid:1000}")
     private String dockerUserId;
+    private AttachContainerResultCallback logCallback;
 
     @Override
     public TestRunInfo execute(Observer<TestExecutionEvent> testExecutionEventObserver) {
@@ -114,21 +115,41 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
                     createContainer(imageId);
                     startContainer();
                     attachToContainer();
-                } catch(Exception e) {
+                } catch (Exception e) {
                     next(new TestExecutionErrorEvent(e.getMessage(), executionId, e));
                 }
             }).start();
-            return new TestRunInfo(
+            TestRunInfo tri = new TestRunInfo(
                     availableVncPort, availableVncWebPort, executionId
             );
+            tri.subscribe(invokeStopObserver(this));
+            return tri;
         } else {
             return new TestRunInfo(-1, -1, "");
         }
     }
 
+    public void stop() {
+        log.info("Will stop container " + container.getId());
+        try {
+            if (logCallback != null) {
+                logCallback.close();
+            }
+            dockerClient
+                    .killContainerCmd(container.getId())
+                    .withSignal("9")
+                    .exec();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            next(new TestExecutionErrorEvent("Cannot stop container " + container.getId(), executionId, e));
+        }
+    }
+
+
     private void startContainer() {
         dockerClient.eventsCmd().exec(eventsResultCallback);
-        //subject.next(new TestExecutionStartEvent(executionId));
+        subject.next(new TestExecutionStartEvent(executionId));
         dockerClient.startContainerCmd(container.getId()).exec();
         Optional.ofNullable(container.getWarnings()).map(ReflectionToStringBuilder::toString)
                 .ifPresent(w -> {
@@ -151,7 +172,7 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
     }
 
     private void attachToContainer() {
-        dockerClient
+        logCallback = dockerClient
                 .logContainerCmd(container.getId())
                 .withStdOut(true)
                 .withStdErr(true)

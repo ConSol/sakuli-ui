@@ -24,4 +24,6 @@ public interface TestService {
     TestRunInfo run(TestSuite testSuite, String workspace);
 
     List<TestSuiteResult> getTestSuiteResults(String sakuliPath);
+
+    void stopTestExecution(String id);
 }

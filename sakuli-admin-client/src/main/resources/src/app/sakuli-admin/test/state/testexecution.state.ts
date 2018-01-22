@@ -59,9 +59,16 @@ export class TestExecutionStarted implements Action {
 export const TEST_EXECUTION_COMPLETED = '[test] TEST_EXECUTION_COMPLETED';
 export class TestExecutionCompleted implements Action {
   readonly type = TEST_EXECUTION_COMPLETED;
-
   constructor(readonly id: string) {
   }
+}
+
+export const TEST_EXECUTION_STOPPED = '[test] TEST_EXECUTION_STOPPED';
+export class TestExecutionStopped implements Action {
+  readonly type = TEST_EXECUTION_STOPPED;
+  constructor(
+    readonly id: string
+  ) {}
 }
 
 export const TEST_EXECUTION_SET_VNC_READY = '[TEST_EXECUTION] SET_VNC_READY';
@@ -78,6 +85,7 @@ export type TestExecutionActionTypes = RunTest
   | TestExecutionStarted
   | TestExecutionCompleted
   | TestExecutionSetVncReady
+  | TestExecutionStopped
 
 const state = createFeatureSelector<TestExecutionState>(TestExecutionFeatureName);
 const selectors = testExecutionEntityAdapter.getSelectors(state);
@@ -131,6 +139,15 @@ export function testExecutionReducer(state: TestExecutionState = testExecutionSt
           vncReady: false
         }
       }, state);
+    }
+    case TEST_EXECUTION_STOPPED: {
+      return testExecutionEntityAdapter.updateOne({
+        id: action.id,
+        changes: {
+          isRunning: false,
+          vncReady: false
+        }
+      }, state)
     }
   }
   return state || testExecutionStateInit

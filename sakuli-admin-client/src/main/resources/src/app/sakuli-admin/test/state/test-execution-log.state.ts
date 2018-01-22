@@ -74,7 +74,6 @@ export const testExecutionLogSelectors = {
 export function testExecutionLogReducer(state: TestExecutionLogState = testExecutionLogStateInit, action: TestExecutionLogActionTypes) {
   switch (action.type) {
     case APPEND_TEST_RUN_INFO_LOG: {
-      console.log('Addd', action);
       return testExecutionLogEntityAdapter.addOne({
         message: action.testExecutionEvent.message,
         timestamp: action.timestamp,
