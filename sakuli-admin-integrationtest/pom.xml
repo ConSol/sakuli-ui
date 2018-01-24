@@ -60,15 +60,70 @@
         <configuration>
           <images>
             <image>
-              <name>java:8</name>
+              <alias>sakuli-tests-sakuli</alias>
+              <name>sakuli/admin-tests-sakuli:${project.version}</name>
+              <build>
+                <from>consol/sakuli-ubuntu-xfce:latest</from>
+              </build>
               <run>
-                <cmd>java -jar /mvn/sakuli-admin-web-1.0-SNAPSHOT-executable.war</cmd>
+                <entrypoint></entrypoint>
+                <dependsOn>
+                  <container>sakuli-tests-server</container>
+                </dependsOn>
+                <env>
+                  <SAKULI_TEST_SUITE>/sakuli-tests/suite</SAKULI_TEST_SUITE>
+                </env>
+                <workingDir>/sakuli-tests/suite</workingDir>
+                <ports>
+                  <port>5901:5901</port>
+                  <port>6901:6901</port>
+                </ports>
                 <volumes>
-                  <bind>${project.build.directory}/../../sakuli-admin-web/target:/mvn</bind>
+                  <bind>
+                    <volume>${project.build.testSourceDirectory}/../sakuli:/sakuli-tests</volume>
+                    <cmd>sakuli run /sakuli-tests/suite</cmd>
+                  </bind>
                 </volumes>
+                <links>
+                  <link>sakuli-tests-server</link>
+                </links>
+                <log>
+                  <file>${project.build.directory}/docker-sakuli.log</file>
+                </log>
+              </run>
+            </image>
+            <image>
+              <alias>sakuli-tests-server</alias>
+              <name>sakuli/admin-tests-server:${project.version}</name>
+              <build>
+                <from>java:8</from>
+                <assembly>
+                  <inline>
+                    <files>
+                      <file>
+                        <source>${settings.localRepository}/org/sweetest/platform/sakuli-admin-web/1.0-SNAPSHOT/sakuli-admin-web-${project.version}-executable.war</source>
+                        <destName>ROOT.war</destName>
+                        <outputDirectory>.</outputDirectory>
+                      </file>
+                    </files>
+                  </inline>
+                </assembly>
+              </build>
+              <run>
+                <cmd>java -jar /maven/ROOT.war</cmd>
+                <ports>1234:8080</ports>
                 <log>
                   <file>${project.build.directory}/docker.log</file>
                 </log>
+                <wait>
+                  <http>
+                    <url>http://localhost:1234</url>
+                    <method>GET</method>
+                    <status>200</status>
+                  </http>
+                  <time>60000</time>
+                  <shutdown>500</shutdown>
+                </wait>
               </run>
             </image>
           </images>

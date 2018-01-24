@@ -43,7 +43,7 @@ export class LayoutMenuService {
     .mergeMap(url => this.store
       .select(menuSelectors.selectAll)
       .map(menuItems => menuItems.filter(m => {
-        const link = this.router.serializeUrl(this.router.createUrlTree(m.link));
+        const link = this.router.serializeUrl(this.router.createUrlTree(m.link || []));
         return link === url;
       }))
       .map(menuItems => menuItems[0])
