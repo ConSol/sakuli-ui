@@ -1,7 +1,6 @@
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/Observable";
 import {TestRunInfo} from "./model/test-run-info.interface";
-import {StompConnection, StompService} from "./stomp.service";
 import {TestExecutionEvent} from "./model/test-execution-event.interface";
 import {TestSuiteResult} from "./model/test-result.interface";
 import {FileService} from "./file.service";
@@ -9,6 +8,7 @@ import {absPath} from "./model/file-response.interface";
 import {DateUtil} from "../../utils";
 import {SakuliTestSuite} from "./model/sakuli-test-model";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {StompService} from "@stomp/ng2-stompjs";
 
 const testUrl = `api/testsuite`;
 
@@ -38,10 +38,7 @@ export class TestService {
   }
 
   stop(containerId: string) {
-    this.stomp.connect('/api/socket')
-      .subscribe((c: StompConnection) => {
-        c.send(`/execution/stop/${containerId}`, {stop:true})
-      })
+    this.stomp.publish(`/api/socket/execution/stop/${containerId}`, JSON.stringify({stop: true}));
   }
 
   run(testSuite: SakuliTestSuite, workspace: string): Observable<TestRunInfo> {
@@ -49,11 +46,9 @@ export class TestService {
   }
 
   testRunLogs(processId: string): Observable<TestExecutionEvent> {
-    return this.stomp.connect('/api/socket')
-      .combineLatest(Observable.of(processId))
-      .mergeMap(([conn, pid]: [StompConnection, string]) => {
-        return conn.topic<TestExecutionEvent>(`/topic/test-run-info/${pid}`)
-      })
+    return this.stomp
+      .subscribe(`/topic/test-run-info/${processId}`)
+      .map(m => JSON.parse(m.body))
       .catch(e => {
         console.warn('Error while fetching logs', e);
         return Observable.empty() as Observable<TestExecutionEvent>;

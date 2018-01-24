@@ -1,6 +1,7 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {ansiRegEx} from "../../../utils";
 
+declare function require<T>(path: string):T ;
 const strip_ansi = require("strip-ansi");
 
 @Pipe({

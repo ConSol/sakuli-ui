@@ -1,9 +1,10 @@
 import {NgModule} from "@angular/core";
-import {StompService} from "./stomp.service";
 import {FileService} from "./file.service";
 import {TestService} from "./test.service";
 import {HttpClientModule} from "@angular/common/http";
 import {ScAuthModule} from "./auth/sc-auth.module";
+import {StompConfig, StompService} from "@stomp/ng2-stompjs";
+import {stompConfig} from "./stomp.config";
 
 export const providers = [
   TestService,
@@ -18,6 +19,10 @@ export const providers = [
   ],
   providers: [
     ...providers,
+    {
+      provide: StompConfig,
+      useValue: stompConfig
+    }
   ],
   exports: [
     ScAuthModule

@@ -2,7 +2,6 @@ import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from 
 import {FileService} from "../../services/access/file.service";
 import {ScToastService} from "../presentation/toast/toast.service";
 import {getModeForPath} from "./editor/modelist";
-import {DangerToast, SuccessToast} from "../presentation/toast/toast.model";
 import {ScFileSelectorService} from "../presentation/file-selector/sc-file-selector.service";
 import {absPath} from "../../services/access/model/file-response.interface";
 import * as path from 'path';

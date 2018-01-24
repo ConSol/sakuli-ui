@@ -1,13 +1,11 @@
 import {FileSelectorFile} from "./file-selector.state";
 import * as path from 'path';
-import {absPath} from "../../../services/access/model/file-response.interface";
 
 export type FileSelectorFilter = (file:FileSelectorFile) => boolean;
 
 export class Filters {
 
   static extension(...ext:string[]) {
-    console.log('Created extendsion Filter', ext);
     return (file:FileSelectorFile) => {
       const fileExt = path.extname(file.name);
       const i = ext.includes(fileExt);
