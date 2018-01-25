@@ -19,7 +19,7 @@ public class ToTestCaseCollectorTest {
     private String inactiveTest = "// case1/test.js http://www.sakuli.org";
     private String activeTest = "case2/citrus.js http://www.citrusframework.org";
 
-    Stream<String> lines = Arrays.asList(
+    private Stream<String> lines = Stream.of(
             "This is a general comment, which is not attached to any tc",
             "",
             "// this is a comment",
@@ -28,7 +28,7 @@ public class ToTestCaseCollectorTest {
             "",
             "// another comment for an active test",
             activeTest
-    ).stream();
+    );
 
     @Test
     public void isSakulitestCaseDefinitionInactive() {
@@ -63,7 +63,8 @@ public class ToTestCaseCollectorTest {
                 "_case1/sakuli_demo.js http://www.sakuli.org",
                 "case1_/sakuli_demo.js http://www.sakuli.org",
                 "case1/_sakuli_demo.js http://www.sakuli.org",
-                "_case1_/sakulidemo.js http://www.sakuli.org"
+                "_case1_/sakulidemo.js http://www.sakuli.org",
+                "_case1_/sakulidemo.type.js http://www.sakuli.org"
         ).forEach(d -> {
             Matcher matcher = ToTestCaseCollector.isSakulitestCaseDefinition.matcher(d);
             assertTrue(matcher.find());
