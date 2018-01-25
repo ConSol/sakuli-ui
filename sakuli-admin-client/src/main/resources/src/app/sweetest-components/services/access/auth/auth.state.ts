@@ -78,7 +78,7 @@ export function authReducer(state: AuthState = AuthStateInit, action: AuthAction
     case LOGIN_SUCCESS: {
       return ({...state, ...action})
     }
-    case LOGOUT: {
+    case LOGOUT_SUCCESS: {
       return AuthStateInit
     }
   }

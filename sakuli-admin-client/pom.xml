@@ -38,12 +38,6 @@
             </configuration>
           </execution>
           <execution>
-            <id>npm-install</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-          </execution>
-          <execution>
             <id>ng-build</id>
             <goals>
               <goal>npm</goal>
@@ -94,7 +88,12 @@
 
   <profiles>
     <profile>
-      <id>development</id>
+      <id>npm-install</id>
+      <activation>
+        <file>
+          <missing>src/resources/node_modules</missing>
+        </file>
+      </activation>
       <build>
         <plugins>
           <plugin>
@@ -106,6 +105,18 @@
             <configuration>
               <arguments>run serve</arguments>
             </configuration>
+            <executions>
+              <execution>
+                <id>ng-build</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <arguments>run build</arguments>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>

@@ -1,4 +1,4 @@
-import { TEMPPage } from './app.po';
+import {TEMPPage} from './app.po';
 
 describe('temp App', () => {
   let page: TEMPPage;
@@ -9,8 +9,8 @@ describe('temp App', () => {
 
   it('should display welcome message', done => {
     page.navigateTo();
-    page.getParagraphText()
-      .then(msg => expect(msg).toEqual('Welcome to app!!'))
+    page.getHeaderText()
+      .then(msg => expect(msg).toEqual('Login to Sakuli-UI'))
       .then(done, done.fail);
   });
 });

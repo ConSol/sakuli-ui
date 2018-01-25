@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.sweetest.platform.server.filter.JwtAuthenticationFilter;
@@ -22,6 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";
     public static final String SIGN_UP_URL = "/login";
+    public static final String LOGOUT_URL = "/logout";
 
 
     @Value("${security.signing-key}")
@@ -32,6 +34,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${security.security-realm")
     private String securityRealm;
+
+    @Value("${app.authentication.enabled}")
+    private boolean authenticationEnabled;
 
     private UserDetailsService userDetailsService;
     private BCryptPasswordEncoder bCryptPasswordEncode;
@@ -46,17 +51,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        /*
+
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        */
-        http.csrf().disable().authorizeRequests()
-                .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
-                .antMatchers(HttpMethod.GET, "/", "/**/*.js", "/**/*.css", "/**/*.woff*").permitAll()
-                .antMatchers("/api/**").authenticated()
-                .and()
-                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
-                .addFilter(new JwtAuthorizationFilter(authenticationManager()));
+
+        if(authenticationEnabled) {
+            http
+                    .csrf()
+                        .disable()
+                    .authorizeRequests()
+                        .antMatchers(HttpMethod.POST, SIGN_UP_URL, LOGOUT_URL)
+                            .permitAll()
+                        .antMatchers(HttpMethod.GET, "/", "/**/*.js", "/**/*.css", "/**/*.woff*")
+                            .permitAll()
+                    // TODO: Right now sockets are not secured, this is actually not the best way
+                        .antMatchers("/api/info" , "/api/socket/**")
+                            .permitAll()
+                        .antMatchers("/api/**")
+                            .authenticated()
+                    .and()
+                        .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+                        .addFilter(new JwtAuthorizationFilter(authenticationManager()));
+        }
     }
 
     @Override

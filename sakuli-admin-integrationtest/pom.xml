@@ -58,15 +58,15 @@
         <artifactId>docker-maven-plugin</artifactId>
         <version>0.23.0</version>
         <configuration>
+          <logStdout>true</logStdout>
           <images>
             <image>
               <alias>sakuli-tests-sakuli</alias>
-              <name>sakuli/admin-tests-sakuli:${project.version}</name>
+              <name>sakuli-admin-tests/sakuli:${project.version}</name>
               <build>
                 <from>consol/sakuli-ubuntu-xfce:latest</from>
               </build>
               <run>
-                <entrypoint></entrypoint>
                 <dependsOn>
                   <container>sakuli-tests-server</container>
                 </dependsOn>
@@ -81,7 +81,6 @@
                 <volumes>
                   <bind>
                     <volume>${project.build.testSourceDirectory}/../sakuli:/sakuli-tests</volume>
-                    <cmd>sakuli run /sakuli-tests/suite</cmd>
                   </bind>
                 </volumes>
                 <links>
@@ -92,9 +91,40 @@
                 </log>
               </run>
             </image>
+            <!--
+            <image>
+              <alias>sakuli-tests-testcafe</alias>
+              <name>sakuli-admin-tests/sakuli:${project.version}</name>
+              <build>
+                <dockerFile>${project.build.testSourceDirectory}/../testcafe/Dockerfile</dockerFile>
+              </build>
+              <run>
+                <cmd>testcafe chrome **.test.ts</cmd>
+                <dependsOn>
+                  <container>sakuli-tests-server</container>
+                </dependsOn>
+                <workingDir>/testcafe</workingDir>
+                <ports>
+                  <port>5901:5901</port>
+                  <port>6901:6901</port>
+                </ports>
+                <volumes>
+                  <bind>
+                    <volume>${project.build.testSourceDirectory}/../testcafe:/testcafe</volume>
+                  </bind>
+                </volumes>
+                <links>
+                  <link>sakuli-tests-server</link>
+                </links>
+                <log>
+                  <file>${project.build.directory}/docker-testcafe.log</file>
+                </log>
+              </run>
+            </image>
+            -->
             <image>
               <alias>sakuli-tests-server</alias>
-              <name>sakuli/admin-tests-server:${project.version}</name>
+              <name>sakuli-admin-tests/server:${project.version}</name>
               <build>
                 <from>java:8</from>
                 <assembly>
@@ -110,7 +140,12 @@
                 </assembly>
               </build>
               <run>
-                <cmd>java -jar /maven/ROOT.war</cmd>
+                <cmd>java -jar /maven/ROOT.war --sakuli.admin.root.directory=/server_home</cmd>
+                <volumes>
+                  <bind>
+                    <volume>${project.build.testSourceDirectory}/../resources:/server_home</volume>
+                  </bind>
+                </volumes>
                 <ports>1234:8080</ports>
                 <log>
                   <file>${project.build.directory}/docker.log</file>

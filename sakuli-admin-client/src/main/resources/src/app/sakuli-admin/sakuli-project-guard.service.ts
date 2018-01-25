@@ -4,26 +4,28 @@ import {Store} from "@ngrx/store";
 import {AppState} from "./appstate.interface";
 import {Observable} from "rxjs/Observable";
 import {OpenWorkspaceDialog} from "./workspace/state/project.actions";
-import {authSelectors} from "../sweetest-components/services/access/auth/auth.state";
 import {workpaceSelectors} from "./workspace/state/project.interface";
+import {log} from "../core/redux.util";
+import {RouterStateSnapshot} from "@angular/router/src/router_state";
 
 @Injectable()
 export class SakuliProjectGuardService implements CanActivate {
 
   constructor(
-              private store: Store<AppState>,
+    private store: Store<AppState>,
   ) {}
 
-  canActivate(route: ActivatedRouteSnapshot) {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    console.log('Project guard')
     return this.store.select(workpaceSelectors.workspace)
-      .combineLatest(this.store.select(authSelectors.isLoggedIn()))
-      .mergeMap(([workspace, loggedIn]) => {
-        if (loggedIn && workspace) {
-          return Observable.of(true);
-        } else if(loggedIn) {
+      .map((workspace) => {
+        if (workspace) {
+          return true
+        } else {
           this.store.dispatch(new OpenWorkspaceDialog());
+          return false;
         }
-        return Observable.of(false);
-      });
+      })
+      .do(log('pg'));
   }
 }

@@ -5,8 +5,10 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomi
 import org.springframework.boot.web.servlet.ErrorPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.util.UrlPathHelper;
 
 import java.util.Optional;
 
@@ -55,5 +57,11 @@ public class ApplicationConfig {
                 configurableEmbeddedServletContainer.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/"));
             }
         };
+    }
+
+    @Bean
+    @Order(-1)
+    public UrlPathHelper getUrlPathHelper() {
+        return new UrlPathHelperNonDecoding();
     }
 }

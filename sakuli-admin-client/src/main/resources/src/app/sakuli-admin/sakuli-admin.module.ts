@@ -12,6 +12,7 @@ import {SaAppLogModule} from "./app-log/app-log.module";
 import {BrowserModule} from "@angular/platform-browser";
 import {LoginComponent} from "./login.component";
 import {SakuliAuthGuardService} from "./sakuli-auth-guard.service";
+import {SakuliAuthProjectGuardService} from "./sakuli-auth-project-guard.service";
 
 @NgModule({
   imports: [
@@ -28,7 +29,8 @@ import {SakuliAuthGuardService} from "./sakuli-auth-guard.service";
   ],
   providers: [
     SakuliProjectGuardService,
-    SakuliAuthGuardService
+    SakuliAuthGuardService,
+    SakuliAuthProjectGuardService
   ],
   exports: [
     SakuliAdminRoutingModule,

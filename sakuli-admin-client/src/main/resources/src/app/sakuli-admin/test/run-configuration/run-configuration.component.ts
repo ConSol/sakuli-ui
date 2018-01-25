@@ -1,35 +1,30 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {RunConfigurationTypes} from "./run-configuration-types.enum";
 import {ContainerTag, RunConfiguration, SakuliContainer} from "./run-configuration.interface";
-import {ProjectModel} from "../../../sweetest-components/services/access/model/project.model";
 import {InplaceFileEditorComponent} from "../../../sweetest-components/components/forms/inplace-file-editor.component";
 import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
 import {Store} from "@ngrx/store";
 import {AppState} from "../../appstate.interface";
 import {workpaceSelectors} from "../../workspace/state/project.interface";
 import * as path from 'path';
-import {
-  FileSelectorFilter,
-  Filters
-} from "../../../sweetest-components/components/presentation/file-selector/file-selector-filter.interface";
-import {FileSelectorFile} from "../../../sweetest-components/components/presentation/file-selector/file-selector.state";
+import {AppInfoService} from "../../../sweetest-components/services/access/app-info.service";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'run-configuration',
   template: `
     <sc-loading class="d-block margin-y" #loadingCmp displayAs="progressbar" for="runconfig"></sc-loading>
-    <form>
+    <form *ngIf="info.getAppInfo() | async; let appInfo">
       <fieldset class="form-group" *ngIf="!(loadingCmp.show$ | async) && !!config">
         <legend>Run Configuration</legend>
-        <div class="form-check">
+        <div class="form-check" *ngIf="appInfo.localExecutionEnabled">
           <label class="form-check-label">
             <input type="radio" class="form-check-input" name="runType" [(ngModel)]="config.type"
                    [value]="types[types.Local]"/>
             Local execution
           </label>
         </div>
-        <div class="form-check">
+        <div class="form-check" *ngIf="appInfo.dockerContainerExecutionEnabled">
           <label class="form-check-label">
             <input type="radio" class="form-check-input" name="runType" [(ngModel)]="config.type"
                    [value]="types[types.SakuliContainer]"/>
@@ -50,7 +45,7 @@ import {FileSelectorFile} from "../../../sweetest-components/components/presenta
             </select>
           </div>
         </div>
-        <div class="form-check">
+        <div class="form-check" *ngIf="appInfo.dockerComposeExecutionEnabled" >
           <label class="form-check-label">
             <input type="radio" class="form-check-input" name="runType" [(ngModel)]="config.type"
                    [value]="types[types.DockerCompose]"/>
@@ -67,7 +62,7 @@ import {FileSelectorFile} from "../../../sweetest-components/components/presenta
             ></inplace-file-editor>
           </div>
         </div>
-        <div class="form-check">
+        <div class="form-check" *ngIf="appInfo.dockerFileExecutionEnabled">
           <label class="form-check-label">
             <input type="radio" class="form-check-input" name="runType" [(ngModel)]="config.type"
                    [value]="types[types.Dockerfile]"/>
@@ -135,7 +130,8 @@ services:
   workspace$ = this.store.select(workpaceSelectors.workspace);
 
   constructor(
-    readonly store: Store<AppState>
+    readonly store: Store<AppState>,
+    readonly info: AppInfoService
   ) {
   }
 

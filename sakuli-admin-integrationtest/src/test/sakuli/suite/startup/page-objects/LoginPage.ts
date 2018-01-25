@@ -1,7 +1,8 @@
 export class LoginPage {
 
     set userName($userName: string) {
-        _setValue(_textbox("username"), $userName);
+        _highlight( _textbox("username"));
+        _setValue( _textbox("username"), $userName);
     }
 
     set password($password: string) {

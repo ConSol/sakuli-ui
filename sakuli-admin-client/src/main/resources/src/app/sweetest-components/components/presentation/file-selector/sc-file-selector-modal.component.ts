@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {Store} from "@ngrx/store";
 import {fileSelectorSelectors} from "./file-selector.state";
@@ -28,7 +28,7 @@ import {ModalAware} from "../modal/sc-modal.service";
       </div>
       <div>
         <button class="btn btn-default" (click)="cancel()">Cancel</button>
-        <button class="btn btn-success" (click)="close()">{{okButtonText}}</button>
+        <button [disabled]="okButtonDisabled$ | async" class="btn btn-success" (click)="close()">{{okButtonText}}</button>
       </div>
     </div>
   `,
@@ -66,10 +66,13 @@ export class ScFileSelectorModalComponent implements ModalAware {
 
   selectedFilesOut$ = this.selectedFiles$.map(files => files.map(absPath).join(', '));
 
+  okButtonDisabled$ = this.selectedFiles$.map(files => !files.length);
+
   constructor(
     readonly modal: NgbActiveModal,
     readonly store: Store<any>
   ) {  }
+
 
 
   close() {

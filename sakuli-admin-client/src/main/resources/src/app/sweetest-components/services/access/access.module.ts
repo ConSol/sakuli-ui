@@ -5,11 +5,13 @@ import {HttpClientModule} from "@angular/common/http";
 import {ScAuthModule} from "./auth/sc-auth.module";
 import {StompConfig, StompService} from "@stomp/ng2-stompjs";
 import {stompConfig} from "./stomp.config";
+import {AppInfoService} from "./app-info.service";
 
 export const providers = [
   TestService,
   FileService,
   StompService,
+  AppInfoService
 ];
 
 @NgModule({

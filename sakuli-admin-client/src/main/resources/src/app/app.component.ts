@@ -15,6 +15,8 @@ import {OpenWorkspaceDialog} from "./sakuli-admin/workspace/state/project.action
 import {Actions} from "@ngrx/effects";
 import {authSelectors, Logout} from "./sweetest-components/services/access/auth/auth.state";
 import {Observable} from "rxjs/Observable";
+import {AppInfoService} from "./sweetest-components/services/access/app-info.service";
+import {notNull} from "./core/redux.util";
 
 @Component({
   selector: 'app-root',
@@ -29,21 +31,35 @@ import {Observable} from "rxjs/Observable";
 })
 export class AppComponent implements OnInit {
 
+  private appInfo$ = this.info.getAppInfo().filter(notNull);
   showSideBar$: Observable<boolean>;
 
   ngOnInit(): void {
-    this.showSideBar$ = this.store.select(authSelectors.isLoggedIn());
+    this.showSideBar$ = this.store
+      .select(authSelectors.isLoggedIn())
+      .combineLatest(this.appInfo$)
+      .map(([loggedIn, i]) => !(!loggedIn && i.authenticationEnabled));
     this.showSideBar$
+      .combineLatest(this.appInfo$.map(i => i.authenticationEnabled))
       .distinctUntilChanged()
-      .subscribe(loggedIn => {
+      .subscribe(([loggedIn, authenticationEnabled]) => {
+        console.log(loggedIn, authenticationEnabled);
         const actions = [];
-        if(loggedIn) {
+        if(loggedIn && authenticationEnabled) {
           actions.push(new RemoveMenuitem(this.logInButton.id));
           actions.push(new AddMenuItem(this.logOutButton));
-        } else {
+        }
+
+        if(!loggedIn && authenticationEnabled) {
           actions.push(new RemoveMenuitem(this.logOutButton.id));
           actions.push(new AddMenuItem(this.logInButton));
         }
+
+        if(!authenticationEnabled) {
+          actions.push(new RemoveMenuitem(this.logOutButton.id));
+          actions.push(new RemoveMenuitem(this.logInButton.id));
+        }
+
         actions.forEach(a => this.store.dispatch(a));
       })
   }
@@ -68,7 +84,7 @@ export class AppComponent implements OnInit {
   );
 
   logOutButton = new MenuItem(
-    'secondary.login',
+    'secondary.logut',
     'Logout',
     new Logout(),
     FontawesomeIcons.signOut,
@@ -81,7 +97,9 @@ export class AppComponent implements OnInit {
               readonly router: Router,
               readonly store: Store<AppState>,
               readonly modal: NgbModal,
-              readonly actions: Actions) {
+              readonly actions: Actions,
+              readonly info:AppInfoService
+  ) {
 
     this.menuService.addMenuItems(
       [

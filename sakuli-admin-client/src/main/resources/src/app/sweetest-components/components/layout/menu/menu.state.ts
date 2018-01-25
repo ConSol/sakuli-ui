@@ -39,11 +39,19 @@ export class SelectMenuItem implements Action {
   ) {}
 }
 
+export const REMOVE_MENUITEM_BY_PARENT = '[MENUITEM] REMOVE BY PARENT';
+export class RemoveByParentMenuitem implements Action {
+  readonly type = REMOVE_MENUITEM_BY_PARENT;
+  constructor(
+    readonly parent?: string
+  ) {}
+}
+
 export const REMOVE_MENUITEM = '[MENUITEM] REMOVE';
 export class RemoveMenuitem implements Action {
   readonly type = REMOVE_MENUITEM;
   constructor(
-    readonly parent?: string
+    readonly id: string,
   ) {}
 }
 
@@ -70,7 +78,7 @@ export const menuSelectors = {
   byParent
 };
 
-export type MenuActions = AddMenuItem | AddAllMenuItems | SelectMenuItem | RemoveMenuitem;
+export type MenuActions = AddMenuItem | AddAllMenuItems | SelectMenuItem | RemoveByParentMenuitem | RemoveMenuitem;
 
 export const menuStateInit = menuEntityAdapter.getInitialState();
 export function menuReducer(state: MenuState, action: MenuActions) {
@@ -96,7 +104,7 @@ export function menuReducer(state: MenuState, action: MenuActions) {
       });
       return mapEntities(map, state, menuSelectId);
     }
-    case REMOVE_MENUITEM: {
+    case REMOVE_MENUITEM_BY_PARENT: {
       const {parent} = action;
       if(parent) {
         const toDelete = Object.keys(state.entities).filter(k => state.entities[k].parent === parent);
@@ -104,6 +112,10 @@ export function menuReducer(state: MenuState, action: MenuActions) {
       } else {
         return menuEntityAdapter.removeAll(state);
       }
+    }
+    case REMOVE_MENUITEM: {
+      const {id} = action;
+      return menuEntityAdapter.removeOne(id, state);
     }
     default:
       return state || menuStateInit

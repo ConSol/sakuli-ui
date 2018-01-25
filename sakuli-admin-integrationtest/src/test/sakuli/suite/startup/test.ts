@@ -1,7 +1,5 @@
 import {LoginPage} from "./page-objects/LoginPage";
 
-_dynamicInclude($includeFolder);
-
 const testCase = new TestCase(45, 65);
 const env = new Environment();
 
@@ -12,10 +10,26 @@ try {
     Logger.logInfo("URL is:" + $URL);
     _navigateTo($URL, true);
 
+    /*
     loginPage.userName = "admin";
     loginPage.password = "sakuli123";
-
+    //env.sleep(5)
     loginPage.doLogin();
+    */
+
+    const $userName = "admin";
+    const $password = "sakuli123";
+    _highlight( _textbox("username"));
+    _setValue( _textbox("username"), $userName);
+    _highlight( _textbox("username"));
+
+
+    _highlight(_password("password"));
+    _setValue(_password("password"), $password);
+    _highlight(_password("password"));
+
+    _click(_submit('Login'));
+
 
 } catch(e) {
     testCase.handleException(e)

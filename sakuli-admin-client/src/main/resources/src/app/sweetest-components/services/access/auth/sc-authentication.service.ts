@@ -41,15 +41,16 @@ export class ScAuthenticationService {
    */
   @Effect() logout$ = this.actions$
     .ofType(LOGOUT)
-    .map(_ => new LogoutSuccess());
+    .mapTo(new LogoutSuccess())
+  ;
 
   @Effect() logoutSuccess$ = this.actions$
     .ofType(LOGOUT_SUCCESS)
-    .map(_ => new NavigateToLogin());
+    .mapTo(new NavigateToLogin());
 
   @Effect() loginSuccess$ = this.actions$
     .ofType(LOGIN_SUCCESS)
-    .map(_ => new RouterGo({path: ['/']}));
+    .mapTo(new RouterGo({path: ['/']}));
 
   login(username: string, password: string) {
     this.store.dispatch(new Login(username, password));

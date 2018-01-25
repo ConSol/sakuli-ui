@@ -2,7 +2,6 @@ import {RouterModule, Routes} from '@angular/router';
 import {NgModule} from '@angular/core';
 import {LocationStrategy, PathLocationStrategy} from "@angular/common";
 import {TestComponent} from "./test/test.component";
-import {SakuliProjectGuardService} from "./sakuli-project-guard.service";
 import {SaAssetsConnectedComponent} from "./test/sa-assets/sa-assests-connected.component";
 import {TestDetailConnectedComponent} from "./test/test-detail/test-detail-connected.component";
 import {SaConfigurationComponent} from "./test/configuration/sa-configuration.component";
@@ -12,7 +11,7 @@ import {PreventRoutingGuardService} from "../sweetest-components/components/form
 import {DashboardConnectedComponent} from "./dashboard/dashboard-connected.component";
 import {LoginComponent} from "./login.component";
 import {SaReportOverviewComponent} from "./test/report/sa-report-overview.component";
-import {SakuliAuthGuardService} from "./sakuli-auth-guard.service";
+import {SakuliAuthProjectGuardService} from "./sakuli-auth-project-guard.service";
 
 export const routes: Routes = [
   {
@@ -27,8 +26,7 @@ export const routes: Routes = [
   {
     path: 'reports',
     canActivate: [
-      SakuliAuthGuardService,
-      SakuliProjectGuardService
+      SakuliAuthProjectGuardService
     ],
     children: [
       {
@@ -44,15 +42,13 @@ export const routes: Routes = [
     path: 'dashboard',
     component: DashboardConnectedComponent,
     canActivate: [
-      SakuliAuthGuardService,
-      SakuliProjectGuardService
+      SakuliAuthProjectGuardService
     ]
   },
   {
     path: 'testsuite',
     canActivate: [
-      SakuliAuthGuardService,
-      SakuliProjectGuardService
+      SakuliAuthProjectGuardService
     ],
     children: [
       {path: ':suite', component: TestComponent},
@@ -93,6 +89,11 @@ export const routes: Routes = [
   {
     path: 'app-log',
     component: AppLogComponent
+  },
+  {
+    path: '**',
+    redirectTo: 'dashboard',
+    pathMatch: 'full'
   }
 ];
 
