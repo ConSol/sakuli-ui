@@ -23,7 +23,7 @@
         <configuration>
           <workingDirectory>src/main/resources</workingDirectory>
           <installDirectory>target</installDirectory>
-          <failOnError>true</failOnError>
+          <!--<failOnError>true</failOnError>-->
         </configuration>
         <executions>
           <execution>
@@ -34,6 +34,26 @@
             <configuration>
               <nodeVersion>${node.version}</nodeVersion>
               <npmVersion>${npm.version}</npmVersion>
+            </configuration>
+          </execution>
+          <execution>
+            <id>install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>ng-build</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <arguments>run build</arguments>
             </configuration>
           </execution>
           <execution>
@@ -75,6 +95,7 @@
     </resources>
   </build>
   <profiles>
+    <!--
     <profile>
       <id>npm-install</id>
       <activation>
@@ -147,5 +168,6 @@
         </plugins>
       </build>
     </profile>
+     -->
   </profiles>
 </project>
