@@ -5,10 +5,14 @@ import {AppState} from "../../../sakuli-admin/appstate.interface";
 import {Store} from "@ngrx/store";
 import {FontawesomeIcons} from "../presentation/icon/fontawesome-icon.utils";
 import {workpaceSelectors} from "../../../sakuli-admin/workspace/state/project.interface";
-import {NavigateToTestSuiteAssets} from "../../../sakuli-admin/test/state/test-navitation.actions";
+import {
+  NavigateToTestSuite,
+  NavigateToTestSuiteAssets,
+  NavigateToTestSuiteConfiguration,
+  NavigateToTestSuiteSource
+} from "../../../sakuli-admin/test/state/test-navitation.actions";
 import {testSuiteSelectors} from "../../../sakuli-admin/test/state/testsuite.state";
-import {SakuliTestSuite} from "../../services/access/model/sakuli-test-model";
-import {RouterGo} from "../../services/router/router.actions";
+import {SakuliTestCase, SakuliTestSuite} from "../../services/access/model/sakuli-test-model";
 import {Router} from "@angular/router";
 import {pinnedByContext} from "../../../sakuli-admin/test/sa-assets/sa-assets.interface";
 import {ScModalService} from "../presentation/modal/sc-modal.service";
@@ -55,7 +59,7 @@ import {log} from "../../../core/redux.util";
             >
               <sc-icon
                 icon="fa-play"
-                (click)="testSuiteItemClick(testSuite, {autorun:'1'}); $event.stopPropagation()"
+                (click)="testSuiteItemClick(testSuite, true); $event.stopPropagation()"
               ></sc-icon>
             </a>
           </span>
@@ -64,13 +68,13 @@ import {log} from "../../../core/redux.util";
           <sc-link *ngFor="let testCase of testSuite.testCases"
                    [fixedIconWidth]="true"
                    icon="fa-code"
-                   [routerLink]="['/testsuite', testSuite.root, 'sources', [testCase.name, testCase.mainFile].join('/')]"
+                   (click)="testSourceItemClick(testSuite, testCase)"
                    [ngClass]="{'active': isActive(['/testsuite', testSuite.root, 'sources', [testCase.name, testCase.mainFile].join('/')])}"
           >
             <span class="hidden-xs-down link-text">{{testCase.name}}</span>
           </sc-link>
           <sc-link [fixedIconWidth]="true"
-                   [routerLink]="['/testsuite', testSuite.root, 'assets']"
+                   (click)="testFilesItemClick(testSuite)"
                    [ngClass]="{'active': isActive(['/testsuite', testSuite.root, 'assets'])}"
                    icon="fa-files-o"
           >
@@ -92,7 +96,7 @@ import {log} from "../../../core/redux.util";
             </button>
           </sc-link>
           <sc-link [fixedIconWidth]="true"
-                   [routerLink]="['/testsuite', testSuite.root, 'configuration']"
+                   (click)="configurationClick(testSuite)"
                    [ngClass]="{'active': isActive(['/testsuite', testSuite.root, 'configuration'])}"
                    icon="fa-wrench"
           >
@@ -223,9 +227,8 @@ export class ScSidebarComponent {
     this.modal.open(SaTextModalComponent, {file})
   }
 
-  testSuiteItemClick(testSuite: SakuliTestSuite, query: any) {
-    const path = ['/testsuite', testSuite.root];
-    this.store.dispatch(new RouterGo({path, query}));
+  testSuiteItemClick(testSuite: SakuliTestSuite, autoRun: boolean) {
+    this.store.dispatch(new NavigateToTestSuite(testSuite, autoRun));
     this.selectionMap.set(testSuite.root, !this.selectionMap.get(testSuite.root));
   }
 
@@ -247,5 +250,18 @@ export class ScSidebarComponent {
     return this.store.select(testExecutionSelectors.latestByTestSuite(testSuite))
       .do(log(testSuite.id))
       .map(i => i == null ? true : !i.isRunning)
+  }
+
+  testSourceItemClick(testSuite: SakuliTestSuite,
+                      testCase: SakuliTestCase) {
+    this.store.dispatch(new NavigateToTestSuiteSource(testSuite, testCase))
+  }
+
+  testFilesItemClick(testsuite: SakuliTestSuite) {
+    this.store.dispatch(new NavigateToTestSuiteAssets(testsuite))
+  }
+
+  configurationClick(testSuite: SakuliTestSuite) {
+    this.store.dispatch(new NavigateToTestSuiteConfiguration(testSuite))
   }
 }

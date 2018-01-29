@@ -87,8 +87,6 @@ export class SaSourceComponent implements OnInit, FormBaseComponent {
   }
 
   onSave() {
-
-
     this.fileService
       .write(
         this.currentFile.file.split('/').slice(0, -1).join('/'),
@@ -99,6 +97,7 @@ export class SaSourceComponent implements OnInit, FormBaseComponent {
       )
       .subscribe(r => {
         this.toastsService.create(new SuccessToast(`Successfully saved ${this.currentFile.file}`))
+        this.sourceForm.markAsPristine();
       }, e => {
         this.toastsService.create(new DangerToast('Error during saving the file please try again', e))
       });

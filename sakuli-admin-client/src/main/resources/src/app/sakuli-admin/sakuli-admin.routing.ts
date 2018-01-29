@@ -51,36 +51,28 @@ export const routes: Routes = [
       SakuliAuthProjectGuardService
     ],
     children: [
-      {path: ':suite', component: TestComponent},
+      {path: '', component: TestComponent},
       {
-        path: ':suite/sources',
+        path: 'sources',
         children: [
           {
             path: '',
-            component: TestDetailConnectedComponent
-          },
-          {
-            path: ':file',
             component: TestDetailConnectedComponent,
             canDeactivate: [PreventRoutingGuardService]
           },
         ]
       },
       {
-        path: ':suite/assets',
+        path: 'assets',
         children: [
           {
             path: '',
             component: SaAssetsConnectedComponent
-          },
-          {
-            path: ':file',
-            component: SaAssetsConnectedComponent,
-          },
+          }
         ]
       },
       {
-        path: ':suite/configuration',
+        path: 'configuration',
         component: SaConfigurationComponent,
         canDeactivate: [PreventRoutingGuardService]
       },

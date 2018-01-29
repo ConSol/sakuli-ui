@@ -1,13 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {
-  SakuliTestCase, SakuliTestSuite
-} from '../../sweetest-components/services/access/model/sakuli-test-model';
-import {TestRunInfo} from "../../sweetest-components/services/access/model/test-run-info.interface";
+import {SakuliTestCase, SakuliTestSuite} from '../../sweetest-components/services/access/model/sakuli-test-model';
 import {AppState} from "../appstate.interface";
 import {Store} from "@ngrx/store";
-import {ProjectModel} from "../../sweetest-components/services/access/model/project.model";
-import {log, notNull} from "../../core/redux.util";
+import {notNull} from "../../core/redux.util";
 import {LoadTestsuite, testSuiteSelectors} from "./state/testsuite.state";
 import {ActivatedRoute} from "@angular/router";
 import {RunTestSuiteComponent} from "./run-test-suite.component";
@@ -48,9 +44,10 @@ export class TestComponent implements OnInit {
     private store: Store<AppState>,
     private activatedRoute: ActivatedRoute
   ) {
-    this.testSuite$ = this.activatedRoute.params
-      .map(p => p['suite']).filter(notNull)
-      .mergeMap(id => this.store.select(testSuiteSelectors.byId(decodeURIComponent(id))))
+    this.testSuite$ = this.activatedRoute.queryParamMap
+      .map(p => p.get('suite'))
+      .filter(notNull)
+      .mergeMap(id => this.store.select(testSuiteSelectors.byId(id)));
     this.title$ = this.testSuite$.map(ts => ts ? ts.configuration.id : '');
     this.subTitle$ = this.testSuite$.map(ts => ts ? ts.configuration.name : '');
     this.testCases$ = this.testSuite$.map(ts => ts.testCases);
@@ -61,12 +58,12 @@ export class TestComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.activatedRoute.paramMap
+    this.activatedRoute.queryParamMap
       .map(m => m.get('suite'))
       .subscribe(suite => {
         this.store.dispatch(new LoadTestsuite(suite));
       });
-    this.activatedRoute.queryParamMap.map(m => m.has('autorun'))
+    this.activatedRoute.queryParamMap.map(m => m.get('autorun') === 'true')
       .filter(x => x)
       .combineLatest(this.testSuite$.filter(notNull))
       .first()
