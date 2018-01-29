@@ -9,6 +9,7 @@ import {AuthFeatureName, authReducer} from "./auth.state";
 import {EffectsModule} from "@ngrx/effects";
 import {ScAuthenticationService} from "./sc-authentication.service";
 import {ReactiveFormsModule} from "@angular/forms";
+import {ScAuthenticatedImageDirective} from "./sc-authenticated-image.directive";
 
 
 @NgModule({
@@ -22,11 +23,13 @@ import {ReactiveFormsModule} from "@angular/forms";
   ],
   exports: [
     ScLoginComponent,
-    ScLogoutComponent
+    ScLogoutComponent,
+    ScAuthenticatedImageDirective
   ],
   declarations: [
     ScLoginComponent,
-    ScLogoutComponent
+    ScLogoutComponent,
+    ScAuthenticatedImageDirective
   ],
   providers: [
     ScAuthenticationService,

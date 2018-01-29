@@ -36,7 +36,7 @@ import {resultStateMap} from "./result-state-map.const";
           <li class="list-group-item d-flex flex-column">
             <strong>{{step.exception.detailMessage}}</strong>
             <a [href]="'api/files?path=' + rmHeadSlash(step.exception.screenshot)" target="_blank" class="text-center mt-1 mb-1">
-              <img [src]="'api/files?path=' + rmHeadSlash(step.exception.screenshot)" width="250"/>
+              <img scAuthenticated [src]="'api/files?path=' + rmHeadSlash(step.exception.screenshot)" width="250"/>
             </a>
             <div>
               <button class="btn btn-link" (click)="showStacktrace = !showStacktrace">Show Stacktrace</button>

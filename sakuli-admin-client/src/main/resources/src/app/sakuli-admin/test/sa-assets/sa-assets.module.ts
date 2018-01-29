@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {SaImageModalComponent} from "./sa-image-modal.component";
 import {SaAssetsComponent} from "./sa-assets.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -9,8 +9,7 @@ import {EffectsModule} from "@ngrx/effects";
 import {SaAssetsEffects} from "./sa-assets.effects";
 import {StoreModule} from "@ngrx/store";
 import {assetReducer} from "./sa-assets.reducer";
-import {
-  ASSETS_FEATURE_NAME} from "./sa-assets.interface";
+import {ASSETS_FEATURE_NAME} from "./sa-assets.interface";
 import {AssetItemFolderComponent} from "./asset-items/asset-item-folder.component";
 import {AssetItemImageComponent} from "./asset-items/asset-item-image.component";
 import {RouterModule} from "@angular/router";
@@ -19,6 +18,7 @@ import {SweetestComponentsModule} from "../../../sweetest-components/index";
 import {ScValuePickerModule} from "../../../sweetest-components/components/presentation/value-picker/sc-value-picker.module";
 import {AssetItemTextComponent} from "./asset-items/asset-item-text.component";
 import {SaTextModalComponent} from "./sa-text-modal.component";
+import {ScAuthModule} from "../../../sweetest-components/services/access/auth/sc-auth.module";
 
 @NgModule({
   imports: [
@@ -31,6 +31,7 @@ import {SaTextModalComponent} from "./sa-text-modal.component";
     StoreModule.forFeature(ASSETS_FEATURE_NAME, assetReducer),
     EffectsModule.forFeature([SaAssetsEffects]),
     ReactiveFormsModule,
+    ScAuthModule
   ],
   declarations: [
     SaImageModalComponent,

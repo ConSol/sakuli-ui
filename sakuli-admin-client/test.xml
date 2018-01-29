@@ -1,0 +1,21 @@
+<project>
+  <!-- ... -->
+  <dependencies>
+    <dependency>
+      <groupId>org.consol.sweetest</groupId>
+      <artifactId>sweetest-core</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.consol.sweetest</groupId>
+      <artifactId>sakuli-sakuli-flavor</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.consol.sweetest</groupId>
+      <artifactId>sakuli-citrus-flavor</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+  </dependencies>
+  <!-- ... -->
+</project>

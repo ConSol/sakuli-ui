@@ -8,8 +8,8 @@ const loginPage = new LoginPage();
 try {
     const $URL = `http://${env.getEnv("SAKULI_TESTS_SERVER_PORT_8080_TCP_ADDR")}:${env.getEnv("SAKULI_TESTS_SERVER_PORT_8080_TCP_PORT")}`;
     Logger.logInfo("URL is:" + $URL);
-    _navigateTo($URL, true);
-
+    _navigateTo($URL);
+    _call(top.location.reload());
     /*
     loginPage.userName = "admin";
     loginPage.password = "sakuli123";

@@ -9,10 +9,8 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-
   <artifactId>sakuli-admin-client</artifactId>
   <name>sakuli-admin-client</name>
-
   <build>
     <plugins>
       <plugin>
@@ -25,6 +23,7 @@
         <configuration>
           <workingDirectory>src/main/resources</workingDirectory>
           <installDirectory>target</installDirectory>
+          <failOnError>true</failOnError>
         </configuration>
         <executions>
           <execution>
@@ -75,7 +74,6 @@
       </resource>
     </resources>
   </build>
-
   <profiles>
     <profile>
       <id>npm-install</id>

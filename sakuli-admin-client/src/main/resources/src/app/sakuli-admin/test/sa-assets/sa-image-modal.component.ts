@@ -16,7 +16,7 @@ interface ImageModalState {
       {{state?.image?.name}}
     </div>
     <div class="modal-body">
-      <img [src]="state?.image?.link"/>
+      <img scAuthenticated [src]="state?.image?.link"/>
     </div>
     <div class="modal-footer d-flex justify-content-between">
       <nav aria-label="Page navigation example">
