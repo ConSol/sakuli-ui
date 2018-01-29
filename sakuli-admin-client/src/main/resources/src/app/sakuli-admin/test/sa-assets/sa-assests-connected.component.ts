@@ -29,13 +29,13 @@ export class SaAssetsConnectedComponent implements OnInit {
               private route: ActivatedRoute) {
   }
 
-  suiteParam$ = this.route.params.map(p => decodeURIComponent(p['suite']));
+  suiteParam$ = this.route.queryParamMap.map(p => decodeURIComponent(p.get('suite')));
   targetFolder$ = this.store.select(currentChildren);
   currentFolder$ = this.store.select(currentFolder);
   uploading$ = this.store.select(uploading);
 
   ngOnInit() {
-    this.route.paramMap.subscribe(m => {
+    this.route.queryParamMap.subscribe(m => {
       const suite = m.has('suite') ? decodeURIComponent(m.get('suite')) : '';
       const file = m.has('file') ? decodeURIComponent(m.get('file')) : '';
       this.store.dispatch(new AssetsSetCurrentFolder(file, suite));

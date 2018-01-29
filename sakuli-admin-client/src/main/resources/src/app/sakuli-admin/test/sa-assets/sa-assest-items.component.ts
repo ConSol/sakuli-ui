@@ -1,8 +1,9 @@
-import {
-  Component, EventEmitter, HostBinding, Input, Output} from '@angular/core';
+import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core';
 import {AssetItemType, getItemType} from "./asset-item-type.enum";
 import {FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
 import {Router} from "@angular/router";
+import {Store} from "@ngrx/store";
+import {NavigateToTestSuiteAssets} from "../state/test-navitation.actions";
 
 
 @Component({
@@ -78,7 +79,8 @@ export class SaAssetItemsComponent {
   itemTypes = AssetItemType;
 
   constructor(
-    readonly router: Router
+    readonly router: Router,
+    readonly store: Store<any>
   ) {}
 
   onSelect(file: FileResponse) {
@@ -105,7 +107,6 @@ export class SaAssetItemsComponent {
   }
 
   async onSelectFolder(file: FileResponse) {
-    console.log('file', file);
-    await this.router.navigate(['/testsuite', this.basePath, 'assets', [file.path, file.name].filter(f => !!f).join('/')])
+    this.store.dispatch(new NavigateToTestSuiteAssets(this.basePath, [file.path, file.name].filter(f => !!f).join('/')));
   }
 }

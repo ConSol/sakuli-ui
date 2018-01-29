@@ -1,10 +1,20 @@
 import {
-  Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnInit, Output, ViewChild
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostBinding,
+  HostListener,
+  Input,
+  OnInit,
+  Output,
+  ViewChild
 } from '@angular/core';
 import {Observable} from "rxjs/Observable";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {absPath, FileResponse} from "../../../sweetest-components/services/access/model/file-response.interface";
 import {FileService} from "../../../sweetest-components/services/access/file.service";
+import {Store} from "@ngrx/store";
+import {NavigateToTestSuiteAssets} from "../state/test-navitation.actions";
 
 export interface UploadEvent {
   files: FileList,
@@ -25,13 +35,15 @@ export interface UploadEvent {
               <sc-icon icon="fa-folder"></sc-icon>
             </div>
             <div class="form-control d-flex flex-row justify-content-start">
-              <a [routerLink]="['/testsuite', testSuitePath ,'assets']">
+              <a (click)="$event.preventDefault(); navBarItemClick(testSuitePath);" href="#">
                 ~
               </a>
               <ng-container *ngFor="let part of currentFolderParts; let i = index">
                 /
-                <a [routerLink]="['/testsuite', testSuitePath, 'assets']|concat:(currentFolderParts|slice:0:i+1).join('/')">
-                  {{part}}
+                <a href="#"
+                   (click)="$event.preventDefault(); navBarItemClick(testSuitePath, currentFolderParts.slice(0, i + 1))"
+                >
+                 {{part}}
                 </a>
               </ng-container>
             </div>
@@ -192,8 +204,9 @@ export class SaAssetsComponent implements OnInit {
     }
   }
 
-  constructor(private filesService: FileService,
-              private modalService: NgbModal,
+  constructor(readonly filesService: FileService,
+              readonly modalService: NgbModal,
+              readonly store: Store<any>
   ) {
   }
 
@@ -225,5 +238,13 @@ export class SaAssetsComponent implements OnInit {
         .map(folders => folders.sort((f1, f2) => absPath(f1).localeCompare(absPath(f2))))
       ;
       this.targetFolders$.first().subscribe(tf => this.targetFolder = tf[0])
+  }
+
+  navBarItemClick(testSuitePath: string, file?: string[]) {
+    if(file) {
+      this.store.dispatch(new NavigateToTestSuiteAssets(testSuitePath, file.join('/')));
+    } else {
+      this.store.dispatch(new NavigateToTestSuiteAssets(testSuitePath));
+    }
   }
 }

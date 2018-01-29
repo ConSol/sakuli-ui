@@ -6,7 +6,7 @@ import {ScToastService} from "../../../sweetest-components/components/presentati
 import {ActivatedRoute} from "@angular/router";
 import {LoadTestsuite} from "../state/testsuite.state";
 import {FormBaseComponent} from "../../../sweetest-components/components/forms/form-base-component.interface";
-import {FormControl, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {DangerToast, SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
 
 @Component({
@@ -56,7 +56,7 @@ export class SaConfigurationComponent implements OnInit, FormBaseComponent {
 
   @Input() currentFile;
 
-  form:FormGroup;
+  form: FormGroup;
 
   @HostListener('document:keydown', ['$event'])
   onHostKeydown($event: KeyboardEvent) {
@@ -71,15 +71,20 @@ export class SaConfigurationComponent implements OnInit, FormBaseComponent {
   constructor(readonly fileService: FileService,
               readonly store: Store<AppState>,
               readonly toastService: ScToastService,
-              readonly route: ActivatedRoute) {
+              readonly route: ActivatedRoute,
+              readonly fb: FormBuilder
+              ) {
   }
 
   initForm(value: string) {
-    console.log('INIT');
-    this.form = new FormGroup({
-      'source': new FormControl(value),
-      'test': new FormControl('JUHU')
-    });
+    if(this.form) {
+      this.form.setValue({'source': value})
+    } else {
+      this.form = this.fb.group({
+        'source': [value]
+      })
+    }
+    this.form.markAsPristine();
   }
 
   get isSaveDisabled() {
@@ -91,7 +96,7 @@ export class SaConfigurationComponent implements OnInit, FormBaseComponent {
   }
 
   get path$() {
-    return this.route.paramMap.map(m => {
+    return this.route.queryParamMap.map(m => {
       return m.has('suite') ? decodeURIComponent(m.get('suite')) : '';
     })
   }
@@ -101,8 +106,6 @@ export class SaConfigurationComponent implements OnInit, FormBaseComponent {
       .mergeMap(p => this.fileService.read(`${p}/testsuite.properties`))
       .subscribe(r => {
         this.initForm(r);
-        this.form.get('source').markAsPristine();
-        this.form.markAsPristine();
       }, e => {
         this.toastService.create(new DangerToast('Error while loading', e))
       })
