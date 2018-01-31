@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <properties>
-    <project.version></project.version>
+    <project.version>1.0-SNAPSHOT</project.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring.boot.version>1.5.0.RELEASE</spring.boot.version>
     <slf4j.version>1.7.22</slf4j.version>
@@ -20,23 +17,29 @@
     <!-- This  is somehow necessary to run spring-boot-tests -->
     <thymeleaf.version>3.0.3.RELEASE</thymeleaf.version>
     <thymeleaf-layout-dialect.version>2.2.1</thymeleaf-layout-dialect.version>
+    <jackson.version>2.9.3</jackson.version>
   </properties>
 
   <groupId>org.sweetest.platform</groupId>
   <artifactId>sakuli-admin</artifactId>
   <packaging>pom</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.9</version>
   <name>sakuli-admin</name>
 
   <modules>
-    <module>sakuli-admin-web</module>
-    <module>sakuli-admin-client</module>
-    <!-- <module>sakuli-admin-integrationtest</module> -->
+    <module>sakuli-ui-web</module>
+    <module>sakuli-ui-client</module>
+    <module>sakuli-ui-integrationtest</module>
   </modules>
 
   <build>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>external.atlassian.jgitflow</groupId>
+          <artifactId>jgitflow-maven-plugin</artifactId>
+          <version>1.0-m5.1</version>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
@@ -161,6 +164,33 @@
     <!-- Default plugins for all modules -->
     <plugins>
       <plugin>
+        <groupId>external.atlassian.jgitflow</groupId>
+        <artifactId>jgitflow-maven-plugin</artifactId>
+        <configuration>
+          <username>${git.user}</username>
+          <password>${git.password}</password>
+          <flowInitContext>
+            <!-- default git flow prefixes -->
+            <masterBranchName>master</masterBranchName>
+            <developBranchName>dev</developBranchName>
+            <featureBranchPrefix>feature/</featureBranchPrefix>
+            <releaseBranchPrefix>release/</releaseBranchPrefix>
+            <hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
+            <!-- non default 'v' prefix -->
+            <versionTagPrefix>v</versionTagPrefix>
+          </flowInitContext>
+          <!--<defaultOriginUrl-->
+          <pushFeatures>true</pushFeatures>
+          <pushHotfixes>true</pushHotfixes>
+          <pushReleases>true</pushReleases>
+          <updateDependencies>true</updateDependencies>
+          <scmCommentPrefix>mvn-jgitflow:</scmCommentPrefix>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <enableSshAgent>true</enableSshAgent>
+          <useReleaseProfile>true</useReleaseProfile>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
       </plugin>
@@ -216,20 +246,18 @@
         <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
         <version>2.2.0</version>
       </dependency>
-      <dependency>
-        <groupId>com.github.docker-java</groupId>
-        <artifactId>docker-java</artifactId>
-        <version>3.0.10</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-      </dependency>
+
     </dependencies>
   </dependencyManagement>
-
+  <distributionManagement>
+    <!-- local maven repository for normal builds -->
+    <repository>
+      <id>local-release</id>
+      <url>file:///${user.home}/.m2/repository</url>
+    </repository>
+    <snapshotRepository>
+      <id>local-snapshots</id>
+      <url>file:///${user.home}/.m2/repository</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>

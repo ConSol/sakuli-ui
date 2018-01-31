@@ -1,0 +1,1 @@
+FROM consol/sakuli-ubuntu-xfce:latest

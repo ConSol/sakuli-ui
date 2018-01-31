@@ -1,0 +1,10 @@
+{
+  "name": "sakuli-admin-test-suite",
+  "dependencies": {
+    "requirejs": "^2.3.5",
+    "sakuli-ts": "1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^2.6.2"
+  }
+}

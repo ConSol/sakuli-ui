@@ -1,0 +1,34 @@
+
+@mixin shadow {
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12);
+  border-radius: 0;
+}
+
+.shade {
+  @include shadow;
+}
+
+.padded-y {
+  padding-top: $padding-y;
+  padding-bottom: $padding-y;
+}
+
+.margin-y {
+  margin-top: $padding-y;
+  margin-bottom: $padding-y;
+}
+
+.grow {
+  flex-grow: 1;
+}
+
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+.text-overflow-ellipsis {
+  text-wrap: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis
+}
