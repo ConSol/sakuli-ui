@@ -23,7 +23,7 @@
   <groupId>org.sweetest.platform</groupId>
   <artifactId>sakuli-admin</artifactId>
   <packaging>pom</packaging>
-  <version>0.10-SNAPSHOT</version>
+  <version>0.9-SNAPSHOT</version>
   <name>sakuli-admin</name>
 
   <modules>
