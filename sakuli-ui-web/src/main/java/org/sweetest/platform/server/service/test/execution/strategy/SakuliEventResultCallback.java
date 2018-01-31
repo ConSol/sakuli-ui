@@ -45,9 +45,9 @@ public class SakuliEventResultCallback extends EventsResultCallback{
         }
         if (ACTION_DISCONNECT.equals(action) || ACTION_KILL.equals(action)) {
             log.info(ReflectionToStringBuilder.toString(item.getActor(), ToStringStyle.MULTI_LINE_STYLE));
-            if(item.getActor().getAttributes() != null && item.getActor().getAttributes().containsKey("container")) {
-                String containerId = item.getActor().getAttributes().getOrDefault("container", item.getActor().getId());
-                log.info("Clean up and remove container " + containerId);
+            if(item.getActor().getAttributes() != null && item.getActor().getAttributes().containsKey("containers")) {
+                String containerId = item.getActor().getAttributes().getOrDefault("containers", item.getActor().getId());
+                log.info("Clean up and remove containers " + containerId);
                 dockerClient.removeContainerCmd(containerId).exec();
             }
             super.onComplete();

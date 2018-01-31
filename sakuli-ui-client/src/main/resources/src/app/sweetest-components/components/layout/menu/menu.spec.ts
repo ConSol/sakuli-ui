@@ -9,17 +9,11 @@ import {
 } from "./menu.state";
 import {IMenuItem, MenuItem} from "./menu-item.interface";
 import {SelectionState} from "../../../model/tree";
-import {TestBed} from "@angular/core/testing";
-import {INITIAL_STATE, Store, StoreModule} from "@ngrx/store";
 import {Actions} from "@ngrx/effects";
 import {LayoutMenuService} from "./layout-menu.service";
-import {provideMockActions} from "@ngrx/effects/testing";
 import {Observable} from "rxjs/Observable";
-import {ScMenuModule} from "./menu.module";
 import {marbles} from "rxjs-marbles";
 import {ROUTER_NAVIGATION} from "@ngrx/router-store";
-import {RouterModule} from "@angular/router";
-import {APP_BASE_HREF} from "@angular/common";
 
 describe('Menu', () => {
   const icon = 'fa-code';
@@ -64,7 +58,7 @@ describe('Menu', () => {
     let effects: LayoutMenuService;
 
     beforeEach(() => {
-
+      /*
       TestBed.configureTestingModule({
         imports: [
           StoreModule.forRoot({}),
@@ -90,16 +84,45 @@ describe('Menu', () => {
         console.warn(e);
       }
       console.log('Setup', provideMockActions(() => mockActions),);
+      */
     });
 
     it('should select on Navigation', marbles(m => {
+      const getStoreStub = ():any => {
+        const s = {
+          scMenu: menuReducer(menuEntityAdapter.getInitialState(), addAllItemsAction)
+        }
+        return {
+          select: (selector) => Observable.of(selector(s))
+        }
+      };
+
+      const getRouterStub = ():any => {
+        return {
+          serializeUrl(v: string[]) {
+            return '/' + v.join('/');
+          },
+          createUrlTree(v) {
+            return v;
+          }
+        }
+      };
+
+      const router = getRouterStub();
+      const store = getStoreStub();
       mockActions = m.hot('---a-', {
         a: { type: ROUTER_NAVIGATION, payload: {routerState: {url: '/p1/c11'} }}
       });
+
+      const lms = new LayoutMenuService(
+        store,
+        new Actions(mockActions),
+        router
+      );
       const expected = m.cold('---a-', {
         a: new SelectMenuItem('p1.c11')
       });
-      m.expect(effects.navigation$).toBeObservable(expected);
+      m.expect(lms.navigation$).toBeObservable(expected);
     }))
   })
 

@@ -1,6 +1,8 @@
 package org.sweetest.platform.server.service;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
@@ -20,6 +22,8 @@ import java.util.stream.Stream;
  */
 @Service
 public class LocalFileSystemService implements FileSystemService {
+
+    private static final Logger log = LoggerFactory.getLogger(LocalFileSystemService.class);
 
     private String rootDirectory;
 
@@ -47,6 +51,7 @@ public class LocalFileSystemService implements FileSystemService {
     @Override
     public Optional<File> getFileFromPath(String path, String file) {
         File f = Paths.get(normalizePath(path).toString(), file).toFile();
+        log.info(f.getAbsolutePath() + "!!!!!!!!!!" +f.exists());
         if(f.exists()) {
             return Optional.of(f);
         } else {

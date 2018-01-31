@@ -130,7 +130,7 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
     }
 
     public void stop() {
-        log.info("Will stop container " + container.getId());
+        log.info("Will stop containers " + container.getId());
         try {
             if (logCallback != null) {
                 logCallback.close();
@@ -142,7 +142,7 @@ public class DockerfileExecutionStrategy extends AbstractTestExecutionStrategy<D
 
         } catch (Exception e) {
             e.printStackTrace();
-            next(new TestExecutionErrorEvent("Cannot stop container " + container.getId(), executionId, e));
+            next(new TestExecutionErrorEvent("Cannot stop containers " + container.getId(), executionId, e));
         }
     }
 
