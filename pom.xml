@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <properties>
     <project.version>1.0-SNAPSHOT</project.version>
@@ -29,7 +30,7 @@
   <modules>
     <module>sakuli-ui-web</module>
     <module>sakuli-ui-client</module>
-     <module>sakuli-ui-integrationtest</module>
+    <module>sakuli-ui-integrationtest</module>
   </modules>
 
   <build>
@@ -249,5 +250,15 @@
 
     </dependencies>
   </dependencyManagement>
-
+  <distributionManagement>
+    <!-- local maven repository for normal builds -->
+    <repository>
+      <id>local-release</id>
+      <url>file:///${user.home}/.m2/repository</url>
+    </repository>
+    <snapshotRepository>
+      <id>local-snapshots</id>
+      <url>file:///${user.home}/.m2/repository</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
