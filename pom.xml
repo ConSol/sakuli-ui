@@ -27,9 +27,9 @@
   <name>sakuli-admin</name>
 
   <modules>
-    <module>sakuli-admin-web</module>
-    <module>sakuli-admin-client</module>
-     <module>sakuli-admin-integrationtest</module>
+    <module>sakuli-ui-web</module>
+    <module>sakuli-ui-client</module>
+     <module>sakuli-ui-integrationtest</module>
   </modules>
 
   <build>
