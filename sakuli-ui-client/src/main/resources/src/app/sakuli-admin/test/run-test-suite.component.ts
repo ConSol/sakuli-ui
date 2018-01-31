@@ -94,7 +94,7 @@ import {RouterGo} from "../../sweetest-components/services/router/router.actions
             [testSuite]="testSuite"
             [config]="runConfiguration$ | async"
             [containerTags]="containerTags$ | async"
-            [sakuliContainers]="sakuliContainer$ | async"
+            [sakuliContainers]="sakuliContainers$ | async"
             (cancel)="onCancelConfiguration()"
             (save)="onSaveConfiguration($event)"
             (containerChange)="onContainerChange($event)"
@@ -179,7 +179,7 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
   showConfiguration = false;
 
   runConfiguration$: Observable<RunConfiguration>;
-  sakuliContainer$: Observable<SakuliContainer[]>;
+  sakuliContainers$: Observable<SakuliContainer[]>;
   containerTags$: Observable<SakuliContainer[]>;
   dockerPullInfo$: Observable<DockerPullInfo[]>;
   dockerPullStream$: Observable<string[]>;
@@ -198,7 +198,7 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
   }
 
   dispatchLoadRunConfiguration() {
-    this.route.params.map(p => p['suite'])
+    this.route.queryParamMap.map(p => p.get('suite'))
       .subscribe(s => this.store.dispatch(new LoadRunConfiguration(s)));
   }
 
@@ -208,8 +208,15 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
     this.store.dispatch(new LoadSakuliContainer());
     this.actions$.ofType(SAVE_RUN_CONFIGURATION_SUCCESS).subscribe(_ => this.showConfiguration = false);
     this.runConfiguration$ = this.store.select(RunConfigurationSelect.runConfiguration).filter(notNull);
-    this.sakuliContainer$ = this.store.select(RunConfigurationSelect.container);
+    this.sakuliContainers$ = this.store.select(RunConfigurationSelect.containers);
     this.containerTags$ = this.store.select(RunConfigurationSelect.tagsForSelectedContainer);
+    /*
+    this.runConfiguration$.first().subscribe(rc => {
+      if(rc.sakuli && rc.sakuli.container) {
+        this.onContainerChange(rc.sakuli.container);
+      }
+    })
+    */
     this.initObservablesWithTestSuite(this.testSuite);
   }
 

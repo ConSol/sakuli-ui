@@ -47,13 +47,13 @@ export class RunConfigurationSelect {
 
   static runConfiguration = createSelector(RunConfigurationSelect.feature, nothrowFn((rc:RunConfigurationState) => rc.configuration));
 
-  static container = createSelector(RunConfigurationSelect.feature, nothrowFn((rc:RunConfigurationState) => rc.containers));
+  static containers = createSelector(RunConfigurationSelect.feature, nothrowFn((rc:RunConfigurationState) => rc.containers));
 
   static sakuliConfig = createSelector(RunConfigurationSelect.feature, nothrowFn((rc:RunConfigurationState) => rc.configuration.sakuli));
 
   static selectedContainer = createSelector(
     RunConfigurationSelect.sakuliConfig,
-    RunConfigurationSelect.container,
+    RunConfigurationSelect.containers,
     nothrowFn((sc: SakuliExecutionConfiguration, containers: SakuliContainer[]) => containers.find(c => c.name === sc.container.name))
   );
 

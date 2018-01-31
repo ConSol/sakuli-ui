@@ -27,9 +27,10 @@ import {
 } from "../../../sweetest-components/components/presentation/loading/sc-loading.state";
 import {RouterModule} from "@angular/router";
 import {APP_BASE_HREF} from "@angular/common";
-import {DangerToast, SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
-import {CreateToast} from "../../../sweetest-components/components/presentation/toast/toast.actions";
+import {DangerToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
+import {CREATE_TOAST, CreateToast} from "../../../sweetest-components/components/presentation/toast/toast.actions";
 import Mocked = jest.Mocked;
+
 
 describe(RunConfigurationEffects.name, () => {
 
@@ -80,7 +81,7 @@ describe(RunConfigurationEffects.name, () => {
     describe('getConfig$', () => {
       it('positive', marbles(m => {
         mockActions = m.hot('---a-', {
-          a: new LoadRunConfiguration()
+          a: new LoadRunConfiguration('')
         });
         mockRunConfigurationService.getRunConfiguration.mockReturnValueOnce(m.cold('a|', {
           a: runConfiguration
@@ -88,26 +89,27 @@ describe(RunConfigurationEffects.name, () => {
         const expected = m.cold('---a-', {
           a: new LoadRunConfigurationSuccess(runConfiguration)
         });
+
         m.expect(effects.getConfig$).toBeObservable(expected)
       }));
 
       it('negative', marbles(m => {
-        mockActions = m.hot('---a-', {
-          a: new LoadRunConfiguration()
-        });
         const error = Error();
+        const values = {
+          a: new LoadRunConfiguration(''),
+          r: new CreateToast(new DangerToast('cannot fetch current configuration', error))
+        }
+        mockActions = m.cold('---a-', values);
         mockRunConfigurationService.getRunConfiguration.mockReturnValueOnce(m.cold('#', null, error));
-        const expected = m.cold('---a-', {
-          a: new CreateToast(new DangerToast('cannot fetch current configuration', error))
-        });
-        m.expect(effects.getConfig$).toBeObservable(expected)
+        effects.getConfig$.subscribe(a => {
+          expect(a.type).toBe(values.r.type);
+        })
       }));
     });
 
     describe('getConfigSuccess$', () => {
-
       it('positive', marbles(m => {
-        mockActions = m.hot('--a', {a: new LoadRunConfigurationSuccess(runConfiguration)})
+        mockActions = m.hot('--a', {a: new LoadRunConfigurationSuccess(runConfiguration)});
         const expect = m.cold('--a', {
           a: new SelectSakuliContainer(runConfiguration.sakuli.container)
         });
@@ -120,7 +122,7 @@ describe(RunConfigurationEffects.name, () => {
 
       it('positive', marbles(m => {
         mockActions = m.hot('-a', {
-          a: new SaveRunConfiguration(runConfiguration)
+          a: new SaveRunConfiguration('', runConfiguration)
         })
         mockRunConfigurationService.saveRunConfiguration
           .mockReturnValueOnce(m.cold('a|', {a: runConfiguration}));
@@ -133,15 +135,15 @@ describe(RunConfigurationEffects.name, () => {
 
       it('negative', marbles(m => {
         mockActions = m.hot('-a', {
-          a: new SaveRunConfiguration(runConfiguration)
+          a: new SaveRunConfiguration('', runConfiguration)
         });
         const error = Error();
         mockRunConfigurationService.saveRunConfiguration
-          .mockReturnValueOnce(m.cold('#', null, error))
-        const expect = m.cold('-a', {
-          a: new CreateToast(new DangerToast('Unable to save configuration', error))
-        });
-        m.expect(effects.saveConfig$).toBeObservable(expect);
+          .mockReturnValueOnce(m.cold('#', null, error));
+
+        effects.saveConfig$.subscribe(a => {
+          expect(a.type).toBe(CREATE_TOAST);
+        })
       }))
     });
 
@@ -153,10 +155,9 @@ describe(RunConfigurationEffects.name, () => {
         });
         mockRunConfigurationService.saveRunConfiguration
           .mockReturnValueOnce(m.cold('a|', {a: runConfiguration}));
-        const expect = m.cold('-a', {
-          a: new CreateToast(new SuccessToast('Successfully saved configuration')),
-        });
-        m.expect(effects.saveConfigSuccess$).toBeObservable(expect);
+        effects.saveConfigSuccess$.subscribe(a => {
+          expect(a.type).toBe(CREATE_TOAST);
+        })
       }));
 
     });
@@ -185,10 +186,9 @@ describe(RunConfigurationEffects.name, () => {
         mockRunConfigurationService.loadSakuliContainer
           .mockReturnValueOnce(m.cold('#', null, error));
 
-        const expect = m.cold('-a', {
-          a: new CreateToast(new DangerToast('Unable to fetch sakuli-containers', error))
-        });
-        m.expect(effects.loadContainer$).toBeObservable(expect);
+        effects.loadContainer$.subscribe(a => {
+          expect(a.type).toBe(CREATE_TOAST);
+        })
       }))
     })
 
@@ -216,11 +216,9 @@ describe(RunConfigurationEffects.name, () => {
         mockRunConfigurationService.loadSakuliContainerTags
           .mockReturnValueOnce(m.cold('#', null, error));
 
-        const expect = m.cold('--a', {
-          a: new CreateToast(new DangerToast(`Unable to fetch tags for '${runConfiguration.sakuli.container.name}'`, error))
-        });
-
-        m.expect(effects.loadContainerTags$).toBeObservable(expect);
+        effects.loadContainerTags$.subscribe(a => {
+          expect(a.type).toBe(CREATE_TOAST)
+        })
       }))
     })
 
@@ -228,7 +226,7 @@ describe(RunConfigurationEffects.name, () => {
 
       it('should set loading for runconfig', marbles(m => {
         mockActions = m.hot('--a--b', {
-          a: new LoadRunConfiguration(),
+          a: new LoadRunConfiguration(''),
           b: new LoadRunConfigurationSuccess(null)
         })
 
@@ -240,7 +238,7 @@ describe(RunConfigurationEffects.name, () => {
         m.expect(effects.loadingState).toBeObservable(expect);
       }))
 
-      it('should set loading for sakuli-container', marbles(m => {
+      it('should set loading for sakuli-containers', marbles(m => {
         mockActions = m.hot('--a--b', {
           a: new LoadSakuliContainer(),
           b: new LoadSakuliContainerSuccess(null)

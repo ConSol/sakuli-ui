@@ -130,7 +130,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
     }
 
     public void stop() {
-        log.info("Will stop container " + container.getId());
+        log.info("Will stop containers " + container.getId());
         try {
             if(callback != null) {
                 callback.close();
@@ -142,7 +142,7 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
 
         } catch (Exception e) {
             e.printStackTrace();
-            next(new TestExecutionErrorEvent("Cannot stop container " + container.getId(), executionId, e));
+            next(new TestExecutionErrorEvent("Cannot stop containers " + container.getId(), executionId, e));
         }
     }
 
