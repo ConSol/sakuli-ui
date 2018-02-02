@@ -43,7 +43,7 @@ export class SaReportTestcaseComponent implements OnInit {
   createPseudoStep() {
     const lastCase = [...this.testCase.steps].pop();
     this.pseudoStep = {
-      startDate: lastCase.stopDate,
+      startDate: lastCase ? lastCase.stopDate : this.testCase.startDate,
       stopDate: this.testCase.stopDate,
       testActions: this.testCase.testActions,
       name: `Final steps`,

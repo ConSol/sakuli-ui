@@ -6,6 +6,7 @@ import {ScEditorComponent} from "./editor/sc-editor.component";
 import {ScIconModule} from "../presentation/icon/sc-icon.module";
 import {CommonModule} from "@angular/common";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {KeyValueListComponent} from "./key-value-list/key-value-list.component";
 
 @NgModule({
   imports: [
@@ -20,11 +21,13 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
   ],
   declarations: [
     InplaceFileEditorComponent,
-    ScEditorComponent
+    ScEditorComponent,
+    KeyValueListComponent
   ],
   exports: [
     InplaceFileEditorComponent,
-    ScEditorComponent
+    ScEditorComponent,
+    KeyValueListComponent
   ]
 })
 export class ScFormsModule {}

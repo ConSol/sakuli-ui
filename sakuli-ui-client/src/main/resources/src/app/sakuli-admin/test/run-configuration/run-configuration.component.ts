@@ -8,6 +8,7 @@ import {AppState} from "../../appstate.interface";
 import {workpaceSelectors} from "../../workspace/state/project.interface";
 import * as path from 'path';
 import {AppInfoService} from "../../../sweetest-components/services/access/app-info.service";
+import {LoadSakuliContainer} from "./run-configuration.actions";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,21 +32,36 @@ import {AppInfoService} from "../../../sweetest-components/services/access/app-i
             Run in Sakuli-Container
           </label>
           <div *ngIf="config.type === types[types.SakuliContainer]" class="config-area margin-y">
-            Container:
-            <sc-loading for="sakuli-container" #loadingContainer></sc-loading>
-            <select *ngIf="!(loadingContainer.show$ | async)" [(ngModel)]="config.sakuli.container"
-                    (change)="containerChange.next(config.sakuli.container)" [ngModelOptions]="{standalone: true}">
-              <option *ngFor="let c of sakuliContainers" [ngValue]="c">{{c.name}}</option>
-            </select>
-            Tag:
-            <sc-loading for="tags" #loadingTags></sc-loading>
-            <select *ngIf="!(loadingTags.show$ | async)" [(ngModel)]="config.sakuli.tag"
-                    [ngModelOptions]="{standalone: true}">
-              <option *ngFor="let t of containerTags" [ngValue]="t">{{t.name}}</option>
-            </select>
+            <div class="input-group input-group-sm mb-3 container-selection">
+              <span class="input-group-addon">[Container]:[Tag]</span>
+              <sc-loading for="sakuli-container" #loadingContainer></sc-loading>
+              <select *ngIf="!(loadingContainer.show$ | async)"
+                      [(ngModel)]="config.sakuli.container"
+                      (change)="containerChange.next(config.sakuli.container)"
+                      [ngModelOptions]="{standalone: true}"
+                      class="custom-select"
+              >
+                <option *ngFor="let c of sakuliContainers" [ngValue]="c">{{c.name}}</option>
+              </select>
+              <span class="input-group-addon">:</span>
+              <sc-loading for="tags" #loadingTags></sc-loading>
+              <select *ngIf="!(loadingTags.show$ | async)"
+                      [(ngModel)]="config.sakuli.tag"
+                      [ngModelOptions]="{standalone: true}"
+                      class="custom-select"
+              >
+                <option *ngFor="let t of containerTags" [ngValue]="t">{{t.name}}</option>
+              </select>
+            </div>
+            <h5>Environment Variables</h5>
+            <key-value-list
+              [(ngModel)]="config.sakuli.environment"
+              [ngModelOptions]="{standalone: true}"
+            ></key-value-list>
           </div>
+          <pre>{{config.sakuli | json}}</pre>
         </div>
-        <div class="form-check" *ngIf="appInfo.dockerComposeExecutionEnabled" >
+        <div class="form-check" *ngIf="appInfo.dockerComposeExecutionEnabled">
           <label class="form-check-label">
             <input type="radio" class="form-check-input" name="runType" [(ngModel)]="config.type"
                    [value]="types[types.DockerCompose]"/>
@@ -90,6 +106,9 @@ import {AppInfoService} from "../../../sweetest-components/services/access/app-i
     .config-area {
       padding-left: 1.25rem;
     }
+    .container-selection select{
+      flex-grow: 1;
+    }
   `]
 })
 
@@ -112,11 +131,13 @@ export class RunConfigurationComponent {
   _dockerFile: string;
   _dockerComposeFile: string;
 
+  keys = Object.keys;
+
   defaultDockerComposeFile = new File([`version: '2'
 services:
   sakuli_test:
     image: consol/sakuli-ubuntu-xfce
-  `],'docker-compose.yml');
+  `], 'docker-compose.yml');
 
   defaultDockerFile = new File([`FROM consol/sakuli-ubuntu-xfce`], 'Dockerfile');
 
@@ -129,13 +150,12 @@ services:
 
   workspace$ = this.store.select(workpaceSelectors.workspace);
 
-  constructor(
-    readonly store: Store<AppState>,
-    readonly info: AppInfoService
-  ) {
+  constructor(readonly store: Store<AppState>,
+              readonly info: AppInfoService) {
   }
 
   ngOnInit() {
+    this.store.dispatch(new LoadSakuliContainer())
   }
 
   get dockerFile() {
@@ -152,10 +172,10 @@ services:
       this.saveDockerFile(),
       this.saveDockerComposeFile()
     ]);
-    if(dockerFile) {
+    if (dockerFile) {
       config.dockerfile.file = path.relative(this.testSuite.root, dockerFile);
     }
-    if(dockerComposeFile) {
+    if (dockerComposeFile) {
       config.dockerCompose.file = path.relative(this.testSuite.root, dockerComposeFile);
     }
     this.save.next(config);
@@ -170,7 +190,7 @@ services:
   }
 
   static async saveInplaceEditor(editor: InplaceFileEditorComponent) {
-    if(editor) {
+    if (editor) {
       return editor.save().toPromise();
     } else {
       return Promise.resolve(null);

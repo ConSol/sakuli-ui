@@ -51,7 +51,6 @@ public class LocalFileSystemService implements FileSystemService {
     @Override
     public Optional<File> getFileFromPath(String path, String file) {
         File f = Paths.get(normalizePath(path).toString(), file).toFile();
-        log.info(f.getAbsolutePath() + "!!!!!!!!!!" +f.exists());
         if(f.exists()) {
             return Optional.of(f);
         } else {

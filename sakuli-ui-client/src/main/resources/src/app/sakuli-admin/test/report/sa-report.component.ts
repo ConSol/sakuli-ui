@@ -56,7 +56,8 @@ import {animate, group, query, style, transition, trigger} from "@angular/animat
   `,
   styles: [`
     .paging-wrapper {
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     sa-report-content {

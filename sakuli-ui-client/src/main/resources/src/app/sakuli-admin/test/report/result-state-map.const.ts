@@ -1,6 +1,7 @@
 export const resultStateMap = {
   'ERRORS': 'danger',
   'CRITICAL_IN_SUITE': 'danger',
+  'CRITICAL_IN_CASE': 'danger',
   'WARNING_IN_SUITE': 'warning',
   'WARNING_IN_CASE': 'warning',
   'WARNING_IN_STEP': 'warning',
