@@ -74,10 +74,10 @@ public class DockerComposeExecutionStrategy extends AbstractTestExecutionStrateg
                             .getServices().entrySet().stream()
                             .map(e -> {
                                 TestRunInfoPorts trip = new TestRunInfoPorts();
-                                e.getValue().getPorts().stream().filter(p -> p.getTarget() == 6901).findFirst().ifPresent(p -> {
+                                e.getValue().getPorts().stream().filter(p -> p.getTarget() == 5901).findFirst().ifPresent(p -> {
                                     trip.setVnc(p.getPublished());
                                 });
-                                e.getValue().getPorts().stream().filter(p -> p.getTarget() == 5901).findFirst().ifPresent(p -> {
+                                e.getValue().getPorts().stream().filter(p -> p.getTarget() == 6901).findFirst().ifPresent(p -> {
                                     trip.setWeb(p.getPublished());
                                 });
                                 return trip;
