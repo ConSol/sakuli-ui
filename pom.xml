@@ -4,7 +4,7 @@
   <properties>
     <project.version>1.0-SNAPSHOT</project.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <spring.boot.version>1.5.0.RELEASE</spring.boot.version>
+    <spring.boot.version>1.5.10.RELEASE</spring.boot.version>
     <slf4j.version>1.7.22</slf4j.version>
     <logback.classic.version>1.1.9</logback.classic.version>
     <testng.version>6.10</testng.version>
@@ -167,8 +167,6 @@
         <groupId>external.atlassian.jgitflow</groupId>
         <artifactId>jgitflow-maven-plugin</artifactId>
         <configuration>
-          <username>${git.user}</username>
-          <password>${git.password}</password>
           <flowInitContext>
             <!-- default git flow prefixes -->
             <masterBranchName>master</masterBranchName>
@@ -188,6 +186,17 @@
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <enableSshAgent>true</enableSshAgent>
           <useReleaseProfile>true</useReleaseProfile>
+          <!-- needs profile activation via:
+              <profile>
+              ...
+                  <activation>
+                      <property>
+                          <name>performRelease</name>
+                          <value>true</value>
+                      </property>
+                  </activation>
+              </profile>
+          -->
         </configuration>
       </plugin>
       <plugin>
@@ -249,6 +258,49 @@
 
     </dependencies>
   </dependencyManagement>
+
+  <scm>
+    <connection>scm:git:git://github.com/ConSol/sakuli-ui.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/ConSol/sakuli-ui.git</developerConnection>
+    <url>git://github.com/ConSol/sakuli-ui.git</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/ConSol/sakuli-ui/issues/</url>
+  </issueManagement>
+
+  <licenses>
+    <license>
+      <name>Apache 2</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+      <comments>A business-friendly OSS license</comments>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Tobias Schneck</name>
+      <id>toschneck</id>
+      <email>tobias.schneck@consol.de</email>
+      <organization>ConSol</organization>
+      <roles>
+        <role>Developer, Architect</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Tim Keiner</name>
+      <id>tnobody</id>
+      <email>tim.keiner@consol.de</email>
+      <organization>ConSol</organization>
+      <roles>
+        <role>Developer, Architect</role>
+      </roles>
+    </developer>
+  </developers>
+
   <distributionManagement>
     <!-- local maven repository for normal builds -->
     <repository>
@@ -260,4 +312,45 @@
       <url>file:///${user.home}/.m2/repository</url>
     </snapshotRepository>
   </distributionManagement>
+
+
+  <profiles>
+    <!-- profile overrides the `upload-config` for releases-->
+    <profile>
+      <id>upload-release</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <!-- profile settings to upload the artifacts to the consol labs server -->
+      <distributionManagement>
+        <repository>
+          <id>labs-consol-sakuli-repository</id>
+          <url>scpexe://labs.consol.de/home/maven-repository/www/htdocs/repository</url>
+        </repository>
+        <snapshotRepository>
+          <id>labs-consol-sakuli-repository</id>
+          <url>scpexe://labs.consol.de/home/maven-repository/www/htdocs/snapshots-repository</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+    <!-- profile for uploading the SNAPSHOT artifacts and zipped files to labs.consol.de/sakuli-->
+    <profile>
+      <id>upload</id>
+      <!-- profile settings to upload the artifacts to the consol labs server -->
+      <distributionManagement>
+        <repository>
+          <id>labs-consol-sakuli-repository</id>
+          <!-- ensure that snapshot repository will used -->
+          <url>scpexe://labs.consol.de/home/maven-repository/www/htdocs/snapshots-repository</url>
+        </repository>
+        <snapshotRepository>
+          <id>labs-consol-sakuli-repository</id>
+          <url>scpexe://labs.consol.de/home/maven-repository/www/htdocs/snapshots-repository</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+  </profiles>
 </project>
