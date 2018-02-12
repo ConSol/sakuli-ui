@@ -20,11 +20,11 @@
     <jackson.version>2.9.3</jackson.version>
   </properties>
 
-  <groupId>org.sweetest.platform</groupId>
+  <groupId>org.sweetest.sakuli</groupId>
   <artifactId>sakuli-ui</artifactId>
   <packaging>pom</packaging>
   <version>0.10-SNAPSHOT</version>
-  <name>sakuli-admin</name>
+  <name>sakuli-ui</name>
 
   <modules>
     <module>sakuli-ui-web</module>
