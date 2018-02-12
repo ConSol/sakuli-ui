@@ -142,7 +142,7 @@
                 </assembly>
               </build>
               <run>
-                <cmd>java -jar /maven/ROOT.war --sakuli.admin.root.directory=/server_home</cmd>
+                <cmd>java -jar /maven/ROOT.war --sakuli.ui.root.directory=/server_home</cmd>
                 <volumes>
                   <bind>
                     <volume>${project.build.testSourceDirectory}/../resources:/server_home</volume>

@@ -27,9 +27,7 @@
           <arguments>
             <argument>--server.port=${server.port}</argument>
           </arguments>
-          <jvmArguments>-Dsweetest.admin.project.home=${project.home}
-            -Dsweetest.admin.working.directory=${project.build.directory}
-          </jvmArguments>
+          <jvmArguments>-Dsakuli.ui.root.directory=${user.home}</jvmArguments>
           <layout>JAR</layout>
         </configuration>
         <executions>

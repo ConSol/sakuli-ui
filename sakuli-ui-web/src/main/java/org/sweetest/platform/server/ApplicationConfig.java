@@ -15,14 +15,12 @@ import java.util.Optional;
 @Configuration
 public class ApplicationConfig {
 
-    private static final String SAKULI_ADMIN_PREFIX = "sakuli.admin.";
-    private static final String SAKULI_ADMIN_ENV_PREFIX = "SAKULI_ADMIN_";
-
-    public static final String ROOT_DIRECTORY = SAKULI_ADMIN_PREFIX + "root.directory";
-    public static final String ROOT_DIRECTORY_ENV = SAKULI_ADMIN_ENV_PREFIX + "ROOT_DIRECTORY";
-
-    public static final String PROJECT_DEFAULT = SAKULI_ADMIN_PREFIX + "testSuite.default";
-    public static final String PROJECT_DEFAULT_ENV = SAKULI_ADMIN_ENV_PREFIX + "PROJECT_DEFAULT";
+    private static final String SAKULI_UI_PREFIX = "sakuli.ui.";
+    public static final String ROOT_DIRECTORY = SAKULI_UI_PREFIX + "root.directory";
+    public static final String PROJECT_DEFAULT = SAKULI_UI_PREFIX + "testSuite.default";
+    private static final String SAKULI_UI_ENV_PREFIX = "SAKULI_UI_";
+    public static final String ROOT_DIRECTORY_ENV = SAKULI_UI_ENV_PREFIX + "ROOT_DIRECTORY";
+    public static final String PROJECT_DEFAULT_ENV = SAKULI_UI_ENV_PREFIX + "PROJECT_DEFAULT";
 
     @Bean(name = "rootDirectory")
     public static String getRootDirectory() {
