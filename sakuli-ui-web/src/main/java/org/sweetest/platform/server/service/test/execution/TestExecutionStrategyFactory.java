@@ -18,7 +18,7 @@ public class TestExecutionStrategyFactory {
     TestExecutionStrategy sakuliContainerStrategy;
 
     @Autowired
-    TestExecutionStrategy localExecutionStrategy;
+    TestExecutionStrategy sakuliLocalExecutionStrategy;
 
     @Autowired
     TestExecutionStrategy dockerfileExecutionStrategy;
@@ -39,8 +39,8 @@ public class TestExecutionStrategyFactory {
                 dockerfileExecutionStrategy.setConfiguration(runConfiguration.getDockerfile());
                 return Optional.of(dockerfileExecutionStrategy);
             case Local:
-                localExecutionStrategy.setConfiguration(runConfiguration.getLocal());
-                return Optional.of(localExecutionStrategy);
+                sakuliLocalExecutionStrategy.setConfiguration(runConfiguration.getLocal());
+                return Optional.of(sakuliLocalExecutionStrategy);
         }
         return Optional.empty();
     }

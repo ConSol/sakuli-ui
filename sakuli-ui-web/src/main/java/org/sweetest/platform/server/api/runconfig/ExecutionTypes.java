@@ -3,12 +3,12 @@ package org.sweetest.platform.server.api.runconfig;
 import org.sweetest.platform.server.api.test.execution.strategy.TestExecutionStrategy;
 import org.sweetest.platform.server.service.test.execution.strategy.DockerComposeExecutionStrategy;
 import org.sweetest.platform.server.service.test.execution.strategy.DockerfileExecutionStrategy;
-import org.sweetest.platform.server.service.test.execution.strategy.LocalExecutionStrategy;
 import org.sweetest.platform.server.service.test.execution.strategy.SakuliContainerStrategy;
+import org.sweetest.platform.server.service.test.execution.strategy.SakuliLocalExecutionStrategy;
 
 public enum ExecutionTypes {
 
-    Local(LocalExecutionStrategy.class),
+    Local(SakuliLocalExecutionStrategy.class),
     Dockerfile(DockerfileExecutionStrategy.class),
     DockerCompose(DockerComposeExecutionStrategy.class),
     SakuliContainer(SakuliContainerStrategy.class);
