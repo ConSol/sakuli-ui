@@ -43,6 +43,11 @@ To build a ready-to-use executable JAR, just type
 then Maven will build a executable jar `sakuli-ui-web-XXX.jar` under `sakuli-ui-web/target/`. Now you can execute the JAR file:
 
     java -jar sakuli-ui-web/target/sakuli-ui-web-XXX.jar
+   
+## Disable Authentication
+
+    java -Dapp.authentication.enabled=false -jar sakuli-ui-web/target/sakuli-ui-web-XXX.jar
+
     
 ## Default Credentials
 
