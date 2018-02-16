@@ -67,6 +67,7 @@ public class DockerComposeExecutionStrategy extends AbstractTestExecutionStrateg
             commands.add("-f");
             commands.add(dockerComposeFile.getAbsolutePath());
             commands.add("up");
+            commands.add("--force-recreate");
 
             List<TestRunInfoPorts> ports =
                     dockerComposeModelOptional
@@ -92,6 +93,7 @@ public class DockerComposeExecutionStrategy extends AbstractTestExecutionStrateg
                     .directory(Paths.get(rootDirectory, getTestSuite().getRoot()).toFile())
                     .command(commands);
 
+            //TODO ThreadPool?
             command = new LocalCommand(processBuilder);
             new Thread(() -> {
                 executor = new CommandExecutorRunnable(
