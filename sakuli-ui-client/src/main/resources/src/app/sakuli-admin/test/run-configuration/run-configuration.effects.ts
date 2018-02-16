@@ -22,7 +22,7 @@ import {
 import {RunConfigurationService} from "../../../sweetest-components/services/access/run-configuration.service";
 import {AppState} from "../../appstate.interface";
 import {Store} from "@ngrx/store";
-import {ContainerTag, RunConfiguration, RunConfigurationSelect, SakuliContainer} from "./run-configuration.interface";
+import {ContainerTag, RunConfiguration, SakuliContainer} from "./run-configuration.interface";
 import {ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
 import {CreateToast, ErrorMessage,} from "../../../sweetest-components/components/presentation/toast/toast.actions";
 import {ScLoadingService} from "../../../sweetest-components/components/presentation/loading/sc-loading.service";
@@ -71,10 +71,12 @@ export class RunConfigurationEffects {
       .catch(ErrorMessage(`Unable to fetch sakuli-containers`))
     );
 
+  /*
   @Effect() loadSakuliContainersSuccess$ = this.actions$.ofType(LOAD_SAKULI_CONTAINER_SUCCESS)
     .withLatestFrom(this.store.select(RunConfigurationSelect.runConfiguration))
-    .filter(([_ , rc]: [LoadSakuliContainerSuccess, RunConfiguration]) => !!rc.sakuli.container)
+    .filter(([_ , rc]: [LoadSakuliContainerSuccess, RunConfiguration]) => !!rc.sakuli.tag)
     .map(([a , rc]: [LoadSakuliContainerSuccess, RunConfiguration]) => new SelectSakuliContainer(a.containers[0]));
+  */
 
   @Effect() loadContainerTags$ = this.actions$.ofType(LOAD_SAKULI_CONTAINER_TAGS)
     .filter((a: LoadSakuliContainerTags) => !!a.container)

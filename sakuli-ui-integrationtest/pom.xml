@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>sakuli-admin</artifactId>
-    <groupId>org.sweetest.platform</groupId>
-    <version>0.9</version>
+    <artifactId>sakuli-ui</artifactId>
+    <groupId>org.sweetest.sakuli</groupId>
+    <version>0.9.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -17,6 +17,7 @@
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
       <version>20170516</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -40,6 +41,7 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
@@ -140,7 +142,7 @@
                 </assembly>
               </build>
               <run>
-                <cmd>java -jar /maven/ROOT.war --sakuli.admin.root.directory=/server_home</cmd>
+                <cmd>java -jar /maven/ROOT.war --sakuli.ui.root.directory=/server_home</cmd>
                 <volumes>
                   <bind>
                     <volume>${project.build.testSourceDirectory}/../resources:/server_home</volume>

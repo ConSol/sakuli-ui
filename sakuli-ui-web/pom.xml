@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>sakuli-admin</artifactId>
-    <groupId>org.sweetest.platform</groupId>
-    <version>0.9</version>
+    <artifactId>sakuli-ui</artifactId>
+    <groupId>org.sweetest.sakuli</groupId>
+    <version>0.9.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -11,7 +11,7 @@
 
   <artifactId>sakuli-ui-web</artifactId>
   <name>sakuli-ui-web</name>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
 
   <properties>
     <server.port>9090</server.port>
@@ -24,27 +24,19 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <fork>true</fork>
-          <profiles>
-            <profile>dev</profile>
-          </profiles>
           <arguments>
             <argument>--server.port=${server.port}</argument>
           </arguments>
-          <jvmArguments>-Dsweetest.admin.project.home=${project.home}
-            -Dsweetest.admin.working.directory=${project.build.directory}
-          </jvmArguments>
+          <jvmArguments>-Dsakuli.ui.root.directory=${user.home}</jvmArguments>
+          <layout>JAR</layout>
         </configuration>
         <executions>
           <execution>
-            <id>create-executable-war</id>
+            <id>create-executable-jar</id>
             <phase>package</phase>
             <goals>
               <goal>repackage</goal>
             </goals>
-            <configuration>
-              <classifier>executable</classifier>
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -60,7 +52,7 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.sweetest.platform</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>sakuli-ui-client</artifactId>
       <version>${project.version}</version>
     </dependency>

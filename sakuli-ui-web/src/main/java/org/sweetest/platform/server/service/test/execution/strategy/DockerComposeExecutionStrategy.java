@@ -67,6 +67,7 @@ public class DockerComposeExecutionStrategy extends AbstractTestExecutionStrateg
             commands.add("-f");
             commands.add(dockerComposeFile.getAbsolutePath());
             commands.add("up");
+            commands.add("--force-recreate");
 
             List<TestRunInfoPorts> ports =
                     dockerComposeModelOptional
@@ -74,10 +75,10 @@ public class DockerComposeExecutionStrategy extends AbstractTestExecutionStrateg
                             .getServices().entrySet().stream()
                             .map(e -> {
                                 TestRunInfoPorts trip = new TestRunInfoPorts();
-                                e.getValue().getPorts().stream().filter(p -> p.getTarget() == 6901).findFirst().ifPresent(p -> {
+                                e.getValue().getPorts().stream().filter(p -> p.getTarget() == 5901).findFirst().ifPresent(p -> {
                                     trip.setVnc(p.getPublished());
                                 });
-                                e.getValue().getPorts().stream().filter(p -> p.getTarget() == 5901).findFirst().ifPresent(p -> {
+                                e.getValue().getPorts().stream().filter(p -> p.getTarget() == 6901).findFirst().ifPresent(p -> {
                                     trip.setWeb(p.getPublished());
                                 });
                                 return trip;
@@ -92,6 +93,7 @@ public class DockerComposeExecutionStrategy extends AbstractTestExecutionStrateg
                     .directory(Paths.get(rootDirectory, getTestSuite().getRoot()).toFile())
                     .command(commands);
 
+            //TODO ThreadPool?
             command = new LocalCommand(processBuilder);
             new Thread(() -> {
                 executor = new CommandExecutorRunnable(

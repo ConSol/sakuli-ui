@@ -29,8 +29,10 @@ import org.sweetest.platform.server.api.test.execution.strategy.TestExecutionSub
 import org.sweetest.platform.server.api.test.execution.strategy.events.*;
 
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.github.dockerjava.api.model.Ports.Binding.bindPort;
 
@@ -206,7 +208,8 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
     private void startContainer() {
         dockerClient.eventsCmd().exec(eventsResultCallback);
         subject.next(new TestExecutionStartEvent(executionId));
-        dockerClient.startContainerCmd(container.getId()).exec();
+        dockerClient.startContainerCmd(container.getId())
+                .exec();
         Optional.ofNullable(container.getWarnings()).map(ReflectionToStringBuilder::toString)
                 .ifPresent(w -> {
                     log.warn(w);
@@ -219,12 +222,19 @@ public class SakuliContainerStrategy extends AbstractTestExecutionStrategy<Sakul
                 .createContainerCmd(containerToRunWithTag)
                 .withCmd("run", "/" + testSuite.getRoot())
                 .withExposedPorts(vncPort, vncWebPort)
+                .withEnv(getEnvFromConfig())
                 .withPortBindings(ports)
                 .withUser(dockerUserId)
                 .withPublishAllPorts(true)
                 .withVolumes(volume)
                 .withBinds(new Bind(Paths.get(rootDirectory, mountPath).toString(), volume))
                 .exec();
+    }
+
+    private List<String> getEnvFromConfig() {
+        return this.getConfiguration().getEnvironment().stream()
+                .map(p -> String.format("%s=%s", p.getKey(), p.getValue()))
+                .collect(Collectors.toList());
     }
 
     void next(TestExecutionEvent event) {

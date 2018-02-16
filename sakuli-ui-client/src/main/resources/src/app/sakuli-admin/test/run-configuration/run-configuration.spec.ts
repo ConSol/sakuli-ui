@@ -34,6 +34,7 @@ import Mocked = jest.Mocked;
 
 describe(RunConfigurationEffects.name, () => {
 
+
     const runConfiguration: RunConfiguration = {
       type: RunConfigurationTypes.Local,
       dockerCompose: {
@@ -45,7 +46,8 @@ describe(RunConfigurationEffects.name, () => {
       local: {},
       sakuli: {
         tag: {name: 'tag'},
-        container: {name: 'container'}
+        container: {name: 'container'},
+        environment: []
       }
     };
 

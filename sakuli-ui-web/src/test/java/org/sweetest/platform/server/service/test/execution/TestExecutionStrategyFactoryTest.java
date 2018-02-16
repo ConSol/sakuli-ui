@@ -28,7 +28,7 @@ public class TestExecutionStrategyFactoryTest {
     TestExecutionStrategy sakuliContainerStrategy;
 
     @Autowired
-    TestExecutionStrategy localExecutionStrategy;
+    TestExecutionStrategy sakuliLocalExecutionStrategy;
 
     @Autowired
     TestExecutionStrategy dockerComposeExecutionStrategy;
@@ -40,7 +40,7 @@ public class TestExecutionStrategyFactoryTest {
     public void testGetStrategyByRunConfigurationForLocal() throws Exception {
         testRunner(
                 ExecutionTypes.Local,
-                localExecutionStrategy,
+                sakuliLocalExecutionStrategy,
                 s -> s.getConfiguration().equals(runConfiguration.getLocal())
         );
     }

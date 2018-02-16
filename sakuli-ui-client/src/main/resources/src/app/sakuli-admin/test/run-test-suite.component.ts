@@ -282,7 +282,7 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
   }
 
   onSaveConfiguration($event: RunConfiguration) {
-    this.route.params.map(p => p['suite']).first()
+    this.route.queryParamMap.map(p => p.get('suite')).first()
       .subscribe(path => this.store.dispatch(new SaveRunConfiguration(path, $event)));
   }
 

@@ -1,6 +1,7 @@
 import {RunConfigurationTypes} from "./run-configuration-types.enum";
 import {createFeatureSelector, createSelector} from "@ngrx/store";
 import {nothrowFn} from "../../../core/utils";
+import {KeyValuePairListString} from "../../../sweetest-components/components/forms/key-value-list/key-value-list.interface";
 
 export interface DockerfileExecutionConfiguration {
   file: string;
@@ -24,6 +25,7 @@ export interface LocalExecutionConfiguration {
 export interface SakuliExecutionConfiguration {
   container: SakuliContainer;
   tag: ContainerTag;
+  environment:KeyValuePairListString
 }
 
 export const RunConfigurationFeatureName = 'runConfiguration';
