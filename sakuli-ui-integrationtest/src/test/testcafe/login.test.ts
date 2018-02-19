@@ -19,7 +19,7 @@ test('invalid login', async t => {
 });
 
 test('valid login', async t => {
-    await loginPage.login("admin", "sakuli123");
+    await loginPage.login("admin", "sakuli");
 
     await t.expect(fileSelector.title.textContent).contains('Select');
 });

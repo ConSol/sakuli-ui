@@ -52,7 +52,7 @@ then Maven will build a executable jar `sakuli-ui-web-XXX.jar` under `sakuli-ui-
 ## Default Credentials
 
 User: `admin`
-Password: `sakuli123`
+Password: `sakuli`
 
 To set your own credentials just set the properties `security.default-username` and `security.default-password`:
 

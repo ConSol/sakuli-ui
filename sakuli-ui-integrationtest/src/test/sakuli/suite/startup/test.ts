@@ -12,13 +12,13 @@ try {
     _call(top.location.reload());
     /*
     loginPage.userName = "admin";
-    loginPage.password = "sakuli123";
+    loginPage.password = "sakuli";
     //env.sleep(5)
     loginPage.doLogin();
     */
 
     const $userName = "admin";
-    const $password = "sakuli123";
+    const $password = "sakuli";
     _highlight( _textbox("username"));
     _setValue( _textbox("username"), $userName);
     _highlight( _textbox("username"));
