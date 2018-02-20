@@ -51,15 +51,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
+        //disabeld because form data request failing otherwise
+        http.csrf().disable();
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         if(authenticationEnabled) {
-            http
-                    .csrf()
-                        .disable()
-                    .authorizeRequests()
+            http.authorizeRequests()
                         .antMatchers(HttpMethod.POST, SIGN_UP_URL, LOGOUT_URL)
                             .permitAll()
                         .antMatchers(HttpMethod.GET, "/", "/**/*.js", "/**/*.css", "/**/*.woff*")
