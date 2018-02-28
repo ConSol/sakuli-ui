@@ -16,7 +16,7 @@ import {
 } from "./sa-assets.action";
 import {uniq} from "../../../core/utils";
 import {absPath} from "../../../sweetest-components/services/access/model/file-response.interface";
-import * as update from 'immutability-helper';
+import update from 'immutability-helper';
 
 function getIndex(state:AssetsState, action: AssetsPin | AssetsUnpin) {
   return state.pinned.findIndex(p => p.context === action.context && absPath(p.file) === absPath(action.file))
