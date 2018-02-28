@@ -10,12 +10,14 @@ import {EffectsModule} from "@ngrx/effects";
 import {ScAuthenticationService} from "./sc-authentication.service";
 import {ReactiveFormsModule} from "@angular/forms";
 import {ScAuthenticatedImageDirective} from "./sc-authenticated-image.directive";
+import {OverlayModule} from "@angular/cdk/overlay";
 
 
 @NgModule({
   imports: [
     HttpClientModule,
     ReactiveFormsModule,
+    OverlayModule,
     StoreModule.forFeature(AuthFeatureName, authReducer),
     EffectsModule.forFeature([
       ScAuthenticationService

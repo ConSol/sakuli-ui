@@ -10,6 +10,7 @@ import {DateUtil} from "../../utils";
     <table class="table table-hover table-striped">
       <tr>
         <th>State</th>
+        <th>Suite</th>
         <th>Started</th>
         <th>Duration (s)</th>
       </tr>
@@ -17,6 +18,7 @@ import {DateUtil} from "../../utils";
         <td>
           <span class="badge" [ngClass]="badgeClass(result.state)">{{result.state}}</span>
         </td>
+        <td>{{result.id}}</td>
         <td>{{result.startDate|moment:'DD.MM.YYYY hh:mm'}}</td>
         <td>{{duration(result.startDate, result.stopDate)}}</td>
       </tr>

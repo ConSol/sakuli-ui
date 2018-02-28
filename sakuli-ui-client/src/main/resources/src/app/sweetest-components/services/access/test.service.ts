@@ -68,7 +68,11 @@ export class TestService {
               return this.files
                 .read(absPath(file))
                 .map(JSON.parse.bind(JSON))
-                .map(res => ({...res, sourceFile: file.name}))
+                .map(res => ({
+                  ...res,
+                  sourceFile: file.name,
+                  testSuitePath
+                }))
             }))
         } else {
           return Observable.of([]);

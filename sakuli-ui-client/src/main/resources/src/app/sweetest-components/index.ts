@@ -38,6 +38,7 @@ import {ScOpenFileModule} from "./components/presentation/open-file/sc-open-file
 import {ScFileSelectorModule} from "./components/presentation/file-selector/sc-file-selector.module";
 import {RouterModule} from "@angular/router";
 import {ScResultTableComponent} from "./components/layout/sc-result-table.component";
+import {ThumbnailModule} from "./components/presentation/thumbnail/thumbnail.module";
 
 
 export const SweetestComponentsAndDirectives  = [
@@ -94,7 +95,8 @@ export const SweetestComponentsAndDirectives  = [
     ScRouterModule,
     ScFormsModule,
     ScOpenFileModule,
-    ScFileSelectorModule
+    ScFileSelectorModule,
+    ThumbnailModule
   ],
   declarations: [
     ...(SweetestComponentsAndDirectives)
@@ -114,6 +116,7 @@ export const SweetestComponentsAndDirectives  = [
     ScLoadingModule,
     ScRouterModule,
     ScFormsModule,
+    ThumbnailModule
   ],
 })
 export class SweetestComponentsModule {
