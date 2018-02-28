@@ -23,7 +23,6 @@ import {AppState} from "../../appstate.interface";
 import {Store} from "@ngrx/store";
 import {LoadTestsuiteSuccess, testSuiteSelectors} from "./testsuite.state";
 import {DangerToast, SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
-import {notNull} from "../../../core/redux.util";
 import {workpaceSelectors} from "../../workspace/state/project.interface";
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
 import {
@@ -104,7 +103,7 @@ export class TestEffects {
   @Effect() loadTestResults = this.actions$.ofType(LOAD_TESTRESULTS)
     .mergeMap(_ => this.store.select(
       testSuiteSelectors.selectAll
-    ).filter(notNull))
+    ).map(all => all || []))
     .mergeMap((suites) => Observable.forkJoin(
       ...suites.map(ts => this.testService.testResults(ts.root))
     ))

@@ -82,7 +82,8 @@ export const testResultsFor = (testSuite: SakuliTestSuite) => {
   return createSelector(
     testResults,
     nothrowFn((results: TestSuiteResult[]) => results
-      .filter(r =>  (r.testSuiteFolder || '').endsWith(testSuite.root)))
+      .filter(r =>  r.id === testSuite.id)
+    )
   );
 }
 
