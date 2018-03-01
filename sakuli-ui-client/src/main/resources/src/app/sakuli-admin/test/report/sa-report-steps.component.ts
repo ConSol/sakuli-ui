@@ -8,7 +8,7 @@ import {resultStateMap} from "./result-state-map.const";
   template: `
     <ng-container>
       <li class="list-group-item pointer-cursor d-flex flex-row" (click)="toggleCollapse()">
-        <sc-icon [icon]="step?.testActions?.length ? 'fa-caret-right' : ''" [fixedWidth]="true" [rotate]="collapsed ? 90 : 0"></sc-icon>
+        <sc-icon [icon]="step?.testActions?.length || step?.exception ? 'fa-caret-right' : ''" [fixedWidth]="true" [rotate]="collapsed ? 90 : 0"></sc-icon>
         <ng-container *ngIf="step.exception">
           <sc-icon iconClass="text-danger" icon="fa-exclamation-triangle"></sc-icon>
         </ng-container>
@@ -35,9 +35,10 @@ import {resultStateMap} from "./result-state-map.const";
         <ng-container *ngIf="step.exception; else actions">
           <li class="list-group-item d-flex flex-column">
             <strong>{{step.exception.detailMessage}}</strong>
-            <a [href]="'api/files?path=' + rmHeadSlash(step.exception.screenshot)" target="_blank" class="text-center mt-1 mb-1">
-              <img scAuthenticated [src]="'api/files?path=' + rmHeadSlash(step.exception.screenshot)" width="250"/>
-            </a>
+            <thumbnail-component 
+              [src]="'api/files?path=' + testSuitePath + '/_logs/_json/' + rmHeadSlash(step.exception.screenshot)" 
+              width="250px"
+            ></thumbnail-component>
             <div>
               <button class="btn btn-link" (click)="showStacktrace = !showStacktrace">Show Stacktrace</button>
               <button class="btn btn-link"
@@ -91,6 +92,7 @@ export class SaReportStepsComponent implements OnInit {
   rmHeadSlash = rmHeadSlash;
 
   @Input() step: TestCaseStepResult;
+  @Input() testSuitePath: string;
   @Input() durationPercent: number;
   @Input() durationOffsetPercent: number;
 

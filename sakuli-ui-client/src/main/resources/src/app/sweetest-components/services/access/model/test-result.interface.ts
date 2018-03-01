@@ -24,12 +24,13 @@ export interface TestSuiteResult extends BaseResult {
   testSuiteFile: string;
   testCases: {[name:string]:TestCaseResult};
   sourceFile: string;
+  testSuitePath: string;
 }
 
 export interface TestCaseResult extends BaseResult {
   startUrl: string;
   lastUrl: string;
-  exception: any;
+  exception: TestCaseException | null;
   steps: TestCaseStepResult[];
   testActions: TestActionResult[];
 }
