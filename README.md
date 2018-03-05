@@ -4,6 +4,12 @@
 
 A (web-based) UI to manage, edit and run Tests with [Sakuli E2E](https://github.com/ConSol/sakuli)
 
+## Usage
+
+**See the official [Sakuli UI Documentation](consol.github.io/sakuli/latest/index.html#sakuli-ui)**
+
+---
+
 ## Development 
 
 To develop or extend Sakuli-UI we recommend to start separate server (Spring Boot) and client (Angular2) development worksflows to archieve to best development experience
