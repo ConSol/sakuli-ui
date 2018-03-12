@@ -1,5 +1,4 @@
 
-
 @import 'styles/variables';
 @import 'styles/forms';
 @import "styles/common";
@@ -10,3 +9,14 @@
 @import "styles/toast";
 @import "styles/circle-indicator";
 @import '../node_modules/bootstrap/scss/bootstrap';
+@import "../node_modules/@angular/cdk/overlay";
+
+
+$cdk-z-index-overlay-backdrop: 1000;
+$cdk-z-index-overlay-container: 1600;
+html {
+  @include cdk-overlay();
+}
+
+
+

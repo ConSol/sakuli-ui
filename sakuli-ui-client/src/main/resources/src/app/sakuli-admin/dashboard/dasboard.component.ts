@@ -80,7 +80,7 @@ export class DashboardComponent {
 
   getResultsForSuite(testSuite: SakuliTestSuite) {
     return this.testResults.filter(tr => {
-      return (tr.testSuiteFolder || '').endsWith(testSuite.root)
+      return (tr.id || '').endsWith(testSuite.id)
     })
       .sort((a,b) => moment(b.startDate).diff(moment(a.startDate)))
   }

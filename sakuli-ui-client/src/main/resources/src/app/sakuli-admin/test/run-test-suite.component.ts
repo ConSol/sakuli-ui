@@ -131,18 +131,19 @@ import {RouterGo} from "../../sweetest-components/services/router/router.actions
       </ng-container>
     </div>
     <ng-container *ngIf="suiteIsNotRunning$ | async">
-      <h4>Latest report:</h4>
-      <sa-report-navigation
-        *ngIf="latestResult$ | async; let latestResult"
-        class="cursor-pointer"
-        (click)="navigateToResult(latestResult)"
-        [testResult]="latestResult"
-        [navigation]="false"
-      ></sa-report-navigation>
-      <sa-report-content
-        [testResult]="latestResult$ | async"
-        class="mb-3 d-block"
-      ></sa-report-content>
+      <ng-container *ngIf="latestResult$ | async; let latestResult">
+        <h4>Latest report:</h4>
+        <sa-report-navigation
+          class="cursor-pointer"
+          (click)="navigateToResult(latestResult)"
+          [testResult]="latestResult"
+          [navigation]="false"
+        ></sa-report-navigation>
+        <sa-report-content
+          [testResult]="latestResult$ | async"
+          class="mb-3 d-block"
+        ></sa-report-content>
+      </ng-container>
     </ng-container>
     <div class="row" *ngIf="hasLogs$ | async">
       <div class="col-12 mb-2" *ngIf="vncReady$ | async" [@onVnc]="vncReady$ | async">

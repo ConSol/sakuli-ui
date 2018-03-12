@@ -7,8 +7,9 @@ import {TestActionResult} from "../../../sweetest-components/services/access/mod
   template: `
     <div style="flex-grow: 1" class="pl-4">
       <div class="action">
-        <span class="object">{{action.object}}</span>.<span class="method">{{action.method}}</span>(<span
-        class="args">
+        <ng-container *ngIf="action.object"><span class="object">{{action.object}}</span>.</ng-container>
+        <span class="method">{{action.method}}</span>
+        <ng-container *ngIf="action.args.length">(<span class="args">
         <ng-container *ngIf="showArgs; else hideArgs">
           <sc-icon icon="fa-minus-square-o" (click)="showArgs = false"></sc-icon>
           <div *ngFor="let arg of action.args || []" class="pl-3">
@@ -23,7 +24,7 @@ import {TestActionResult} from "../../../sweetest-components/services/access/mod
                 (click)="showArgs = true"
           >{{action.args.length}} arguments</span>
         </ng-template>
-      </span>)
+      </span>)</ng-container>
       </div>
       <span class="text-muted font-italic">{{action.message}}</span>
     </div>

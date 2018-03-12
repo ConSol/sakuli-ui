@@ -39,12 +39,12 @@ define("test", ["require", "exports", "page-objects/LoginPage"], function (requi
         _call(top.location.reload());
         /*
         loginPage.userName = "admin";
-        loginPage.password = "sakuli123";
+        loginPage.password = "sakuli";
         //env.sleep(5)
         loginPage.doLogin();
         */
         var $userName = "admin";
-        var $password = "sakuli123";
+        var $password = "sakuli";
         _highlight(_textbox("username"));
         _setValue(_textbox("username"), $userName);
         _highlight(_textbox("username"));

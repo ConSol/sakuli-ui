@@ -1,0 +1,89 @@
+{
+  "browserName": "firefox",
+  "browserInfo": null,
+  "host": "4ed963451ddf",
+  "testSuiteFolder": "../..",
+  "testSuiteFile": "../../testsuite.suite",
+  "dbJobPrimaryKey": -1,
+  "testCases": {
+    "case1": {
+      "startUrl": "http://sahi.example.com/_s_/dyn/Driver_initialized",
+      "lastURL": null,
+      "steps": [
+        {
+          "testActions": [],
+          "startDate": null,
+          "stopDate": null,
+          "exception": {
+            "stackTrace": "Error \u003d\u003e ERROR ... @CALL: /Projects/consol/TA/sakuli/example_test_suites/example_xfce/case1/sakuli_demo.js\u0026n\u003d34\n\tat org.sakuli.exceptions.SakuliExceptionHandler.transformException(SakuliExceptionHandler.java:266)\n\tat org.sakuli.exceptions.SakuliExceptionHandler.processException(SakuliExceptionHandler.java:152)\n\tat org.sakuli.exceptions.SakuliExceptionHandler.handleException(SakuliExceptionHandler.java:140)\n\tat org.sakuli.exceptions.SakuliExceptionHandler.handleException(SakuliExceptionHandler.java:299)\n\tat org.sakuli.aop.RhinoAspect.doHandleRhinoException(RhinoAspect.java:232)\n\tat net.sf.sahi.report.Report.addResult(Report.java:93)\n\tat net.sf.sahi.rhino.RhinoScriptRunner.run(RhinoScriptRunner.java:124)\n\tat java.lang.Thread.run(Thread.java:748)\nCaused by: Error \u003d\u003e ERROR ... @CALL: /Projects/consol/TA/sakuli/example_test_suites/example_xfce/case1/sakuli_demo.js\u0026n\u003d34\n\t... 5 more\n",
+            "detailMessage": "Error \u003d\u003e ERROR ... @CALL: /Projects/consol/TA/sakuli/example_test_suites/example_xfce/case1/sakuli_demo.js\u0026n\u003d34",
+            "screenshot": "../_screenshots/2018_02_27_14_56_49_379_Error_ERROR_CALL_Projects_.png"
+          },
+          "state": "ERRORS",
+          "name": "Test_Sahi_landing_page",
+          "dbPrimaryKey": -1,
+          "warningTime": -1,
+          "criticalTime": -1,
+          "id": "Test_Sahi_landing_page",
+          "creationDate": "2018-02-27T14:56:40.889Z"
+        },
+        {
+          "testActions": [],
+          "startDate": null,
+          "stopDate": null,
+          "exception": null,
+          "state": "INIT",
+          "name": "Calculation",
+          "dbPrimaryKey": -1,
+          "warningTime": -1,
+          "criticalTime": -1,
+          "id": "Calculation",
+          "creationDate": "2018-02-27T14:56:40.890Z"
+        },
+        {
+          "testActions": [],
+          "startDate": null,
+          "stopDate": null,
+          "exception": null,
+          "state": "INIT",
+          "name": "Editor",
+          "dbPrimaryKey": -1,
+          "warningTime": -1,
+          "criticalTime": -1,
+          "id": "Editor",
+          "creationDate": "2018-02-27T14:56:40.891Z"
+        }
+      ],
+      "testActions": [
+        {
+          "object": null,
+          "method": "Total Memory in JVM (Xmx) is: 889 MB;\u003cbr/\u003eMemory currently in use is: 118.5 MB;\u003cbr/\u003eMemory increment during this test is: 24 MB",
+          "args": [],
+          "message": "Sahi Action",
+          "documentationURL": "http://sahipro.com/docs/all-topics.html?q\u003d_null"
+        }
+      ],
+      "tcFile": "../../case1/sakuli_demo.js",
+      "startDate": null,
+      "stopDate": null,
+      "exception": null,
+      "state": "ERRORS",
+      "name": "case1",
+      "dbPrimaryKey": -1,
+      "warningTime": 40,
+      "criticalTime": 60,
+      "id": "case1",
+      "creationDate": "2018-02-27T14:56:40.881Z"
+    }
+  },
+  "startDate": "2018-02-27T14:56:40.788Z",
+  "stopDate": "2018-02-27T14:56:51.578Z",
+  "exception": null,
+  "state": "ERRORS",
+  "name": "example test suite inside of the Xfce desktop for Sakuli",
+  "dbPrimaryKey": -1,
+  "warningTime": 60,
+  "criticalTime": 90,
+  "id": "example_xfce",
+  "creationDate": "2018-02-27T14:56:40.470Z"
+}

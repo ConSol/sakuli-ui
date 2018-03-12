@@ -15,12 +15,11 @@ import java.util.Optional;
 @Configuration
 public class ApplicationConfig {
 
-    private static final String SAKULI_UI_PREFIX = "sakuli.ui.";
-    public static final String ROOT_DIRECTORY = SAKULI_UI_PREFIX + "root.directory";
-    public static final String PROJECT_DEFAULT = SAKULI_UI_PREFIX + "testSuite.default";
-    private static final String SAKULI_UI_ENV_PREFIX = "SAKULI_UI_";
-    public static final String ROOT_DIRECTORY_ENV = SAKULI_UI_ENV_PREFIX + "ROOT_DIRECTORY";
-    public static final String PROJECT_DEFAULT_ENV = SAKULI_UI_ENV_PREFIX + "PROJECT_DEFAULT";
+    public static final String ROOT_DIRECTORY = "sakuli.ui.root.directory";
+    public static final String PROJECT_DEFAULT = "sakuli.ui.testSuite.default";
+    public static final String ROOT_DIRECTORY_ENV = "SAKULI_UI_ROOT_DIRECTORY";
+    public static final String PROJECT_DEFAULT_ENV = "SAKULI_UI_PROJECT_DEFAULT";
+    public static final String DOCKER_CONTAINER_SAKULI_UI_USER = "SAKULI_UI_DOCKER_USER_ID";
 
     @Bean(name = "rootDirectory")
     public static String getRootDirectory() {
@@ -33,10 +32,10 @@ public class ApplicationConfig {
     @Bean(name = "defaultProject")
     @Deprecated
     public static String getDefaultProject() {
-        if(System.getProperty(PROJECT_DEFAULT) != null) {
+        if (System.getProperty(PROJECT_DEFAULT) != null) {
             return System.getProperty(PROJECT_DEFAULT);
         }
-        if(System.getenv(PROJECT_DEFAULT_ENV) != null) {
+        if (System.getenv(PROJECT_DEFAULT_ENV) != null) {
             return System.getenv(PROJECT_DEFAULT_ENV);
         }
         return null;

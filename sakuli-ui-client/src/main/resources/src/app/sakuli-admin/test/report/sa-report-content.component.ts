@@ -16,17 +16,24 @@ import {
               <sc-icon icon="fa-clock-o">
                 {{((testCase.stopDate | dateDiff:testCase.startDate) / 1000) | number}} sec
               </sc-icon>
+              <span class="badge badge-danger" *ngIf="testCase.exception">
+                <sc-icon iconClass="" icon="fa-exclamation-triangle"></sc-icon>
+                failed
+              </span>
               <span class="badge badge-danger" *ngIf="testCase.state === 'CRITICAL'">
                 Criticaltime of <strong>{{testCase.criticalTime}}</strong> sec exceeded
               </span>
               <span class="badge badge-warning" *ngIf="testCase.state === 'WARNING'">
                 Warningtime of <strong>{{testCase.warningTime}}</strong> sec exceeded
               </span>
+              
             </small>
+            
           </h4>
         </div>
         <sa-report-testcase
           [testCase]="testCase"
+          [testSuitePath]="testResult.testSuitePath"
         ></sa-report-testcase>
       </div>
     </ng-container>
