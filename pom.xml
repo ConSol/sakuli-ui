@@ -2,9 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <properties>
+        <!--properties for release build with gitflow-plugin-->
         <github.host>github.com</github.host>
-        <project.version>1.0-SNAPSHOT</project.version>
+        <maven.settings.file>${settings.localRepository}</maven.settings.file>
+        <performRelease>false</performRelease>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <spring.boot.version>1.5.10.RELEASE</spring.boot.version>
         <slf4j.version>1.7.22</slf4j.version>
         <logback.classic.version>1.1.9</logback.classic.version>
@@ -37,9 +40,9 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>external.atlassian.jgitflow</groupId>
-                    <artifactId>jgitflow-maven-plugin</artifactId>
-                    <version>1.0-m5.1</version>
+                    <groupId>com.amashchenko.maven.plugin</groupId>
+                    <artifactId>gitflow-maven-plugin</artifactId>
+                    <version>1.9.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -165,39 +168,41 @@
         <!-- Default plugins for all modules -->
         <plugins>
             <plugin>
-                <groupId>external.atlassian.jgitflow</groupId>
-                <artifactId>jgitflow-maven-plugin</artifactId>
+                <groupId>com.amashchenko.maven.plugin</groupId>
+                <artifactId>gitflow-maven-plugin</artifactId>
                 <configuration>
-                    <flowInitContext>
+                    <verbose>true</verbose>
+                    <keepBranch>false</keepBranch>
+                    <fetchRemote>true</fetchRemote>
+                    <pushRemote>true</pushRemote>
+                    <postReleaseGoals>deploy</postReleaseGoals>
+                    <postHotfixGoals>deploy</postHotfixGoals>
+                    <!--load maven settings.xml for sub-processes of maven-->
+                    <argLine>-DperformRelease=${performRelease} -s ${maven.settings.file}</argLine>
+                    <gitFlowConfig>
                         <!-- default git flow prefixes -->
-                        <masterBranchName>master</masterBranchName>
-                        <developBranchName>dev</developBranchName>
+                        <productionBranch>master</productionBranch>
+                        <developmentBranch>dev</developmentBranch>
                         <featureBranchPrefix>feature/</featureBranchPrefix>
                         <releaseBranchPrefix>release/</releaseBranchPrefix>
                         <hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
                         <!-- non default 'v' prefix -->
                         <versionTagPrefix>v</versionTagPrefix>
-                    </flowInitContext>
-                    <!--<defaultOriginUrl-->
-                    <pushFeatures>true</pushFeatures>
-                    <pushHotfixes>true</pushHotfixes>
-                    <pushReleases>true</pushReleases>
-                    <updateDependencies>true</updateDependencies>
-                    <scmCommentPrefix>mvn-jgitflow:</scmCommentPrefix>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <enableSshAgent>true</enableSshAgent>
-                    <useReleaseProfile>true</useReleaseProfile>
-                    <!-- needs profile activation via:
-                        <profile>
-                        ...
-                            <activation>
-                                <property>
-                                    <name>performRelease</name>
-                                    <value>true</value>
-                                </property>
-                            </activation>
-                        </profile>
-                    -->
+                    </gitFlowConfig>
+                    <commitMessages>
+                        <!--suppress MavenModelInspection -->
+                        <featureStartMessage>create feature-branch '@{featureName}' - update version to v@{version}
+                        </featureStartMessage>
+                        <!--suppress MavenModelInspection -->
+                        <featureFinishMessage>merge feature-branch '@{featureName}' - update version to v@{version}
+                        </featureFinishMessage>
+
+                        <hotfixStartMessage>update version for hotfix to v@{version}</hotfixStartMessage>
+                        <hotfixFinishMessage>update for next development version to v@{version}</hotfixFinishMessage>
+
+                        <releaseStartMessage>update version for release to v@{version}</releaseStartMessage>
+                        <releaseFinishMessage>update for next development version to v@{version}</releaseFinishMessage>
+                    </commitMessages>
                 </configuration>
             </plugin>
             <plugin>
@@ -316,6 +321,8 @@
             <id>jenkins</id>
             <properties>
                 <github.host>sakuli-ui.github.com</github.host>
+                <maven.settings.file>${user.home}/mvn_settings/sakuli-settings.xml</maven.settings.file>
+                <performRelease>true</performRelease>
             </properties>
         </profile>
         <!-- profile overrides the `upload-config` for releases-->
