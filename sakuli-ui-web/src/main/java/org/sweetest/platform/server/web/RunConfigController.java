@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.sweetest.platform.server.api.project.ProjectService;
 import org.sweetest.platform.server.api.runconfig.RunConfiguration;
 import org.sweetest.platform.server.api.runconfig.dockerhub.DockerHubRepository;
 import org.sweetest.platform.server.api.runconfig.dockerhub.DockerHubRepositoryResponse;
@@ -22,9 +21,6 @@ public class RunConfigController {
 
     @Autowired
     private SakuliRunConfigService runConfigService;
-
-    @Autowired
-    private ProjectService projectService;
 
     private RestTemplate restTemplate = new RestTemplate();
 

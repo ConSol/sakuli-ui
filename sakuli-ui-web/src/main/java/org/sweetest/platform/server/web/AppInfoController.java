@@ -1,8 +1,5 @@
 package org.sweetest.platform.server.web;
 
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.schema.JsonSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +25,4 @@ public class AppInfoController {
         return appInfoService.getAppInfo();
     }
 
-    @GetMapping("schema")
-    @ResponseBody
-    public JsonSchema schema() throws JsonMappingException {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonSchema schema = mapper.generateJsonSchema(AppInfo.class);
-        return schema;
-    }
 }

@@ -12,7 +12,6 @@ export class SakuliAuthProjectGuardService implements CanActivate {
     readonly authGuard: SakuliAuthGuardService
   ) {}
 
-
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     return this.authGuard
       .canActivate(route, state)

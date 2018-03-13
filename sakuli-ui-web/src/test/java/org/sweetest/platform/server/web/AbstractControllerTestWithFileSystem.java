@@ -17,8 +17,10 @@ import java.io.IOException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(
+        properties = {"app.authentication.enabled=false"},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = {Application.class, MockConfig.class})
+
 @AutoConfigureMockMvc
 public class AbstractControllerTestWithFileSystem {
 

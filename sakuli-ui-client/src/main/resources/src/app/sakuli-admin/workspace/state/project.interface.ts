@@ -13,7 +13,7 @@ export interface WorkspaceState {
 export const WorkspaceStateInit: WorkspaceState = {
   fileTree: [],
   selectedFile: null,
-  workspace: null
+  workspace: ''
 };
 
 const workspaceState = createFeatureSelector<WorkspaceState>(WorkspaceFeatureName);
@@ -22,7 +22,7 @@ const workspace = createSelector(
   (s) => s ? s.workspace :  ''
 )
 
-export const workpaceSelectors = {
+export const workspaceSelectors = {
   workspaceState,
   workspace
 }

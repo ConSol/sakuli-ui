@@ -36,7 +36,7 @@ import {
 } from "../../../sweetest-components/services/access/model/file-response.interface";
 import {AssetItemType, getItemType} from "./asset-item-type.enum";
 import {SaTextModalComponent} from "./sa-text-modal.component";
-import {workpaceSelectors} from "../../workspace/state/project.interface";
+import {workspaceSelectors} from "../../workspace/state/project.interface";
 
 @Injectable()
 export class SaAssetsEffects {
@@ -54,7 +54,7 @@ export class SaAssetsEffects {
     .mergeMap((a: AssetLoadFolder) => this.fileService.files(a.folder).map(c => new AssetLoadFolderSuccess(a.folder, c)));
 
   @Effect() uploadFile = this.action$.ofType(ASSETS_UPLOAD)
-    .combineLatest(this.store.select(workpaceSelectors.workspace).filter(notNull).first())
+    .combineLatest(this.store.select(workspaceSelectors.workspace).filter(notNull).first())
     .mergeMap(([a, p]: [AssetsUpload, string]) => {
       const {files, targetFolder} = a;
       return Observable.merge(...files.map(file => this.fileService
@@ -70,7 +70,7 @@ export class SaAssetsEffects {
     .map(([, cf]) => new AssetLoadFolder(cf));
 
   @Effect() delete$ = this.action$.ofType(ASSETS_DELETE)
-    .combineLatest(this.store.select(workpaceSelectors.workspace).filter(notNull).first())
+    .combineLatest(this.store.select(workspaceSelectors.workspace).filter(notNull).first())
     .mergeMap(([a, p]: [AssetsDelete, string]) => {
       const {file} = a;
       return this.fileService.delete(p + absPath(file))

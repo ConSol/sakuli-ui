@@ -7,10 +7,10 @@ import {Action, Store} from "@ngrx/store";
 import {LayoutMenuService} from "./sweetest-components/components/layout/menu/layout-menu.service";
 import {IMenuItem, MenuItem} from "./sweetest-components/components/layout/menu/menu-item.interface";
 import {
-    AddMenuItem,
-    InvokeMenuitem,
-    RemoveMenuitem,
-    SelectMenuItem
+  AddMenuItem,
+  InvokeMenuitem,
+  RemoveMenuitem,
+  SelectMenuItem
 } from "./sweetest-components/components/layout/menu/menu.state";
 import {SelectionState} from "./sweetest-components/model/tree";
 import {OpenWorkspaceDialog} from "./sakuli-admin/workspace/state/project.actions";
@@ -66,10 +66,18 @@ export class AppComponent implements OnInit {
       })
   }
 
+  static get preventPersistence() {
+    const preventPersistenceKey = 'preventStatePersistance';
+    return window[preventPersistenceKey]
+      || sessionStorage.getItem(preventPersistenceKey)
+      || localStorage.getItem(preventPersistenceKey)
+  }
+
   @HostListener('window:beforeunload', ['$event'])
   hostBeforeUnload() {
-    if (!window['preventStatePersistance']) {
+    if (!AppComponent.preventPersistence) {
       this.store.select(s => s).first().subscribe(s => {
+        console.log('persisting', JSON.stringify(s));
         sessionStorage.setItem("sakuli-admin-state", JSON.stringify(s))
       });
     }

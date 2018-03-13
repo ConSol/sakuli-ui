@@ -24,7 +24,7 @@ const testExecutionEntityAdapter = createEntityAdapter<TestExecutionEntity>({
   sortComparer: testExecutionSortComparer
 });
 
-const testExecutionStateInit = testExecutionEntityAdapter.getInitialState();
+export const testExecutionStateInit = testExecutionEntityAdapter.getInitialState();
 
 
 export const RUN_TEST = uniqueName('[test] runtest');
