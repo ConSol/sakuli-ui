@@ -33,15 +33,11 @@ import {ModalAware} from "../modal/sc-modal.service";
     </div>
   `,
   styles: [`
-    :host {
-      width: 90vw;
-      height: 90vh;
-    }
     
     .modal-body {
       overflow: auto;
     }
-    
+
     .modal-footer {
       display: flex;
       flex-direction: row;

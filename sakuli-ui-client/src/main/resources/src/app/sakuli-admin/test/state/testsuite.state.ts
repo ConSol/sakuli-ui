@@ -120,6 +120,7 @@ export const testSuiteSelectors = {
 export type TestsuiteActions = LoadTestsuite | LoadTestsuiteSuccess | LoadTestsuiteError | SelectTestsuite | RemoveAllTestsuites;
 
 export function testsuiteReducer(state: TestSuiteState = testSuiteStateInit, action: TestsuiteActions) {
+
   switch (action.type) {
     case LOAD_TESTSUITE_SUCCESS: {
       const {testsuite} = action;

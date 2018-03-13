@@ -9,11 +9,14 @@ import {DateUtil} from "../../utils";
 import {SakuliTestSuite} from "./model/sakuli-test-model";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {StompService} from "@stomp/ng2-stompjs";
+import {Logger} from "../../../core/utils";
 
 const testUrl = `api/testsuite`;
 
 @Injectable()
 export class TestService {
+
+  private logger = new Logger(TestService);
 
   constructor(private http: HttpClient,
               private files: FileService,
@@ -51,6 +54,7 @@ export class TestService {
       .map(m => JSON.parse(m.body))
       .catch(e => {
         console.warn('Error while fetching logs', e);
+        //this.logger.warn('Error while fetching logs', e);
         return Observable.empty() as Observable<TestExecutionEvent>;
       })
   }

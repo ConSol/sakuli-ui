@@ -13,7 +13,20 @@ public class DockerHubRepository {
     private Long star_count;
     private Long pull_count;
     private String last_updated;
-    private Object build_on_cloud;
+
+    public String getNamespacedName() {
+        return String.format("%s/%s", getNamespace(), getName());
+    }
+
+    public void setNamespacedName(String namespacedName) {
+        String[] parts = namespacedName.split("/");
+        if(parts.length == 2) {
+            this.setNamespace(parts[0]);
+            this.setName(parts[1]);
+        } else {
+            throw new IllegalArgumentException(namespacedName + " is not in format :namespace/:name");
+        }
+    }
 
     public String getUser() {
         return user;
@@ -109,13 +122,5 @@ public class DockerHubRepository {
 
     public void setLast_updated(String last_updated) {
         this.last_updated = last_updated;
-    }
-
-    public Object getBuild_on_cloud() {
-        return build_on_cloud;
-    }
-
-    public void setBuild_on_cloud(Object build_on_cloud) {
-        this.build_on_cloud = build_on_cloud;
     }
 }
