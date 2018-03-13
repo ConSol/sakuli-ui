@@ -24,4 +24,5 @@ public class AppInfoController {
     public AppInfo getDockerConfig() {
         return appInfoService.getAppInfo();
     }
+
 }

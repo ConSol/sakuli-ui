@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {TestComponent} from './test.component';
 import {CommonModule} from '@angular/common';
-import {SweetestComponentsModule} from '../../sweetest-components/index';
+import {SweetestComponentsModule} from '../../sweetest-components';
 import {StoreModule} from '@ngrx/store';
 import {testReducer} from './state/test.reducer';
 import {EffectsModule} from "@ngrx/effects";
@@ -37,8 +37,6 @@ export const DeclareAndExport = [
   SaConfigurationComponent,
   SaDockerPullInfoComponent
 ];
-
-console.log(DeclareAndExport)
 
 @NgModule({
   imports: [

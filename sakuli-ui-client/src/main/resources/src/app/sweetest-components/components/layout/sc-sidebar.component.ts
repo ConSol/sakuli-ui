@@ -4,7 +4,7 @@ import {IMenuItem} from "./menu/menu-item.interface";
 import {AppState} from "../../../sakuli-admin/appstate.interface";
 import {Store} from "@ngrx/store";
 import {FontawesomeIcons} from "../presentation/icon/fontawesome-icon.utils";
-import {workpaceSelectors} from "../../../sakuli-admin/workspace/state/project.interface";
+import {workspaceSelectors} from "../../../sakuli-admin/workspace/state/project.interface";
 import {
   NavigateToTestSuite,
   NavigateToTestSuiteAssets,
@@ -193,7 +193,7 @@ export class ScSidebarComponent {
 
   @Output() menuItemSelected = new EventEmitter<IMenuItem>();
 
-  workspace$ = this.store.select(workpaceSelectors.workspace);
+  workspace$ = this.store.select(workspaceSelectors.workspace);
 
   testSuites$ = this.store.select(testSuiteSelectors.selectAll);
 

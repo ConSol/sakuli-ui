@@ -5,7 +5,7 @@ import {InplaceFileEditorComponent} from "../../../sweetest-components/component
 import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
 import {Store} from "@ngrx/store";
 import {AppState} from "../../appstate.interface";
-import {workpaceSelectors} from "../../workspace/state/project.interface";
+import {workspaceSelectors} from "../../workspace/state/project.interface";
 import * as path from 'path';
 import {AppInfoService} from "../../../sweetest-components/services/access/app-info.service";
 import {LoadSakuliContainer} from "./run-configuration.actions";
@@ -33,25 +33,29 @@ import {LoadSakuliContainer} from "./run-configuration.actions";
           </label>
           <div *ngIf="config.type === types[types.SakuliContainer]" class="config-area margin-y">
             <div class="input-group input-group-sm mb-3 container-selection">
-              <span class="input-group-addon">[Container]:[Tag]</span>
-              <sc-loading for="sakuli-container" #loadingContainer></sc-loading>
-              <select *ngIf="!(loadingContainer.show$ | async)"
-                      [(ngModel)]="config.sakuli.container"
-                      (change)="containerChange.next(config.sakuli.container)"
-                      [ngModelOptions]="{standalone: true}"
-                      class="custom-select"
-              >
-                <option *ngFor="let c of sakuliContainers" [ngValue]="c">{{c.name}}</option>
-              </select>
-              <span class="input-group-addon">:</span>
-              <sc-loading for="tags" #loadingTags></sc-loading>
-              <select *ngIf="!(loadingTags.show$ | async)"
-                      [(ngModel)]="config.sakuli.tag"
-                      [ngModelOptions]="{standalone: true}"
-                      class="custom-select"
-              >
-                <option *ngFor="let t of containerTags" [ngValue]="t">{{t.name}}</option>
-              </select>
+              <span class="input-group-prepend">
+                [Container]:[Tag]
+                <sc-loading for="sakuli-container" #loadingContainer></sc-loading>
+              </span>
+              <div>
+                <select *ngIf="!(loadingContainer.show$ | async)"
+                        [(ngModel)]="config.sakuli.container"
+                        (change)="containerChange.next(config.sakuli.container)"
+                        [ngModelOptions]="{standalone: true}"
+                        class="custom-select"
+                >
+                  <option *ngFor="let c of sakuliContainers" [ngValue]="c">{{c.name}}</option>
+                </select>
+                <label class="input-group-addon">:</label>
+                <sc-loading for="tags" #loadingTags></sc-loading>
+                <select *ngIf="!(loadingTags.show$ | async)"
+                        [(ngModel)]="config.sakuli.tag"
+                        [ngModelOptions]="{standalone: true}"
+                        class="custom-select"
+                >
+                  <option *ngFor="let t of containerTags" [ngValue]="t">{{t.name}}</option>
+                </select>
+              </div>
             </div>
             <h5>Environment Variables</h5>
             <key-value-list
@@ -106,7 +110,8 @@ import {LoadSakuliContainer} from "./run-configuration.actions";
     .config-area {
       padding-left: 1.25rem;
     }
-    .container-selection select{
+
+    .container-selection select {
       flex-grow: 1;
     }
   `]
@@ -148,7 +153,7 @@ services:
   @ViewChild(InplaceFileEditorComponent)
   dockerComposeFileEditor: InplaceFileEditorComponent;
 
-  workspace$ = this.store.select(workpaceSelectors.workspace);
+  workspace$ = this.store.select(workspaceSelectors.workspace);
 
   constructor(readonly store: Store<AppState>,
               readonly info: AppInfoService) {

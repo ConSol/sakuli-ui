@@ -23,7 +23,7 @@ import {AppState} from "../../appstate.interface";
 import {Store} from "@ngrx/store";
 import {LoadTestsuiteSuccess, testSuiteSelectors} from "./testsuite.state";
 import {DangerToast, SuccessToast} from "../../../sweetest-components/components/presentation/toast/toast.model";
-import {workpaceSelectors} from "../../workspace/state/project.interface";
+import {workspaceSelectors} from "../../workspace/state/project.interface";
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
 import {
   RUN_TEST,
@@ -43,7 +43,7 @@ import {APPEND_TEST_RUN_INFO_LOG, AppendTestRunInfoLog} from "./test-execution-l
 export class TestEffects {
 
   @Effect() runTest$ = this.actions$.ofType(RUN_TEST)
-    .withLatestFrom(this.store.select(workpaceSelectors.workspace))
+    .withLatestFrom(this.store.select(workspaceSelectors.workspace))
     .mergeMap(([rt, workspace]: [RunTest, string]) => this.testService.run(rt.testSuite, workspace).map(tri => new SetTestRunInfo(tri, rt.testSuite)));
 
   @Effect() runTestLoading$ = this.loading.registerLoadingActions(

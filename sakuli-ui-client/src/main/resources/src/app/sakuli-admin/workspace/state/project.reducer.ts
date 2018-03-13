@@ -26,7 +26,7 @@ function recursiveTreeWalker(filter: (item: Tree<FileResponse>) => boolean,
   return tree;
 }
 
-export function projectReducer(state: WorkspaceState, action: Actions.All): WorkspaceState {
+export function workspaceReducer(state: WorkspaceState = WorkspaceStateInit, action: Actions.All): WorkspaceState {
   switch (action.type) {
     case Actions.OPEN_WORKSPACE: {
       const {file} = action;
@@ -61,7 +61,7 @@ export function projectReducer(state: WorkspaceState, action: Actions.All): Work
           i => absPath(i) === path,
           i => ({...i, children: filesToTreeItems(children)}),
           tree
-        ))
+        ));
       return ({...state, fileTree});
     }
   }
