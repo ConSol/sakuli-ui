@@ -256,7 +256,6 @@
                 <artifactId>testng</artifactId>
                 <version>${testng.version}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
