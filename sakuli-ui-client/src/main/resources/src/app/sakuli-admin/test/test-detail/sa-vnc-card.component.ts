@@ -134,7 +134,7 @@ export class SaVncCard implements OnInit {
 
   get webSrc() {
     return this.sanitizer.bypassSecurityTrustResourceUrl(
-      `http://localhost:${this.webPort}/vnc_auto.html?password=sakuli&view_only=${this.viewOnly}`
+      `api/novnc/${this.webPort}/vnc_auto.html?path=ws/novnc/${this.webPort}&password=sakuli&view_only=${this.viewOnly}`
     )
   }
 
