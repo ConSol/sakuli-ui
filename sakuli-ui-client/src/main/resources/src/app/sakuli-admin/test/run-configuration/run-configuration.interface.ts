@@ -44,6 +44,12 @@ export interface RunConfigurationState {
   tags: {[containerId: string]: ContainerTag[]}
 }
 
+export const runcConfigurationStateInit = {
+  configuration: null,
+  container: [],
+  tags: {}
+}
+
 export class RunConfigurationSelect {
 
   static feature = createFeatureSelector<RunConfigurationState>(RunConfigurationFeatureName);
