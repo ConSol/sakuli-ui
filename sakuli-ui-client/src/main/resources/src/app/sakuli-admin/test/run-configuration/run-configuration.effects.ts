@@ -22,7 +22,7 @@ import {
 import {RunConfigurationService} from "../../../sweetest-components/services/access/run-configuration.service";
 import {AppState} from "../../appstate.interface";
 import {Store} from "@ngrx/store";
-import {ContainerTag, RunConfiguration, SakuliContainer} from "./run-configuration.interface";
+import {ContainerTag, RunConfiguration, RunConfigurationSelect, SakuliContainer} from "./run-configuration.interface";
 import {ScToastService} from "../../../sweetest-components/components/presentation/toast/toast.service";
 import {CreateToast, ErrorMessage,} from "../../../sweetest-components/components/presentation/toast/toast.actions";
 import {ScLoadingService} from "../../../sweetest-components/components/presentation/loading/sc-loading.service";
@@ -108,6 +108,11 @@ export class RunConfigurationEffects {
     LOAD_SAKULI_CONTAINER_TAGS_SUCCESS
   );
 
+  @Effect() loadTagsOnContainerChange$ = this
+    .store
+    .select(RunConfigurationSelect.selectedContainer)
+    .map(c => new LoadSakuliContainerTags(c))
+  ;
 
   constructor(readonly actions$: Actions,
               readonly runConfigurationService: RunConfigurationService,

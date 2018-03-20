@@ -36,20 +36,19 @@ public class RunConfigurationPropertyMapperService {
         runConfiguration.getDockerCompose().setFile(
                 properties.getProperty(PROPERTY_DOCKER_COMPOSE_FILE, runConfiguration.getDockerCompose().getFile()));
 
-        String pTagName = properties.getProperty(PROPERTY_SAKULI_CONTAINER_TAG,
-                runConfiguration.getSakuli().getTag() == null ? "" : runConfiguration.getSakuli().getTag().getName());
-        DockerHubTag tag = (runConfiguration.getSakuli().getTag() == null) ? new DockerHubTag() : runConfiguration.getSakuli().getTag();
-        tag.setName(pTagName);
-        runConfiguration.getSakuli().setTag(tag);
-
-        String pContainerName = properties.getProperty(PROPERTY_SAKULI_CONTAINER_CONTAINER,
-                runConfiguration.getSakuli().getContainer() == null ? "": runConfiguration.getSakuli().getContainer().getNamespacedName()
-        );
-        DockerHubRepository container = (runConfiguration.getSakuli().getContainer() == null) ? new DockerHubRepository() : runConfiguration.getSakuli().getContainer();
-        if(!pContainerName.isEmpty()) {
-            container.setNamespacedName(pContainerName);
+        String pTagName = properties.getProperty(PROPERTY_SAKULI_CONTAINER_TAG);
+        if(pTagName != null) {
+            DockerHubTag tag = (runConfiguration.getSakuli().getTag() == null) ? new DockerHubTag() : runConfiguration.getSakuli().getTag();
+            tag.setName(pTagName);
+            runConfiguration.getSakuli().setTag(tag);
         }
-        runConfiguration.getSakuli().setContainer(container);
+
+        String pContainerName = properties.getProperty(PROPERTY_SAKULI_CONTAINER_CONTAINER);
+        if(pContainerName != null) {
+            DockerHubRepository container = (runConfiguration.getSakuli().getContainer() == null) ? new DockerHubRepository() : runConfiguration.getSakuli().getContainer();
+            container.setNamespacedName(pContainerName);
+            runConfiguration.getSakuli().setContainer(container);
+        }
         AtomicInteger i = new AtomicInteger(0);
 
         List<KeyValuePair> env = runConfiguration.getSakuli().getEnvironment();
