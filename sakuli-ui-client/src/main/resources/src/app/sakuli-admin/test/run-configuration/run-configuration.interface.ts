@@ -45,6 +45,7 @@ export interface RunConfigurationState {
 }
 
 export class RunConfigurationSelect {
+
   static feature = createFeatureSelector<RunConfigurationState>(RunConfigurationFeatureName);
 
   static runConfiguration = createSelector(RunConfigurationSelect.feature, nothrowFn((rc:RunConfigurationState) => rc.configuration));
@@ -52,6 +53,27 @@ export class RunConfigurationSelect {
   static containers = createSelector(RunConfigurationSelect.feature, nothrowFn((rc:RunConfigurationState) => rc.containers));
 
   static sakuliConfig = createSelector(RunConfigurationSelect.feature, nothrowFn((rc:RunConfigurationState) => rc.configuration.sakuli));
+  static isValid = createSelector(RunConfigurationSelect.feature, nothrowFn((rc: RunConfigurationState) => {
+    const forceType = (type: RunConfigurationTypes) => typeof type === 'string' ? RunConfigurationTypes[type] : type;
+    switch (forceType(rc.configuration.type)) {
+      case RunConfigurationTypes.Local: {
+        return true;
+      }
+      case RunConfigurationTypes.DockerCompose: {
+        return rc.configuration.dockerCompose.file != null;
+      }
+      case RunConfigurationTypes.Dockerfile: {
+        return rc.configuration.dockerfile.file != null;
+      }
+      case RunConfigurationTypes.SakuliContainer: {
+        const {sakuli} = rc.configuration;
+        return sakuli.container.name != null && sakuli.tag.name != null;
+      }
+      default: {
+        return true;
+      }
+    }
+  }, false));
 
   static selectedContainer = createSelector(
     RunConfigurationSelect.sakuliConfig,

@@ -13,6 +13,7 @@ import java.util.Properties;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class RunConfigurationPropertyMapperServiceTest {
 
@@ -69,5 +70,15 @@ public class RunConfigurationPropertyMapperServiceTest {
         assertEquals(properties.getProperty(RunConfigurationPropertyMapperService.PROPERTY_SAKULI_CONTAINER_TAG), "latest");
         assertEquals(properties.getProperty(RunConfigurationPropertyMapperService.PROPERTY_SAKULI_CONTAINER_ENV + ".1.key"), "k1");
         assertEquals(properties.getProperty(RunConfigurationPropertyMapperService.PROPERTY_SAKULI_CONTAINER_ENV + ".1.value"), "v1");
+    }
+
+    @Test
+    public void runConfigNoSakuli() throws IOException {
+        Properties emptyProperties = new Properties();
+        emptyProperties.load(getClass().getResourceAsStream("rc-properties/test_2.properties"));
+        RunConfiguration runConfiguration = new RunConfiguration();
+        sut.propertiesToRunConfiguration(emptyProperties,runConfiguration);
+        assertNull(runConfiguration.getSakuli().getContainer());
+        assertNull(runConfiguration.getSakuli().getTag());
     }
 }

@@ -25,6 +25,7 @@ import {TestEditorFeatureName, testEditorReducer} from "./state/test-editor.inte
 import {TestExecutionFeatureName, testExecutionReducer} from "./state/testexecution.state";
 import {TestExecutionLogFeatureName, testExecutionLogReducer} from "./state/test-execution-log.state";
 import {SaVncCard} from "./test-detail/sa-vnc-card.component";
+import {OverlayModule} from "@angular/cdk/overlay";
 
 export const DeclareAndExport = [
   TestComponent,
@@ -43,6 +44,7 @@ export const DeclareAndExport = [
     CommonModule,
     SweetestComponentsModule,
     NgbModule,
+    OverlayModule,
     StoreModule.forFeature(TestSuiteFeatureName, testsuiteReducer),
     StoreModule.forFeature('test', testReducer),
     StoreModule.forFeature(TestEditorFeatureName, testEditorReducer),
