@@ -41,7 +41,7 @@ public class ProxyController {
 
     @RequestMapping("{port}")
     @ResponseBody
-    public String doProxyRoot(
+    public ResponseEntity<String> doProxyRoot(
             @RequestBody(required = false) String body,
             HttpMethod method,
             HttpServletRequest request,
@@ -52,7 +52,7 @@ public class ProxyController {
 
     @RequestMapping("{port}/**/*")
     @ResponseBody
-    public String doProxy(
+    public ResponseEntity<String> doProxy(
             @RequestBody(required = false) String body,
             HttpMethod method,
             HttpServletRequest request,
@@ -80,7 +80,15 @@ public class ProxyController {
         );
 
         String responseEntityBody = responseEntity.getBody();
-        return enrichHtmlIfNeeded(responseEntityBody, baseHref);
+        final String enrichedHtml = enrichHtmlIfNeeded(responseEntityBody, baseHref);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.putAll(responseEntity.getHeaders());
+        responseHeaders.setContentLength(enrichedHtml.getBytes().length);
+        return new ResponseEntity<>(
+                enrichedHtml,
+                responseHeaders,
+                responseEntity.getStatusCode()
+        );
     }
 
     private String enrichHtmlIfNeeded(String responseEntityBody, String baseHref) {

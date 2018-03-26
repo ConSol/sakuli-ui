@@ -1,23 +1,12 @@
-import {
-  AfterViewChecked,
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  Input,
-  NgZone,
-  ViewChild
-} from "@angular/core";
+import {ChangeDetectionStrategy, Component, Input} from "@angular/core";
 import {LogMessage} from "../../../../sakuli-admin/test/state/test.interface";
 import {AnsiColorPipe} from "./ansi-color.pipe";
-import {Observable} from "rxjs/Observable";
 
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'sc-logs',
-  template: `
-    {{follow}}
+  template: `    
     <div class="pre" #pre>
       <div class="line"
            *ngFor="let message of messages; let i = index"
@@ -50,68 +39,9 @@ import {Observable} from "rxjs/Observable";
   AnsiColorPipe.Styles
   ]
 })
-export class ScLogComponent implements AfterViewInit, AfterViewChecked {
-
-  @ViewChild('pre') pre: ElementRef;
+export class ScLogComponent  {
 
   @Input() follow: boolean = true;
 
   @Input() messages: LogMessage[];
-
-  private latestScrollPosition = 0;
-
-  onHostScroll() {
-    if (this.latestScrollPosition > this.scrollTop) {
-      this.follow = false;
-    }
-    if (this.scrollTop >= this.scrollHeight - (10 + this.height)) {
-      this.follow = true;
-    }
-    this.latestScrollPosition = this.scrollTop;
-  }
-
-  get scrollTop() {
-    return this.nativeElement.scrollTop;
-  }
-
-  get scrollHeight() {
-    return this.nativeElement.scrollHeight;
-  }
-
-  get height() {
-    return this.nativeElement.getClientRects().item(0).height;
-  }
-
-  scrollY(y: number) {
-    this.nativeElement.scrollTop = y;
-  }
-
-  get nativeElement(): HTMLPreElement {
-    return this.elRef.nativeElement;
-  }
-
-  constructor(
-    readonly elRef: ElementRef,
-    readonly zone: NgZone
-  ) {
-  }
-
-  ngAfterViewInit() {
-    console.log('....');
-    this.zone.runOutsideAngular(() => {
-      Observable.fromEvent(this.elRef.nativeElement, 'scroll')
-        .debounceTime(50)
-        .subscribe(_ => this.onHostScroll())
-    })
-  }
-
-  ngAfterViewChecked() {
-    this.followScroll();
-  }
-
-  followScroll() {
-    if (this.follow) {
-      this.scrollY(this.scrollHeight);
-    }
-  }
 }

@@ -56,6 +56,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        // Allows embedding of vnc proxy view; by default this is denied
+        http.headers().frameOptions().sameOrigin();
         if(authenticationEnabled) {
             http.authorizeRequests()
                         .antMatchers(HttpMethod.POST, SIGN_UP_URL, LOGOUT_URL)

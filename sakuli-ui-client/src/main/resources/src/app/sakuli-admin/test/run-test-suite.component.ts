@@ -63,7 +63,7 @@ import {TemplatePortal} from "@angular/cdk/portal";
       <div class="card margin-y">
         <div class="card-block d-flex justify-content-between align-items-center">
           <div>
-            <button [disabled]="!testSuite && !(isValid$ | async)" class="btn btn-success" (click)="runSuite(testSuite)">
+            <button [disabled]="!testSuite || !(isValid$ | async)" class="btn btn-success" (click)="runSuite(testSuite)">
               <sc-icon icon="fa-play-circle">Run {{runWithText | async}}</sc-icon>
             </button>
             <span class="text-danger" *ngIf="!(isValid$ | async)">Configuration is not valid</span>
@@ -121,7 +121,7 @@ import {TemplatePortal} from "@angular/cdk/portal";
       </ng-container>
     </ng-container>
     <div class="row" *ngIf="hasLogs$ | async">
-      <div class="col-12 mb-2" *ngIf="vncReady$ | async" [@onVnc]="vncReady$ | async">
+      <div class="col-12 mb-2" *ngIf="vncReady$ | async">
         <ng-container *ngFor="let ports of (testSuiteExecutionInfo$ | async)?.testRunInfoPortList">
           <sa-vnc-card
             [vncPort]="ports.vnc"

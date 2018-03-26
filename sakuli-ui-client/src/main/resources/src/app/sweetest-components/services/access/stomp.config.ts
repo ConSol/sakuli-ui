@@ -20,5 +20,5 @@ export const stompConfig: StompConfig = {
   reconnect_delay: 5000,
 
   // Will log diagnostics on console
-  debug: !environment.production
+  debug: false && !environment.production
 };

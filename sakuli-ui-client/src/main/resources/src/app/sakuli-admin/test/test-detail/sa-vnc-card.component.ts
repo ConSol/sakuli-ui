@@ -27,11 +27,13 @@ import {BehaviorSubject} from "rxjs/BehaviorSubject";
         </sc-icon>
       </label>
       <div style="flex-grow: 1">
+        <!--
         <a [href]="vncSrc" target="_blank" class="mr-1">
           <sc-icon icon="fa-external-link">
             VNC-Port: {{vncPort}}
           </sc-icon>
         </a>
+        -->
         <a [href]="webSrc" target="_blank">
           <sc-icon icon="fa-external-link">
             VNC-Web: {{webPort}}
@@ -43,7 +45,7 @@ import {BehaviorSubject} from "rxjs/BehaviorSubject";
       </button>
     </div>
     <div class="card-content">
-      <iframe allowfullscreen #iframe [src]="webSrc">
+      <iframe allowfullscreen #iframe [src]="webSrc" target="_parent">
         No iframe support...
       </iframe>
     </div>

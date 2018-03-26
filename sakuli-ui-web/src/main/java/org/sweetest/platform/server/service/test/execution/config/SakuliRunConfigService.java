@@ -22,7 +22,7 @@ public class SakuliRunConfigService {
 
     private static final Logger log = LoggerFactory.getLogger(SakuliRunConfigService.class);
 
-    static final private String FILE_NAME = "sakuli-ui.properties";
+    static final private String FILE_NAME = "sakuli.ui.properties";
 
 
     @Autowired

@@ -39,6 +39,7 @@ import {ScFileSelectorModule} from "./components/presentation/file-selector/sc-f
 import {RouterModule} from "@angular/router";
 import {ScResultTableComponent} from "./components/layout/sc-result-table.component";
 import {ThumbnailModule} from "./components/presentation/thumbnail/thumbnail.module";
+import {ScrollDownDirective} from "./components/layout/scroll-down.directive";
 
 
 export const SweetestComponentsAndDirectives  = [
@@ -75,6 +76,8 @@ export const SweetestComponentsAndDirectives  = [
   DateDiffPipe,
   NumberPipe,
   MomentPipe,
+
+  ScrollDownDirective
 ];
 
 @NgModule({
