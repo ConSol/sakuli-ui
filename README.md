@@ -65,3 +65,7 @@ To set your own credentials just set the properties `security.default-username` 
     java -Dsecurity.default-username=myadmin -Dsecurity.default-password=mypassword -jar sakuli-ui-web/target/sakuli-ui-web-XXX.jar
 
 **ATTENTION:** the `-Dxxx` property overwriting have to set before `-jar`, see [Spring Boot - External Config](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html)
+
+- - -
+
+![Supported by Federal Ministry for Economic Affairs and Energy](https://github.com/ConSol/sakuli/raw/master/docs/images/bmi_logo_eng.png)
