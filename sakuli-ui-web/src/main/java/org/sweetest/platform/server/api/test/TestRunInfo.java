@@ -6,17 +6,17 @@ import java.util.List;
 
 public class TestRunInfo extends TestExecutionSubject {
 
-    private String containerId;
+    private String executionId;
 
     private List<TestRunInfoPorts> testRunInfoPortList = new ArrayList<>();
 
-    public TestRunInfo(String containerId) {
-        this.containerId = containerId;
+    public TestRunInfo(String executionId) {
+        this.executionId = executionId;
     }
 
-    public TestRunInfo(int vncPort, int vncWebPort, String containerId) {
+    public TestRunInfo(int vncPort, int vncWebPort, String executionId) {
         this.addTestRunInfoPorts(vncPort, vncWebPort);
-        this.containerId = containerId;
+        this.executionId = executionId;
     }
 
     public List<TestRunInfoPorts> getTestRunInfoPortList() {
@@ -35,11 +35,11 @@ public class TestRunInfo extends TestExecutionSubject {
         testRunInfoPortList.add(testRunInfoPort);
     }
 
-    public String getContainerId() {
-        return containerId;
+    public String getExecutionId() {
+        return executionId;
     }
 
-    public void setContainerId(String containerId) {
-        this.containerId = containerId;
+    public void setExecutionId(String executionId) {
+        this.executionId = executionId;
     }
 }

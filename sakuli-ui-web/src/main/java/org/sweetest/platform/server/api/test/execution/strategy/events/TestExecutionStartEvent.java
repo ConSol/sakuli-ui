@@ -6,6 +6,10 @@ public class TestExecutionStartEvent extends TestExecutionEvent {
 
     public static final String Type = "test.lifecycle.started";
 
+    public TestExecutionStartEvent(String bareMetalProcessId, String pid) {
+        super(Type, bareMetalProcessId, pid);
+    }
+
     public TestExecutionStartEvent(String pid) {
         super(Type, "", pid);
     }

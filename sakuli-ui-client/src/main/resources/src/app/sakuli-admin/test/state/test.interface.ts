@@ -54,7 +54,7 @@ export function dockerPullInfoForCurrentRunInfo (testSuite: SakuliTestSuite) {
   return createSelector(
     testExecutionSelectors.latestByTestSuite(testSuite),
     dockerPullInfo,
-    nothrowFn((tri: TestExecutionEntity, dpi: DockerPullInfoMap) => dpi[tri.containerId])
+    nothrowFn((tri: TestExecutionEntity, dpi: DockerPullInfoMap) => dpi[tri.executionId])
   );
 }
 
@@ -69,7 +69,7 @@ export function dockerPullStreamForCurrentRunInfo (testSuite: SakuliTestSuite) {
   return createSelector(
     testExecutionSelectors.latestByTestSuite(testSuite),
     dockerPullStream,
-    nothrowFn((tri: TestRunInfo, dpi: IdMap<string[]>) => dpi[tri.containerId])
+    nothrowFn((tri: TestRunInfo, dpi: IdMap<string[]>) => dpi[tri.executionId])
   );
 }
 

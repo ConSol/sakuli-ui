@@ -146,13 +146,14 @@ public class SakuliTestService implements TestService {
                         if(e instanceof TestExecutionCompletedEvent) {
                             executionInstancesService.remove(e.getProcessId());
                         }
+
                         simpMessagingTemplate.convertAndSend(
                                 "/topic/test-run-info/" + e.getProcessId(),
                                 e
                         );
                     });
-                    executionInstancesService.put(testRunInfo.getContainerId(), testRunInfo);
-                    //testExecutionStrategyMap.put(testRunInfo.getContainerId(), testRunInfo);
+                    executionInstancesService.put(testRunInfo.getExecutionId(), testRunInfo);
+                    //testExecutionStrategyMap.put(testRunInfo.getExecutionId(), testRunInfo);
                     return testRunInfo;
                 })
                 .orElse(null);

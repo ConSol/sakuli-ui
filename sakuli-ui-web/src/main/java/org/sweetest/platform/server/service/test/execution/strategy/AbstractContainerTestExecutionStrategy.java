@@ -19,7 +19,6 @@ import org.sweetest.platform.server.api.test.execution.strategy.TestExecutionEve
 import org.sweetest.platform.server.api.test.execution.strategy.TestExecutionSubject;
 import org.sweetest.platform.server.api.test.execution.strategy.events.TestExecutionErrorEvent;
 import org.sweetest.platform.server.api.test.execution.strategy.events.TestExecutionLogEvent;
-import org.sweetest.platform.server.api.test.execution.strategy.events.TestExecutionStartEvent;
 
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -123,8 +122,7 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
 
     protected void startContainer() {
         log.info("Start pre-configured container for execution ID '{}'", executionId);
-        dockerClient.eventsCmd().exec(new SakuliEventResultCallback(executionId, subject, dockerClient));
-        subject.next(new TestExecutionStartEvent(executionId));
+        dockerClient.eventsCmd().exec(new SakuliEventResultCallback(executionId, subject, dockerClient, containerReference));
         dockerClient.startContainerCmd(containerReference.getId())
                 .exec();
         Optional.ofNullable(containerReference.getWarnings()).map(ReflectionToStringBuilder::toString)
@@ -177,7 +175,7 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
                 next(new TestExecutionErrorEvent("Cannot stop containers " + containerReference.getId(), executionId, e));
             }
         } else {
-            next(new TestExecutionLogEvent("no-container-id", "Cannot stop container: no container is started!"));
+            next(new TestExecutionLogEvent("no-container-event", "Cannot stop container: no container is started!"));
         }
     }
 }

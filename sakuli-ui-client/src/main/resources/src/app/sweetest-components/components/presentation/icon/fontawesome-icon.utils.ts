@@ -370,9 +370,9 @@ export type FontawesomeIcon =
   | "fa-houzz"
   | "fa-html5"
   | "fa-i-cursor"
-  | "fa-id-badge"
-  | "fa-id-card"
-  | "fa-id-card-o"
+  | "fa-event-badge"
+  | "fa-event-card"
+  | "fa-event-card-o"
   | "fa-ils"
   | "fa-image"
   | "fa-imdb"
@@ -1157,9 +1157,9 @@ export const FontawesomeIcons = {
   "houzz": "fa-houzz" as FontawesomeIcon,
   "html5": "fa-html5" as FontawesomeIcon,
   "iCursor": "fa-i-cursor" as FontawesomeIcon,
-  "idBadge": "fa-id-badge" as FontawesomeIcon,
-  "idCard": "fa-id-card" as FontawesomeIcon,
-  "idCardO": "fa-id-card-o" as FontawesomeIcon,
+  "idBadge": "fa-event-badge" as FontawesomeIcon,
+  "idCard": "fa-event-card" as FontawesomeIcon,
+  "idCardO": "fa-event-card-o" as FontawesomeIcon,
   "ils": "fa-ils" as FontawesomeIcon,
   "image": "fa-image" as FontawesomeIcon,
   "imdb": "fa-imdb" as FontawesomeIcon,

@@ -64,7 +64,7 @@ export const testExecutionLogSelectors = {
       ((entities:TestExecutionLogMessageEntity[], te:TestExecutionEntity) => {
         return (testSuite && te)
           ? (entities || [])
-            .filter(e => e.executionId === te.containerId)
+            .filter(e => e.executionId === te.executionId)
           : []
       }
     ))

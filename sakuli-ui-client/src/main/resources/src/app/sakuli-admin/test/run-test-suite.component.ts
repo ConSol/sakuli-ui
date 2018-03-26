@@ -63,7 +63,8 @@ import {TemplatePortal} from "@angular/cdk/portal";
       <div class="card margin-y">
         <div class="card-block d-flex justify-content-between align-items-center">
           <div>
-            <button [disabled]="!testSuite || !(isValid$ | async)" class="btn btn-success" (click)="runSuite(testSuite)">
+            <button [disabled]="!testSuite || !(isValid$ | async)" class="btn btn-success"
+                    (click)="runSuite(testSuite)">
               <sc-icon icon="fa-play-circle">Run {{runWithText | async}}</sc-icon>
             </button>
             <span class="text-danger" *ngIf="!(isValid$ | async)">Configuration is not valid</span>
@@ -81,9 +82,23 @@ import {TemplatePortal} from "@angular/cdk/portal";
       <div class="card-content" *ngIf="testSuiteExecutionInfo$ | async; let testSuiteExecutionInfo">
         <p>
           <sc-icon icon="fa-spinner" [spin]="true"></sc-icon>
-          <span>Test suite is running in container {{testSuiteExecutionInfo?.containerId}}</span>
+          <ng-container [ngSwitch]="(runConfiguration$ | async)?.type">
+            <span *ngSwitchCase="types[types.SakuliContainer]">
+              Test suite is running in container {{testSuiteExecutionInfo.containerId}}
+            </span>
+            <span *ngSwitchCase="types[types.Dockerfile]">
+             Test suite is running in container {{testSuiteExecutionInfo.containerId}}
+            </span>
+            <span *ngSwitchCase="types[types.Local]">
+              Test suite is running local
+            </span>
+            <span *ngSwitchCase="types[types.DockerCompose]">
+              Test suite is running with local docker compose
+            </span>
+            <span *ngSwitchDefault>Test suite is running</span>
+          </ng-container>
         </p>
-        <button class="btn btn-danger" (click)="stopExecution(testSuiteExecutionInfo?.containerId)">
+        <button class="btn btn-danger" (click)="stopExecution(testSuiteExecutionInfo?.executionId)">
           <sc-icon icon="fa-ban"> Stop execution</sc-icon>
         </button>
       </div>
@@ -158,6 +173,8 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
         .centerVertically()
     }));
   }
+
+  types = RunConfigurationTypes;
 
   private debounceTime = 250;
 
@@ -305,4 +322,5 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
   navigateToResult(result: TestSuiteResult) {
     this.store.dispatch(new RouterGo({path: ['/reports', result.sourceFile]}))
   }
+
 }
