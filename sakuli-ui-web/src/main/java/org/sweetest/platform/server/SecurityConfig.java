@@ -65,7 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers(HttpMethod.GET, "/", "/**/*.js", "/**/*.css", "/**/*.woff*")
                             .permitAll()
                     // TODO: Right now sockets are not secured, this is actually not the best way
-                        .antMatchers("/api/info" , "/api/socket/**")
+                        .antMatchers("/api/info" ,"/api/novnc/**" , "/api/socket/**")
                             .permitAll()
                         .antMatchers("/api/**")
                             .authenticated()
