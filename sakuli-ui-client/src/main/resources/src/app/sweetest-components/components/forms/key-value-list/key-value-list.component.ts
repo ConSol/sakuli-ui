@@ -13,7 +13,9 @@ import {KeyValuePairListString, KeyValueStringPair} from "./key-value-list.inter
         [(ngModel)]="pair.key"
         [ngModelOptions]="{standalone: true}"
       >
-      <span class="input-group-addon">=</span>
+      <div class="input-group-prepend input-group-append">
+        <span class="input-group-text">=</span>
+      </div>
       <input 
         class="form-control form-control-sm" 
         type="text" 
@@ -21,9 +23,11 @@ import {KeyValuePairListString, KeyValueStringPair} from "./key-value-list.inter
         [(ngModel)]="pair.value"
         [ngModelOptions]="{standalone: true}"
       >
-      <span class="input-group-addon">
-        <sc-icon icon="fa-trash" (click)="remove(pair)"></sc-icon>
-      </span>
+      <div class="input-group-append">
+        <span class="input-group-text">
+          <sc-icon icon="fa-trash" (click)="remove(pair)"></sc-icon>
+        </span>
+      </div>
     </div>
     <button class="btn btn-success btn-sm" (click)="addEmptyEntry()">
       <sc-icon icon="fa-plus"></sc-icon>

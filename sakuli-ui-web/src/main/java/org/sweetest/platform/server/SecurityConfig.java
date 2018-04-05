@@ -56,6 +56,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        // Allows embedding of vnc proxy view; by default this is denied
+        http.headers().frameOptions().sameOrigin();
         if(authenticationEnabled) {
             http.authorizeRequests()
                         .antMatchers(HttpMethod.POST, SIGN_UP_URL, LOGOUT_URL)
@@ -63,7 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers(HttpMethod.GET, "/", "/**/*.js", "/**/*.css", "/**/*.woff*")
                             .permitAll()
                     // TODO: Right now sockets are not secured, this is actually not the best way
-                        .antMatchers("/api/info" , "/api/socket/**")
+                        .antMatchers("/api/info" ,"/api/novnc/**" , "/api/socket/**")
                             .permitAll()
                         .antMatchers("/api/**")
                             .authenticated()

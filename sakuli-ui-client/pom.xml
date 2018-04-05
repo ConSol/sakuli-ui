@@ -3,7 +3,7 @@
   <parent>
     <artifactId>sakuli-ui</artifactId>
     <groupId>org.sweetest.sakuli</groupId>
-    <version>0.9.2</version>
+    <version>0.9.3</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -95,7 +95,7 @@
   <profiles>
     <!--
     <profile>
-      <id>npm-install</id>
+      <event>npm-install</event>
       <activation>
         <file>
           <missing>${basedir}/src/main/resources/node_modules</missing>
@@ -111,7 +111,7 @@
             </goals>
             <executions>
               <execution>
-                <id>install</id>
+                <event>install</event>
                 <goals>
                   <goal>npm</goal>
                 </goals>
@@ -121,7 +121,7 @@
                 </configuration>
               </execution>
               <execution>
-                <id>ng-build</id>
+                <event>ng-build</event>
                 <goals>
                   <goal>npm</goal>
                 </goals>
@@ -136,7 +136,7 @@
       </build>
     </profile>
     <profile>
-      <id>npm-without-install</id>
+      <event>npm-without-install</event>
       <activation>
         <file>
           <exists>${basedir}/src/main/resources/node_modules</exists>
@@ -152,7 +152,7 @@
             </goals>
             <executions>
               <execution>
-                <id>ng-build</id>
+                <event>ng-build</event>
                 <goals>
                   <goal>npm</goal>
                 </goals>

@@ -5,5 +5,6 @@ export interface TestRunInfoPorts {
 
 export interface TestRunInfo {
   testRunInfoPortList: TestRunInfoPorts[];
-  containerId:string;
+  executionId:string;
+  containerId: string;
 }

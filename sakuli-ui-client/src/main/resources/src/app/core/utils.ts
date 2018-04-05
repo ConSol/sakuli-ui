@@ -1,3 +1,6 @@
+import {Type} from "@angular/compiler/src/core";
+import {environment} from "../../environments/environment";
+
 export const uniq = <T>(array: T[], idFactory: (e: T) => string) => {
   return Array.from(
     array
@@ -35,3 +38,47 @@ export const urlencoded = (s: TemplateStringsArray, ...v:any[]) => {
   }
   return result;
 };
+
+
+export class Logger {
+  private env = environment;
+  constructor(readonly context: Type) {
+
+  }
+
+  log(message: string, ...more: any[]) {
+    console.log(this.getMessage(message), ...more);
+  }
+
+  warn(message: string, ...more: any[]) {
+    console.log(this.getMessage(message), ...more);
+  }
+
+  debug(message: string, ...more: any[]) {
+    if('debug' in console) {
+      console.debug(this.getMessage(message), ...more);
+    }
+  }
+
+  trace(message: string, ...more: any[]) {
+    if('trace' in console) {
+      console.trace(this.getMessage(message), ...more);
+    }
+  }
+
+  group(message: string, ...more: any[]) {
+    if('group' in console) {
+      console.group(this.getMessage(message), ...more);
+    }
+  }
+
+  groupEnd() {
+    if('groupEnd' in console) {
+      console.groupEnd();
+    }
+  }
+
+  private getMessage(message: string) {
+    return `${this.context.name}:${message}`
+  }
+}

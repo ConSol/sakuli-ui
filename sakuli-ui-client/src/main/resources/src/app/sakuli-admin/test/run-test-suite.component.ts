@@ -1,8 +1,17 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef
+} from "@angular/core";
 import {AppState} from "../appstate.interface";
 import {Store} from "@ngrx/store";
 import {SakuliTestSuite} from "../../sweetest-components/services/access/model/sakuli-test-model";
-import {animate, style, transition, trigger} from "@angular/animations";
 import {
   RunConfiguration,
   RunConfigurationSelect,
@@ -32,73 +41,40 @@ import {testSuiteSelectId} from "./state/testsuite.state";
 import {TestSuiteResult} from "../../sweetest-components/services/access/model/test-result.interface";
 import {LoadTestResults, StopTestExecution} from "./state/test.actions";
 import {RouterGo} from "../../sweetest-components/services/router/router.actions";
+import {Overlay, OverlayConfig, OverlayRef} from "@angular/cdk/overlay";
+import {TemplatePortal} from "@angular/cdk/portal";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'run-test-suite',
-  animations: [
-    trigger('onVnc', [
-      transition(':enter', [
-        style({
-          transform: 'scale(0,0)'
-        }),
-        animate(".25s ease-in", style({transform: 'scale(1,1)'}))
-      ]),
-      transition(':leave', [
-        animate(".25s ease-in", style({transform: 'scale(0,0)'}))
-      ])
-    ]),
-    trigger('openConfig', [
-      transition(':enter', [
-        style({
-          height: 0,
-          overflowY: 'hidden',
-          paddingTop: 0,
-          paddingBottom: 0,
-        }),
-        animate(".5s ease-out", style({
-          height: 'auto',
-          overflowY: 'initial',
-          paddingTop: '*',
-          paddingBottom: '*'
-        }))
-      ]),
-      transition(':leave', [
-        animate(".3s ease", style({
-          height: 0,
-          overflowY: 'hidden',
-          paddingTop: 0,
-          paddingBottom: 0,
-        }))
-      ])
-    ])
-  ],
   template: `
+    <ng-template #runConfigurationTemplate>
+      <run-configuration
+        [testSuite]="testSuite"
+        [config]="runConfiguration$ | async"
+        [containerTags]="containerTags$ | async"
+        [sakuliContainers]="sakuliContainers$ | async"
+        (cancel)="onCancelConfiguration()"
+        (save)="onSaveConfiguration($event)"
+        (containerChange)="onContainerChange($event)"
+      ></run-configuration>
+    </ng-template>
     <ng-template #runCard>
       <div class="card margin-y">
         <div class="card-block d-flex justify-content-between align-items-center">
           <div>
-            <button [disabled]="!testSuite" class="btn btn-success" (click)="runSuite(testSuite)">
+            <button [disabled]="!testSuite || !(isValid$ | async)" class="btn btn-success"
+                    (click)="runSuite(testSuite)">
               <sc-icon icon="fa-play-circle">Run {{runWithText | async}}</sc-icon>
             </button>
+            <span class="text-danger" *ngIf="!(isValid$ | async)">Configuration is not valid</span>
             <sc-loading for="runTest" displayAs="spinner">
               Preparing execution.
             </sc-loading>
           </div>
-          <div *ngIf="!showConfiguration">
+          <div>
             <button class="btn btn-link" (click)="toggleConfiguration()">Configure</button>
           </div>
-        </div>
-        <div class="card-block" *ngIf="showConfiguration" [@openConfig]="showConfiguration">
-          <run-configuration
-            [testSuite]="testSuite"
-            [config]="runConfiguration$ | async"
-            [containerTags]="containerTags$ | async"
-            [sakuliContainers]="sakuliContainers$ | async"
-            (cancel)="onCancelConfiguration()"
-            (save)="onSaveConfiguration($event)"
-            (containerChange)="onContainerChange($event)"
-          ></run-configuration>
         </div>
       </div>
     </ng-template>
@@ -106,9 +82,23 @@ import {RouterGo} from "../../sweetest-components/services/router/router.actions
       <div class="card-content" *ngIf="testSuiteExecutionInfo$ | async; let testSuiteExecutionInfo">
         <p>
           <sc-icon icon="fa-spinner" [spin]="true"></sc-icon>
-          <span>Test suite is running in container {{testSuiteExecutionInfo?.containerId}}</span>
+          <ng-container [ngSwitch]="(runConfiguration$ | async)?.type">
+            <span *ngSwitchCase="types[types.SakuliContainer]">
+              Test suite is running in container {{testSuiteExecutionInfo.containerId}}
+            </span>
+            <span *ngSwitchCase="types[types.Dockerfile]">
+             Test suite is running in container {{testSuiteExecutionInfo.containerId}}
+            </span>
+            <span *ngSwitchCase="types[types.Local]">
+              Test suite is running local
+            </span>
+            <span *ngSwitchCase="types[types.DockerCompose]">
+              Test suite is running with local docker compose
+            </span>
+            <span *ngSwitchDefault>Test suite is running</span>
+          </ng-container>
         </p>
-        <button class="btn btn-danger" (click)="stopExecution(testSuiteExecutionInfo?.containerId)">
+        <button class="btn btn-danger" (click)="stopExecution(testSuiteExecutionInfo?.executionId)">
           <sc-icon icon="fa-ban"> Stop execution</sc-icon>
         </button>
       </div>
@@ -146,7 +136,7 @@ import {RouterGo} from "../../sweetest-components/services/router/router.actions
       </ng-container>
     </ng-container>
     <div class="row" *ngIf="hasLogs$ | async">
-      <div class="col-12 mb-2" *ngIf="vncReady$ | async" [@onVnc]="vncReady$ | async">
+      <div class="col-12 mb-2" *ngIf="vncReady$ | async">
         <ng-container *ngFor="let ports of (testSuiteExecutionInfo$ | async)?.testRunInfoPortList">
           <sa-vnc-card
             [vncPort]="ports.vnc"
@@ -173,12 +163,28 @@ import {RouterGo} from "../../sweetest-components/services/router/router.actions
 })
 export class RunTestSuiteComponent implements OnInit, OnChanges {
 
+  initOverlay(): any {
+    this.overlayRef = this.overlay.create(new OverlayConfig({
+      hasBackdrop: true,
+      scrollStrategy: this.overlay.scrollStrategies.noop(),
+      positionStrategy: this.overlay.position()
+        .global()
+        .centerHorizontally()
+        .centerVertically()
+    }));
+  }
+
+  types = RunConfigurationTypes;
+
   private debounceTime = 250;
 
   @Input() testSuite: SakuliTestSuite;
 
+  @ViewChild("runConfigurationTemplate") runConfigurationTemplate: TemplateRef<any>;
+
   showConfiguration = false;
 
+  isValid$: Observable<string | boolean>;
   runConfiguration$: Observable<RunConfiguration>;
   sakuliContainers$: Observable<SakuliContainer[]>;
   containerTags$: Observable<SakuliContainer[]>;
@@ -192,9 +198,12 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
   testSuiteExecutionInfo$: Observable<TestExecutionEntity>;
   latestResult$: Observable<TestSuiteResult>;
   suiteIsNotRunning$: Observable<boolean>;
+  private overlayRef: OverlayRef;
 
   constructor(private store: Store<AppState>,
               readonly route: ActivatedRoute,
+              readonly overlay: Overlay,
+              readonly vcr: ViewContainerRef,
               readonly actions$: Actions) {
   }
 
@@ -211,14 +220,9 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
     this.runConfiguration$ = this.store.select(RunConfigurationSelect.runConfiguration).filter(notNull);
     this.sakuliContainers$ = this.store.select(RunConfigurationSelect.containers);
     this.containerTags$ = this.store.select(RunConfigurationSelect.tagsForSelectedContainer);
-    /*
-    this.runConfiguration$.first().subscribe(rc => {
-      if(rc.sakuli && rc.sakuli.container) {
-        this.onContainerChange(rc.sakuli.container);
-      }
-    })
-    */
+    this.isValid$ = this.store.select(RunConfigurationSelect.isValid);
     this.initObservablesWithTestSuite(this.testSuite);
+    this.initOverlay();
   }
 
   ngOnChanges(change: SimpleChanges) {
@@ -271,15 +275,19 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
     this.store.dispatch(new RunTest(testSuite));
   }
 
-  toggleConfiguration() {
+  async toggleConfiguration() {
     this.showConfiguration = !this.showConfiguration;
-    if (this.showConfiguration) {
-      this.dispatchLoadRunConfiguration();
+    if (!this.overlayRef.hasAttached()) {
+      const tplPortal = new TemplatePortal(this.runConfigurationTemplate, this.vcr)
+      this.overlayRef.attach(tplPortal);
+    } else {
+      this.overlayRef.dispose();
+      this.initOverlay();
     }
   }
 
-  onCancelConfiguration() {
-    this.showConfiguration = false;
+  async onCancelConfiguration() {
+    await this.toggleConfiguration();
   }
 
   onSaveConfiguration($event: RunConfiguration) {
@@ -314,4 +322,5 @@ export class RunTestSuiteComponent implements OnInit, OnChanges {
   navigateToResult(result: TestSuiteResult) {
     this.store.dispatch(new RouterGo({path: ['/reports', result.sourceFile]}))
   }
+
 }

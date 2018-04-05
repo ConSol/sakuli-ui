@@ -10,7 +10,7 @@ export interface FileSelectorFile extends FileResponse {
   loading: boolean;
 }
 
-export const fileSelectorSelectId = (e: FileSelectorFile):string => absPath(e);
+export const fileSelectorSelectId = (e: FileSelectorFile): string => absPath(e);
 
 export interface FileSelectorState extends EntityState<FileSelectorFile> {
   open: boolean;
@@ -50,6 +50,7 @@ export const fileSelectorSelectors = {
 };
 
 export const OPEN_FILESELECTORFILE = '[FILESELECTORFILE] OPEN';
+
 export class OpenFileSelectorFile implements Action {
   readonly type = OPEN_FILESELECTORFILE;
 
@@ -58,6 +59,7 @@ export class OpenFileSelectorFile implements Action {
 }
 
 export const CLOSE_FILESELECTORFILE = '[FILESELECTORFILE] CLOSE';
+
 export class CloseFileselectorfile implements Action {
   readonly type = CLOSE_FILESELECTORFILE;
 
@@ -66,6 +68,7 @@ export class CloseFileselectorfile implements Action {
 }
 
 export const ADD_FILESELECTORFILES = '[FILESELECTORFILES] ADD';
+
 export class AddFileSelectorFiles implements Action {
   readonly type = ADD_FILESELECTORFILES;
 
@@ -74,6 +77,7 @@ export class AddFileSelectorFiles implements Action {
 }
 
 export const OPEN_FILESELECTOR = '[FILESELECTOR] OPEN';
+
 export class OpenFileSelector implements Action {
   readonly type = OPEN_FILESELECTOR;
 
@@ -82,6 +86,7 @@ export class OpenFileSelector implements Action {
 }
 
 export const CLOSE_FILESELECTOR = '[FILESELECTOR] CLOSE';
+
 export class CloseFileselector implements Action {
   readonly type = CLOSE_FILESELECTOR;
 
@@ -90,11 +95,12 @@ export class CloseFileselector implements Action {
 }
 
 export const SELECT_FILESELECTORFILE = '[FILESELECTORFILE] SELECT';
+
 export class SelectFileselectorfile implements Action {
   readonly type = SELECT_FILESELECTORFILE;
-  constructor(
-    readonly id: string
-  ) {}
+
+  constructor(readonly id: string) {
+  }
 }
 
 export type FileSelectorActions = AddFileSelectorFiles
@@ -115,33 +121,40 @@ const addOrUpdate = (state: FileSelectorState, entities: FileSelectorFile[]): Fi
   );
 };
 
-
 export function fileSelectorReducer(state: FileSelectorState = fileSelectorStateInit, action: FileSelectorActions) {
-  switch (action.type) {
-    case OPEN_FILESELECTOR: {
-      return ({...state, open: true})
+  //console.log(action.type, state);
+  //console.trace('TRaced');
+  const res = (() => {
+
+    switch (action.type) {
+      case OPEN_FILESELECTOR: {
+        return ({...state, open: true})
+      }
+      case CLOSE_FILESELECTOR: {
+        return ({...state, open: false})
+      }
+      case ADD_FILESELECTORFILES: {
+        return addOrUpdate(state, action.files);
+      }
+      case OPEN_FILESELECTORFILE: {
+        const {id} = action;
+        return fileSelectorEntityAdapter.updateOne({id, changes: {open: true}}, state);
+      }
+      case CLOSE_FILESELECTORFILE: {
+        const {id} = action;
+        return fileSelectorEntityAdapter.updateOne({id, changes: {open: false}}, state);
+      }
+      case SELECT_FILESELECTORFILE: {
+        const {id} = action;
+        const resetState = fileSelectorEntityAdapter.updateMany((state.ids as string[]).map((id: string) => ({
+          id,
+          changes: {selected: false}
+        })), state);
+        return fileSelectorEntityAdapter.updateOne({id, changes: {selected: true}}, resetState);
+      }
     }
-    case CLOSE_FILESELECTOR: {
-      return ({...state, open: false})
-    }
-    case ADD_FILESELECTORFILES: {
-      return addOrUpdate(state, action.files);
-    }
-    case OPEN_FILESELECTORFILE: {
-      const {id} = action;
-      return fileSelectorEntityAdapter.updateOne({id, changes: {open: true}}, state);
-    }
-    case CLOSE_FILESELECTORFILE: {
-      const {id} = action;
-      return fileSelectorEntityAdapter.updateOne({id, changes: {open: false}}, state);
-    }
-    case SELECT_FILESELECTORFILE: {
-      const {id} = action;
-      const resetState = fileSelectorEntityAdapter.updateMany((state.ids as string[]).map((id:string) => ({id, changes: {selected: false}})), state);
-      return fileSelectorEntityAdapter.updateOne({id, changes: {selected: true}}, resetState);
-    }
-    default: {
-      return state || fileSelectorStateInit
-    }
-  }
+    return state || fileSelectorStateInit
+  })();
+  //console.log(state);
+  return res;
 }

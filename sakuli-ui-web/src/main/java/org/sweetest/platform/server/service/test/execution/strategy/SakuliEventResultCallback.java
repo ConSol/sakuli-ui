@@ -1,6 +1,7 @@
 package org.sweetest.platform.server.service.test.execution.strategy;
 
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Event;
 import com.github.dockerjava.core.command.EventsResultCallback;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
@@ -23,11 +24,13 @@ public class SakuliEventResultCallback extends EventsResultCallback{
     private String executionId;
     private TestExecutionSubject subject;
     private DockerClient dockerClient;
+    private CreateContainerResponse container;
 
-    public SakuliEventResultCallback(String executionId, TestExecutionSubject subject, DockerClient dockerClient) {
+    public SakuliEventResultCallback(String executionId, TestExecutionSubject subject, DockerClient dockerClient, CreateContainerResponse container) {
         this.executionId = executionId;
         this.subject = subject;
         this.dockerClient = dockerClient;
+        this.container = container;
     }
 
     @Override
@@ -35,7 +38,8 @@ public class SakuliEventResultCallback extends EventsResultCallback{
         log.info(item.getAction());
         String action = item.getAction();
         if(ACTION_START.equals(action)) {
-            subject.next(new TestExecutionStartEvent(executionId));
+            log.info("STRARTED !!!!!!!!!!!!!!!!!");
+            subject.next(new TestExecutionStartEvent(container.getId(), executionId));
         }
         if (ACTION_DISCONNECT.equals(action)) {
             subject.next(new TestExecutionCompletedEvent(executionId));

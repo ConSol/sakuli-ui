@@ -25,4 +25,9 @@ public enum ExecutionTypes {
     public Class<TestExecutionStrategy> getStrategyClass() {
         return strategyClass;
     }
+
+    @Override
+    public String toString() {
+        return name();
+    }
 }

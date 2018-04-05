@@ -89,7 +89,7 @@ public class SakuliTestResultLogReader {
                      * Setting Suite specific values
                      */
 
-                    switchPattern.matches("test suite id: (.*)")
+                    switchPattern.matches("test suite event: (.*)")
                             .map(group1)
                             .ifPresent(s -> last(resultList).setId(s));
 

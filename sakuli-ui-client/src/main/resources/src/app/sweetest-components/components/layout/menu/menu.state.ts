@@ -81,7 +81,7 @@ export const menuSelectors = {
 export type MenuActions = AddMenuItem | AddAllMenuItems | SelectMenuItem | RemoveByParentMenuitem | RemoveMenuitem;
 
 export const menuStateInit = menuEntityAdapter.getInitialState();
-export function menuReducer(state: MenuState, action: MenuActions) {
+export function menuReducer(state: MenuState = menuStateInit, action: MenuActions) {
 
   function addOrUpdateOne(state: MenuState, item:IMenuItem) {
     const id: string = menuSelectId(item);

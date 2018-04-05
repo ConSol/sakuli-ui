@@ -4,7 +4,7 @@
     <properties>
         <!--properties for release build with gitflow-plugin-->
         <github.host>github.com</github.host>
-        <maven.settings.file>${settings.localRepository}</maven.settings.file>
+        <maven.settings.hook/>
         <performRelease>false</performRelease>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -27,7 +27,7 @@
     <groupId>org.sweetest.sakuli</groupId>
     <artifactId>sakuli-ui</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.2</version>
+    <version>0.9.3</version>
     <name>sakuli-ui</name>
 
     <modules>
@@ -178,7 +178,7 @@
                     <postReleaseGoals>deploy</postReleaseGoals>
                     <postHotfixGoals>deploy</postHotfixGoals>
                     <!--load maven settings.xml for sub-processes of maven-->
-                    <argLine>-DperformRelease=${performRelease} -s ${maven.settings.file}</argLine>
+                    <argLine>-DperformRelease=${performRelease} ${maven.settings.hook}</argLine>
                     <gitFlowConfig>
                         <!-- default git flow prefixes -->
                         <productionBranch>master</productionBranch>
@@ -256,7 +256,6 @@
                 <artifactId>testng</artifactId>
                 <version>${testng.version}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -321,7 +320,7 @@
             <id>jenkins</id>
             <properties>
                 <github.host>sakuli-ui.github.com</github.host>
-                <maven.settings.file>${user.home}/mvn_settings/sakuli-settings.xml</maven.settings.file>
+                <maven.settings.hook>-s ${user.home}/mvn_settings/sakuli-settings.xml</maven.settings.hook>
                 <performRelease>true</performRelease>
             </properties>
         </profile>

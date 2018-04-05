@@ -17,6 +17,7 @@ import {testExecutionLogSelectors} from "../state/test-execution-log.state";
 import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
 import {TestExecutionEntity, testExecutionSelectors} from "../state/testexecution.state";
 import {testSuiteSelectId} from "../state/testsuite.state";
+import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,22 +27,29 @@ import {testSuiteSelectId} from "../state/testsuite.state";
       <div *ngIf="testRunInfo$ | async; let testRunInfo">
         <span class="text-muted">{{testRunInfo.timestamp | moment:'DD.MM.YYYY HH:mm:ss'}}</span>
       </div>
-      <button class="m-0 p-0 btn btn-link" (click)="fullScreen()">
-        <sc-icon icon="fa-expand"></sc-icon>
-      </button>
+      <div>
+        <sc-icon icon="fa-download">
+          <a [href]="downloadData$ | async" download="sakuli.log">
+            <span class="hidden-xs">Download</span>
+          </a>
+        </sc-icon>
+        <button class="m-0 p-0 btn btn-link" (click)="fullScreen()">
+          <sc-icon icon="fa-expand"></sc-icon>
+        </button>
+      </div>
     </div>
-    <div class="card-content" #logs>
-      <sc-logs  class="p-0" [follow]="true" [messages]="testRunLogs$ | async">
+    <div class="card-content" #logs scroll-down>
+      <sc-logs class="p-0" [follow]="true" [messages]="testRunLogs$ | async">
       </sc-logs>
     </div>
   `,
   styles: [`
-    
+
     sc-logs {
       width: 100%;
       height: 100%;
     }
-    
+
     .card-header {
       background-color: white;
       flex-shrink: 0;
@@ -70,6 +78,7 @@ export class SaLogCard implements OnInit, OnChanges {
   testRunInfo$: Observable<TestExecutionEntity>;
 
   testRunLogs$: Observable<string[]>;
+  downloadData$: Observable<SafeUrl>;
 
   fullScreen() {
     const elementRef = this.logs;
@@ -93,7 +102,10 @@ export class SaLogCard implements OnInit, OnChanges {
     return 'card';
   }
 
-  constructor(private store: Store<AppState>) {
+  constructor(
+    private store: Store<AppState>,
+    readonly sanitizer: DomSanitizer
+  ) {
   }
 
   ngOnInit() {
@@ -113,6 +125,7 @@ export class SaLogCard implements OnInit, OnChanges {
 
 
   initObservablesWithTestSuite(testSuite: SakuliTestSuite) {
+
     this.testRunLogs$ = this.store
       .select(testExecutionLogSelectors.latestForTestSuite(testSuite))
       .map(logs => logs.map(log => log.message))
@@ -122,6 +135,11 @@ export class SaLogCard implements OnInit, OnChanges {
     this.testRunInfo$ = this.store
       .select(testExecutionSelectors.latestByTestSuite(this.testSuite))
       .filter(notNull).first();
+
+    this.downloadData$ = this.testRunLogs$
+      .map(logs => {
+        return this.sanitizer.bypassSecurityTrustUrl(`data:application/octet-stream,${logs.join('')}`);
+      })
   }
 
 }

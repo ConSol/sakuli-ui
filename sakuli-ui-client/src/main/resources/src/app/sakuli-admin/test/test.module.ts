@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {TestComponent} from './test.component';
 import {CommonModule} from '@angular/common';
-import {SweetestComponentsModule} from '../../sweetest-components/index';
+import {SweetestComponentsModule} from '../../sweetest-components';
 import {StoreModule} from '@ngrx/store';
 import {testReducer} from './state/test.reducer';
 import {EffectsModule} from "@ngrx/effects";
@@ -25,6 +25,7 @@ import {TestEditorFeatureName, testEditorReducer} from "./state/test-editor.inte
 import {TestExecutionFeatureName, testExecutionReducer} from "./state/testexecution.state";
 import {TestExecutionLogFeatureName, testExecutionLogReducer} from "./state/test-execution-log.state";
 import {SaVncCard} from "./test-detail/sa-vnc-card.component";
+import {OverlayModule} from "@angular/cdk/overlay";
 
 export const DeclareAndExport = [
   TestComponent,
@@ -38,13 +39,12 @@ export const DeclareAndExport = [
   SaDockerPullInfoComponent
 ];
 
-console.log(DeclareAndExport)
-
 @NgModule({
   imports: [
     CommonModule,
     SweetestComponentsModule,
     NgbModule,
+    OverlayModule,
     StoreModule.forFeature(TestSuiteFeatureName, testsuiteReducer),
     StoreModule.forFeature('test', testReducer),
     StoreModule.forFeature(TestEditorFeatureName, testEditorReducer),

@@ -4,8 +4,7 @@ import {Store} from "@ngrx/store";
 import {AppState} from "./appstate.interface";
 import {Observable} from "rxjs/Observable";
 import {OpenWorkspaceDialog} from "./workspace/state/project.actions";
-import {workpaceSelectors} from "./workspace/state/project.interface";
-import {log} from "../core/redux.util";
+import {workspaceSelectors} from "./workspace/state/project.interface";
 import {RouterStateSnapshot} from "@angular/router/src/router_state";
 
 @Injectable()
@@ -16,8 +15,7 @@ export class SakuliProjectGuardService implements CanActivate {
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    console.log('Project guard')
-    return this.store.select(workpaceSelectors.workspace)
+    return this.store.select(workspaceSelectors.workspace)
       .map((workspace) => {
         if (workspace) {
           return true
@@ -26,6 +24,5 @@ export class SakuliProjectGuardService implements CanActivate {
           return false;
         }
       })
-      .do(log('pg'));
   }
 }

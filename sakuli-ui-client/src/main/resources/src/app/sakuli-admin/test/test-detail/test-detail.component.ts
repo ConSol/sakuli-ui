@@ -126,7 +126,7 @@ export class TestDetailComponent implements FormBaseComponent {
   @ViewChild(SaSourceComponent)
   sourceEditor: SaSourceComponent;
 
-  fileTabId = 'test-detail-component-item-tab-id';
+  fileTabId = 'test-detail-component-item-tab-event';
   @Input() testSuite: SakuliTestSuite;
   @Input() tabs: TestEditorEntity[] = [];
   @Input() activeTab: string = this.fileTabId;

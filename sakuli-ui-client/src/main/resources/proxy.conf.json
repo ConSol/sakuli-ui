@@ -10,5 +10,9 @@
   "/api/socket/**/*": {
     "target": "ws://localhost:9090",
     "ws": true
+  },
+  "/ws/novnc/**/*": {
+    "target": "ws://localhost:9090",
+    "ws": true
   }
 }

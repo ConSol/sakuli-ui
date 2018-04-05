@@ -20,7 +20,9 @@ import {DangerToast, SuccessToast} from "../../../../sweetest-components/compone
           <div class="input-group-wrapper mr-3">
             <div class="input-group"
                  [ngClass]="{'is-invalid': sourceForm.hasInvalidUrl}">
-              <span class="input-group-addon">Starturl:</span>
+              <div class="input-group-prepend">
+                <span class="input-group-text">Starturl:</span>
+              </div>
               <input type="text"
                      class="form-control"
                      formControlName="startUrl">

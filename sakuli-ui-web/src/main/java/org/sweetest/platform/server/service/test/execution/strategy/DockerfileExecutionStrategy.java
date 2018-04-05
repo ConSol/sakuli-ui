@@ -43,7 +43,7 @@ public class DockerfileExecutionStrategy extends AbstractContainerTestExecutionS
                 try {
                     log.info("Start docker build for file: {}", dockerfile.get().toPath().toString());
                     String imageId = buildDockerImage(dockerfile.get());
-                    log.info("docker build finished: image-id={}", imageId);
+                    log.info("docker build finished: image-event={}", imageId);
                     containerReference = createContainerConfig(imageId).exec();
                     startContainer();
                     attachToContainer();

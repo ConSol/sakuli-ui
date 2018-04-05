@@ -1,11 +1,12 @@
 import {NgModule} from '@angular/core';
 import {ProjectOpenComponent} from './project-open.component';
 import {CommonModule} from '@angular/common';
-import {SweetestComponentsModule} from '../../sweetest-components/index';
+import {SweetestComponentsModule} from '../../sweetest-components';
 import {StoreModule} from '@ngrx/store';
-import {projectReducer} from './state/project.reducer';
+import {workspaceReducer} from './state/project.reducer';
 import {EffectsModule} from "@ngrx/effects";
 import {ProjectEffects} from "./state/projects.effects";
+import {WorkspaceFeatureName} from "./state/project.interface";
 
 export const DeclareAndExport = [
   ProjectOpenComponent
@@ -15,8 +16,8 @@ export const DeclareAndExport = [
   imports: [
     CommonModule,
     SweetestComponentsModule,
+    StoreModule.forFeature(WorkspaceFeatureName, workspaceReducer),
     EffectsModule.forFeature([ProjectEffects]),
-    StoreModule.forFeature('project', projectReducer),
   ],
   entryComponents: [
     ProjectOpenComponent

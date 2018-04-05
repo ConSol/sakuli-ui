@@ -4,6 +4,7 @@ import {Action, createFeatureSelector, createSelector, MemoizedSelector} from "@
 import {SakuliTestSuite} from "../../../sweetest-components/services/access/model/sakuli-test-model";
 import {notNull, uniqueName} from "../../../core/redux.util";
 import {testSuiteSelectId} from "./testsuite.state";
+import {TestExecutionEvent} from "../../../sweetest-components/services/access/model/test-execution-event.interface";
 
 export interface TestExecutionEntity extends TestRunInfo {
   isRunning: boolean,
@@ -17,14 +18,14 @@ export interface TestExecutionState extends EntityState<TestExecutionEntity> {
 }
 
 export const TestExecutionFeatureName = 'testexecution';
-export const testExecutionSelectId = e => e.containerId;
+export const testExecutionSelectId = e => e.executionId;
 export const testExecutionSortComparer = (e1, e2) => e1.timestamp - e2.timestamp;
 const testExecutionEntityAdapter = createEntityAdapter<TestExecutionEntity>({
   selectId: testExecutionSelectId,
   sortComparer: testExecutionSortComparer
 });
 
-const testExecutionStateInit = testExecutionEntityAdapter.getInitialState();
+export const testExecutionStateInit = testExecutionEntityAdapter.getInitialState();
 
 
 export const RUN_TEST = uniqueName('[test] runtest');
@@ -52,7 +53,8 @@ export const TEST_EXECUTION_STARTED = uniqueName('[test] TEST_EXECUTION_STARTED'
 export class TestExecutionStarted implements Action {
   readonly type = TEST_EXECUTION_STARTED;
 
-  constructor(readonly id: string) {
+  constructor(readonly event: TestExecutionEvent) {
+    console.log('Invoke started action', event);
   }
 }
 
@@ -115,6 +117,13 @@ export const testExecutionSelectors = {
 
 export function testExecutionReducer(state: TestExecutionState = testExecutionStateInit, action: TestExecutionActionTypes) {
   switch (action.type) {
+    case TEST_EXECUTION_STARTED: {
+      const {type, event} = action;
+      return testExecutionEntityAdapter.updateOne({
+        id: event.processId,
+        changes: {containerId: event.message}
+      }, state)
+    }
     case SET_TEST_RUN_INFO: {
       return testExecutionEntityAdapter.addOne({
         ...action.testRunInfo,

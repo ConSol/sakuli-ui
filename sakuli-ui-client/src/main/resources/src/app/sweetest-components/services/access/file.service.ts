@@ -5,7 +5,7 @@ import {HttpClient} from "@angular/common/http";
 
 const projectUrl = '/api/files';
 
-export const rmHeadSlash = (p: string = '') => p.slice(p.startsWith("/") ? 1 : 0);
+export const rmHeadSlashAndEncode = (p: string = '') => encodeURIComponent(p.slice(p.startsWith("/") ? 1 : 0));
 
 @Injectable()
 export class FileService {
@@ -15,7 +15,7 @@ export class FileService {
 
   files(path: string = ''): Observable<FileResponse[]> {
     return this.http
-      .get<FileResponse[]>(`${projectUrl}/ls?path=${encodeURIComponent(rmHeadSlash(path || ''))}`)
+      .get<FileResponse[]>(`${projectUrl}/ls?path=${rmHeadSlashAndEncode(path || '')}`)
       .map(fr => fr
         .sort((a, b) => (a.name.toLowerCase() === b.name.toLowerCase()) ? 0 : (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1)
         .sort((a, b) => (a.directory && b.directory) ? 0 : (!a.directory && b.directory) ? 1 : -1)
@@ -31,7 +31,7 @@ export class FileService {
   read(path: string): Observable<string> {
     return this.http
       .get(
-        `${projectUrl}?path=${encodeURIComponent(rmHeadSlash(path))}`,
+        `${projectUrl}?path=${rmHeadSlashAndEncode(path)}`,
         {responseType: 'text'}
       )
   }
@@ -41,7 +41,7 @@ export class FileService {
     formData.append('file', file);
     return this.http
       .post(
-        `${projectUrl}?path=${encodeURIComponent(rmHeadSlash(path))}/${file.name}`,
+        `${projectUrl}?path=${rmHeadSlashAndEncode(path)}/${file.name}`,
         formData,
         {responseType: 'text'}
       )

@@ -1,6 +1,5 @@
 package org.sweetest.platform.server.service.sakuli;
 
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.jooq.lambda.Unchecked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +19,7 @@ import org.sweetest.platform.server.api.test.execution.strategy.events.TestExecu
 import org.sweetest.platform.server.api.test.execution.strategy.events.TestExecutionStopEvent;
 import org.sweetest.platform.server.api.test.result.TestSuiteResult;
 import org.sweetest.platform.server.service.test.execution.TestExecutionContext;
+import org.sweetest.platform.server.service.test.execution.TestExecutionInstancesService;
 import org.sweetest.platform.server.service.test.execution.TestExecutionStrategyFactory;
 import org.sweetest.platform.server.service.test.execution.config.SakuliRunConfigService;
 
@@ -39,7 +39,10 @@ public class SakuliTestService implements TestService {
 
     private static final Logger log = LoggerFactory.getLogger(SakuliTestService.class);
 
-    private Map<String, TestExecutionSubject> testExecutionStrategyMap = new HashMap<>();
+    //private Map<String, TestExecutionSubject> testExecutionStrategyMap = new HashMap<>();
+
+    @Autowired
+    private TestExecutionInstancesService executionInstancesService;
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
@@ -140,16 +143,17 @@ public class SakuliTestService implements TestService {
                 .map(strategy -> {
                     testExecutionContext.setStrategy(strategy);
                     TestRunInfo testRunInfo = testExecutionContext.executeStrategy(testSuite, workspace, e -> {
-                        log.debug(ReflectionToStringBuilder.toString(e));
                         if(e instanceof TestExecutionCompletedEvent) {
-                            testExecutionStrategyMap.remove(e.getProcessId());
+                            executionInstancesService.remove(e.getProcessId());
                         }
+
                         simpMessagingTemplate.convertAndSend(
                                 "/topic/test-run-info/" + e.getProcessId(),
                                 e
                         );
                     });
-                    testExecutionStrategyMap.put(testRunInfo.getContainerId(), testRunInfo);
+                    executionInstancesService.put(testRunInfo.getExecutionId(), testRunInfo);
+                    //testExecutionStrategyMap.put(testRunInfo.getExecutionId(), testRunInfo);
                     return testRunInfo;
                 })
                 .orElse(null);
@@ -197,7 +201,7 @@ public class SakuliTestService implements TestService {
 
     @Override
     public void stopTestExecution(String id) {
-        TestExecutionSubject executionSubject = testExecutionStrategyMap.get(id);
+        TestExecutionSubject executionSubject = executionInstancesService.get(id);
         if(null != executionSubject) {
             executionSubject.next(new TestExecutionStopEvent(id));
         }
