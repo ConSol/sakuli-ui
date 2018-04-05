@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {TestCaseStepResult} from "../../../sweetest-components/services/access/model/test-result.interface";
-import {rmHeadSlash} from "../../../sweetest-components/services/access/file.service";
+import {rmHeadSlashAndEncode} from "../../../sweetest-components/services/access/file.service";
 import {resultStateMap} from "./result-state-map.const";
 
 @Component({
@@ -35,8 +35,8 @@ import {resultStateMap} from "./result-state-map.const";
         <ng-container *ngIf="step.exception; else actions">
           <li class="list-group-item d-flex flex-column">
             <strong>{{step.exception.detailMessage}}</strong>
-            <thumbnail-component 
-              [src]="'api/files?path=' + testSuitePath + '/_logs/_json/' + rmHeadSlash(step.exception.screenshot)" 
+            <thumbnail-component
+              [src]="'api/files?path=' + testSuitePath + '/_logs/_json/' + rmHeadSlashAndEncode(step.exception.screenshot)"
               width="250px"
             ></thumbnail-component>
             <div>
@@ -89,7 +89,7 @@ import {resultStateMap} from "./result-state-map.const";
 
 export class SaReportStepsComponent implements OnInit {
 
-  rmHeadSlash = rmHeadSlash;
+  rmHeadSlashAndEncode = rmHeadSlashAndEncode;
 
   @Input() step: TestCaseStepResult;
   @Input() testSuitePath: string;

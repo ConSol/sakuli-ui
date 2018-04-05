@@ -4,7 +4,7 @@ import {
   TestCaseStepResult
 } from "../../../sweetest-components/services/access/model/test-result.interface";
 import {DateUtil} from "../../../sweetest-components/utils";
-import {rmHeadSlash} from "../../../sweetest-components/services/access/file.service";
+import {rmHeadSlashAndEncode} from "../../../sweetest-components/services/access/file.service";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,11 +15,12 @@ import {rmHeadSlash} from "../../../sweetest-components/services/access/file.ser
         <li class="list-group-item d-flex flex-column">
           <strong>{{testCase.exception.detailMessage}}</strong>
           <thumbnail-component
-            [src]="'api/files?path=' + testSuitePath + '/_logs/_json/' + rmHeadSlash(testCase.exception.screenshot)"
+            [src]="'api/files?path=' + testSuitePath + '/_logs/_json/' + rmHeadSlashAndEncode(testCase.exception.screenshot)"
             width="250px"
           ></thumbnail-component>
           <div>
             <button class="btn btn-link" (click)="showStacktrace = !showStacktrace">Show Stacktrace</button>
+            <!--TODO tnobody missing import, see sa-report-steps.component-->
             <button class="btn btn-link"
                     *ngIf="showStacktrace"
                     (click)="toClipBoard(stackTraceArea)">Copy stack trace to clipboard
@@ -60,7 +61,7 @@ import {rmHeadSlash} from "../../../sweetest-components/services/access/file.ser
 })
 export class SaReportTestcaseComponent implements OnInit {
 
-  rmHeadSlash = rmHeadSlash;
+  rmHeadSlashAndEncode = rmHeadSlashAndEncode;
 
   collapsed = false;
 
