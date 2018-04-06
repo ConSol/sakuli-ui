@@ -23,7 +23,7 @@ import {notNull} from "./core/redux.util";
 @Component({
   selector: 'app-root',
   template: `
-    <sc-layout brandLogo="assets/sakuli_logo_small.png"
+    <sc-layout brandLogo="assets/sakuli_logo_small_beta.png"
                (menuItemSelected)="onLink($event)"
                [sideBar]="showSideBar$ | async"
     >
