@@ -12,6 +12,7 @@ import {DashboardConnectedComponent} from "./dashboard/dashboard-connected.compo
 import {LoginComponent} from "./login.component";
 import {SaReportOverviewComponent} from "./test/report/sa-report-overview.component";
 import {SakuliAuthProjectGuardService} from "./sakuli-auth-project-guard.service";
+import {SaHelpComponent} from "./help/sa-help.component";
 
 export const routes: Routes = [
   {
@@ -81,6 +82,10 @@ export const routes: Routes = [
   {
     path: 'app-log',
     component: AppLogComponent
+  },
+  {
+    path: 'help',
+    component: SaHelpComponent
   },
   {
     path: '**',

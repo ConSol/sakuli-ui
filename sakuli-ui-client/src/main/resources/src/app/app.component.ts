@@ -114,7 +114,7 @@ export class AppComponent implements OnInit {
     this.menuService.addMenuItems(
       [
         new MenuItem('secondary.log', 'Log', '/app-log', FontawesomeIcons.commentingO, LayoutMenuService.Menus.SECONDARY, SelectionState.UnSelected, 10),
-        new MenuItem('secondary.help', 'Help', '', FontawesomeIcons.questionCircle, LayoutMenuService.Menus.SECONDARY, SelectionState.UnSelected, 20),
+        new MenuItem('secondary.help', 'Help', '/help', FontawesomeIcons.questionCircle, LayoutMenuService.Menus.SECONDARY, SelectionState.UnSelected, 20),
       ]
     );
 
