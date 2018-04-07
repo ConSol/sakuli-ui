@@ -26,19 +26,18 @@ public class WebSocketProxyConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+
         registry
                 .addHandler(new ProxyWebSocketServerHandler(), URL)
                 .setAllowedOrigins("*")
         .addInterceptors(new HandshakeInterceptor() {
             @Override
             public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-                logger.info("interfacpted before hs");
                 return true;
             }
 
             @Override
             public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
-                logger.info("interfacpted after hs");
                 String requiredHeader = "sec-websocket-protocol";
                 if(request.getHeaders().get(requiredHeader).size() > 0) {
                     response.getHeaders().add(requiredHeader, request.getHeaders().get(requiredHeader).get(0));

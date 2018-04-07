@@ -119,7 +119,7 @@ export class TestEffects {
 
   @Effect({dispatch: false}) stopTestExecution$ = this.actions$.ofType(STOP_TEST_EXECUTION)
     .do((ste: StopTestExecution) => {
-      console.log('Effect captured');
+      console.log(`Will stop: ${ste.containerId}`);
       this.testService.stop(ste.containerId)
     });
 
