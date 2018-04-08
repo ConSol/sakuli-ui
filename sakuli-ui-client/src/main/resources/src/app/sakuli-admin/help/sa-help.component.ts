@@ -33,7 +33,7 @@ import {Observable} from "rxjs/Observable";
 })
 
 export class SaHelpComponent implements OnInit {
-  private info$: Observable<any>;
+  info$: Observable<any>;
 
   constructor(readonly http: HttpClient) {
   }

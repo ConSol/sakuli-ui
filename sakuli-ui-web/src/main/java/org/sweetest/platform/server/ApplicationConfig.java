@@ -11,6 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.util.UrlPathHelper;
 
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Configuration
 public class ApplicationConfig {
@@ -44,6 +46,15 @@ public class ApplicationConfig {
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    /**
+     *
+     * @return ExecutorService
+     */
+    @Bean
+    public ExecutorService testExecutionExecutorService() {
+        return Executors.newCachedThreadPool();
     }
 
     @Bean

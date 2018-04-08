@@ -2,8 +2,8 @@ package org.sweetest.platform.server.api.test;
 
 public class TestRunInfoPorts {
 
-    private int vnc;
-    private int web;
+    private int vnc = -1;
+    private int web = -1;
 
     public TestRunInfoPorts() {}
 

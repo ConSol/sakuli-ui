@@ -21,9 +21,10 @@ export class RemoveToast implements Action {
 
 export type ToastActions = CreateToast | RemoveToast;
 
-export const ErrorMessage = (message: string) => (e: Error) => {
+export const ErrorMessage = (message: string, appendAction?: Action) => (e: Error) => {
   console.warn('Error caught', e);
-  return Observable.of(new CreateToast(new DangerToast(message, e)));
+  const toastAction = new CreateToast(new DangerToast(message, e));
+  return appendAction ? Observable.of(toastAction, appendAction) : Observable.of(toastAction);
 };
 
 export const WarnMessage = (message: string) => (e: Error) => {

@@ -36,6 +36,12 @@ export class RunTest implements Action {
   }
 }
 
+export const RUN_TEST_ERROR = '[test] RUN_TEST_ERROR';
+export class RunTestError implements Action {
+  readonly type = RUN_TEST_ERROR;
+  constructor() {}
+}
+
 export const SET_TEST_RUN_INFO = uniqueName('[test] settestruninfo');
 export class SetTestRunInfo implements Action {
   readonly type = SET_TEST_RUN_INFO;

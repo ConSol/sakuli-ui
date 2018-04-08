@@ -1,12 +1,19 @@
 package org.sweetest.platform.server.api.test.execution.strategy;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.sweetest.platform.server.api.common.Observer;
 import org.sweetest.platform.server.api.test.TestRunInfo;
 import org.sweetest.platform.server.api.test.TestSuite;
 import org.sweetest.platform.server.api.test.execution.strategy.events.TestExecutionStopEvent;
 import org.sweetest.platform.server.service.sakuli.SakuliTestSuite;
 
+import java.util.concurrent.ExecutorService;
+
 public abstract class AbstractTestExecutionStrategy<T> implements TestExecutionStrategy<T> {
+
+    @Autowired
+    ExecutorService testExecutionExecutorService;
+
     protected T configuration;
     protected TestSuite testSuite;
     protected String workspace;
@@ -26,6 +33,10 @@ public abstract class AbstractTestExecutionStrategy<T> implements TestExecutionS
               strategy.stop();
           }
         };
+    }
+
+    protected void runDetached(Runnable runner) {
+        testExecutionExecutorService.submit(runner);
     }
 
     @Override

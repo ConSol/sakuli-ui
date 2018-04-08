@@ -68,15 +68,14 @@ public class SakuliLocalExecutionStrategy extends AbstractTestExecutionStrategy<
                     .command("sakuli", "run", testSuitePath.toString());
 
             LocalCommand command = new LocalCommand(processBuilder);
-            //TODO ThreadPool?
-            new Thread(() -> {
+            runDetached(() -> {
                 executor = new CommandExecutorRunnable(
                         executionId,
                         command,
                         subject
                 );
                 executor.run();
-            }).start();
+            });
 
         } catch (Exception e) {
             //TODO check why not block execution in UI and shows error message
