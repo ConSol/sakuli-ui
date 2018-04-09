@@ -1,6 +1,5 @@
 package org.sweetest.platform.server.web;
 
-import com.github.dockerjava.core.DockerClientConfig;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -36,8 +35,10 @@ public class ProxyController {
     @Autowired
     private TestExecutionInstancesService executionInstancesService;
 
-    @Autowired
-    private DockerClientConfig dockerClientConfig;
+    @Autowired private String resolvedDockerHost;
+    @Autowired private String resolvedDockerSchema;
+
+
 
     @RequestMapping("{port}")
     @ResponseBody
@@ -59,13 +60,11 @@ public class ProxyController {
             @PathVariable("port") String port
     ) throws URISyntaxException {
 
-        URI dockerHost = dockerClientConfig.getDockerHost();
-
         String baseHref = String.format("%s/%s", REQUEST_MAPPING_PATH, port);
         URI uri = new URI(
-                getScheme(dockerHost),
+                resolvedDockerSchema,
                 null,
-                getHost(dockerHost),
+                resolvedDockerHost,
                 Integer.parseInt(port),
                 request.getRequestURI().replaceFirst(baseHref, ""),
                 request.getQueryString(),
@@ -122,30 +121,5 @@ public class ProxyController {
         return httpHeaders;
     }
 
-    private String getHost(URI dockerHost) {
-        switch (dockerHost.getScheme()) {
-            case "http":
-            case "https":
-            case "tcp":
-                return dockerHost.getHost();
-            case "unix":
-                return "localhost";
-            default:
-                return "localhost";
-        }
-    }
-
-    private String getScheme(URI dockerHost) {
-        switch (dockerHost.getScheme()) {
-            case "http":
-            case "https":
-                return dockerHost.getScheme();
-            case "tcp":
-            case "unix":
-                return "http";
-            default:
-                return "http";
-        }
-    }
 
 }

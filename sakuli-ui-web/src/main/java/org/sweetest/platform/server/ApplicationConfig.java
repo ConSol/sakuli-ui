@@ -1,6 +1,5 @@
 package org.sweetest.platform.server;
 
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.web.servlet.ErrorPage;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +21,8 @@ public class ApplicationConfig {
     public static final String ROOT_DIRECTORY_ENV = "SAKULI_UI_ROOT_DIRECTORY";
     public static final String PROJECT_DEFAULT_ENV = "SAKULI_UI_PROJECT_DEFAULT";
     public static final String DOCKER_CONTAINER_SAKULI_UI_USER = "SAKULI_UI_DOCKER_USER_ID";
+    public static final String HOSTNAME = "HOSTNAME";
+
 
     @Bean(name = "rootDirectory")
     public static String getRootDirectory() {
@@ -59,12 +60,7 @@ public class ApplicationConfig {
 
     @Bean
     public EmbeddedServletContainerCustomizer handle404Error() {
-        return new EmbeddedServletContainerCustomizer() {
-            @Override
-            public void customize(ConfigurableEmbeddedServletContainer configurableEmbeddedServletContainer) {
-                configurableEmbeddedServletContainer.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/"));
-            }
-        };
+        return configurableEmbeddedServletContainer -> configurableEmbeddedServletContainer.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/"));
     }
 
     @Bean

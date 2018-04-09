@@ -19,10 +19,10 @@ import java.util.concurrent.TimeUnit;
 public class NextHop {
 
     private final WebSocketSession webSocketClientSession;
-    private String port;
+    private URI destination;
 
-    public NextHop(WebSocketSession webSocketServerSession, String port) {
-        this.port = port;
+    public NextHop(WebSocketSession webSocketServerSession, URI destination) {
+        this.destination = destination;
         webSocketClientSession = createWebSocketClientSession(webSocketServerSession);
     }
 
@@ -38,7 +38,7 @@ public class NextHop {
             return new StandardWebSocketClient(container)
                     .doHandshake(new ProxyWebSocketClientHandler(webSocketServerSession),
                             webSocketHttpHeaders,
-                            URI.create(String.format("ws://localhost:%s/websockify",port)))
+                            destination)
                     .get(1000 * 60, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             throw new RuntimeException(e);

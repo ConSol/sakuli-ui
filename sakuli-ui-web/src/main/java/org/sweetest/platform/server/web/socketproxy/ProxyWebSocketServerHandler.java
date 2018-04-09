@@ -2,6 +2,7 @@ package org.sweetest.platform.server.web.socketproxy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketMessage;
@@ -11,6 +12,7 @@ import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 import org.springframework.web.util.UriTemplate;
 import org.sweetest.platform.server.WebSocketProxyConfig;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,6 +27,8 @@ public class ProxyWebSocketServerHandler extends BinaryWebSocketHandler {
     private Map<String, WebSocketClient> webSocketClientMap = new HashMap<>();
 
     private String port;
+
+    @Autowired private String resolvedDockerHost;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -48,7 +52,7 @@ public class ProxyWebSocketServerHandler extends BinaryWebSocketHandler {
     }
 
     private NextHop createHop(WebSocketSession webSocketSession, String port) {
-        NextHop nextHop = new NextHop(webSocketSession, port);
+        NextHop nextHop = new NextHop(webSocketSession, URI.create(String.format("ws://%s:%s/websockify", resolvedDockerHost, port)));
         nextHops.put(webSocketSession.getId(), nextHop);
         return nextHop;
     }
@@ -60,7 +64,7 @@ public class ProxyWebSocketServerHandler extends BinaryWebSocketHandler {
     private NextHop getNextHop(WebSocketSession webSocketSession, String port) {
         NextHop nextHop = nextHops.get(webSocketSession.getId());
         if (nextHop == null) {
-            nextHop = new NextHop(webSocketSession, port);
+            nextHop = createHop(webSocketSession, port);
             nextHops.put(webSocketSession.getId(), nextHop);
         }
         return nextHop;
