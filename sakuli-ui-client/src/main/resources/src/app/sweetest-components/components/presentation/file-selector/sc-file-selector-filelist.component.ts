@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {
-  CloseFileselectorfile,
+  CloseFileselectorfile, DEFAULT_FILESELECTORFILE_SORT,
   FileSelectorFile,
   fileSelectorSelectId,
   fileSelectorSelectors,
@@ -9,7 +9,7 @@ import {
 } from "./file-selector.state";
 import {Store} from "@ngrx/store";
 import {absPath} from "../../../services/access/model/file-response.interface";
-import {FileSelectorFilter} from "./file-selector-filter.interface";
+import {FileSelectorFilter, FileSelectorSort} from "./file-selector-filter.interface";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -69,6 +69,7 @@ export class ScFileSelectorFilelistComponent implements OnInit {
 
   @Input() hide: FileSelectorFilter;
   @Input() inactive: FileSelectorFilter;
+  @Input() sort: FileSelectorSort;
 
   get filesFiltered(): FileSelectorFile[] {
     return this.files.filter(f => !this.hide(f));
@@ -84,7 +85,10 @@ export class ScFileSelectorFilelistComponent implements OnInit {
   }
 
   childrenFor(file: FileSelectorFile) {
-    return this.store.select(fileSelectorSelectors.childrenFor(absPath(file)))
+    return this.store.select(fileSelectorSelectors.childrenFor(
+      absPath(file),
+      this.sort || DEFAULT_FILESELECTORFILE_SORT
+    ))
   }
 
   fileClick(file: FileSelectorFile) {

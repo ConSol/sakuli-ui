@@ -2,6 +2,7 @@ import {FileSelectorFile} from "./file-selector.state";
 import * as path from 'path';
 
 export type FileSelectorFilter = (file:FileSelectorFile) => boolean;
+export type FileSelectorSort = ((f1:FileSelectorFile) => any)[]
 
 export class Filters {
 

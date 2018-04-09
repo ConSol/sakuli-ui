@@ -39,7 +39,6 @@ export class ProjectEffects {
     .catch(ErrorMessage(`Error while opening path`));
 
   @Effect() openDialog$ = this.actions$.ofType(OPEN_WORKSPACE_DIALOG)
-    .do(log('Will open'))
     .mergeMap(_ => {
       return Observable.fromPromise(this.fileSelector.openModal({
         title: 'Select a workspace',

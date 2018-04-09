@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {Store} from "@ngrx/store";
 import {fileSelectorSelectors} from "./file-selector.state";
-import {FileSelectorFilter} from "./file-selector-filter.interface";
+import {FileSelectorFilter, FileSelectorSort} from "./file-selector-filter.interface";
 import {absPath} from "../../../services/access/model/file-response.interface";
 import {ModalAware} from "../modal/sc-modal.service";
 
@@ -56,6 +56,7 @@ export class ScFileSelectorModalComponent implements ModalAware {
   @Input() root: string;
   @Input() hide: FileSelectorFilter;
   @Input() inactive: FileSelectorFilter;
+  @Input() sort: FileSelectorSort;
 
   selectedFiles$ = this.store
     .select(fileSelectorSelectors.selectedFiles);

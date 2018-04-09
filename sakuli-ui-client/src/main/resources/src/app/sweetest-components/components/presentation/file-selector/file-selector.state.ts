@@ -1,7 +1,8 @@
 import {createEntityAdapter, EntityState} from "@ngrx/entity";
 import {absPath, FileResponse} from "../../../services/access/model/file-response.interface";
-import {Action, createFeatureSelector, createSelector} from "@ngrx/store";
-
+import {Action, createFeatureSelector, createSelector, MemoizedSelector} from "@ngrx/store";
+import {FileSelectorSort} from "./file-selector-filter.interface";
+import * as _ from 'lodash';
 export const FileSelectorFeatureName = 'scFileSelector';
 
 export interface FileSelectorFile extends FileResponse {
@@ -26,7 +27,8 @@ export const FileSelectorFileFromFileResponse = (fr: FileResponse): FileSelector
 };
 
 export const fileSelectorEntityAdapter = createEntityAdapter<FileSelectorFile>({
-  selectId: fileSelectorSelectId
+  selectId: fileSelectorSelectId,
+  sortComparer: (f: FileSelectorFile) => f.name
 });
 
 export const fileSelectorStateInit = fileSelectorEntityAdapter.getInitialState({
@@ -35,13 +37,17 @@ export const fileSelectorStateInit = fileSelectorEntityAdapter.getInitialState({
 
 const featureSelector = createFeatureSelector<FileSelectorState>(FileSelectorFeatureName);
 
-const _fileSelectorSelectors = fileSelectorEntityAdapter.getSelectors(featureSelector);
+export const DEFAULT_FILESELECTORFILE_SORT: FileSelectorSort = [
+  f => f.directory ? 0 : 1,
+  f => f.name
+];
 
+const _fileSelectorSelectors = fileSelectorEntityAdapter.getSelectors(featureSelector);
 export const fileSelectorSelectors = {
   ..._fileSelectorSelectors,
-  childrenFor(path: string) {
+  childrenFor(path: string, sort: FileSelectorSort = DEFAULT_FILESELECTORFILE_SORT) {
     return createSelector(_fileSelectorSelectors.selectAll,
-      files => files.filter(file => file.path === path)
+      files => _.sortBy<FileSelectorFile>(files.filter(file => file.path === path), sort)
     )
   },
   selectedFiles: createSelector(_fileSelectorSelectors.selectAll,

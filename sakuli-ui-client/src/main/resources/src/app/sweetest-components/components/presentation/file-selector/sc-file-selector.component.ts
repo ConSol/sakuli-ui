@@ -1,14 +1,14 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {
-  AddFileSelectorFiles,
+  AddFileSelectorFiles, DEFAULT_FILESELECTORFILE_SORT,
   FileSelectorFile,
   FileSelectorFileFromFileResponse,
   fileSelectorSelectors
 } from "./file-selector.state";
 import {FileService} from "../../../services/access/file.service";
 import {Observable} from "rxjs/Observable";
-import {FileSelectorFilter} from "./file-selector-filter.interface";
+import {FileSelectorFilter, FileSelectorSort} from "./file-selector-filter.interface";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,6 +26,7 @@ export class ScFileSelectorComponent implements OnInit {
   @Input() root: string;
   @Input() hide: FileSelectorFilter;
   @Input() inactive: FileSelectorFilter;
+  @Input() sort: FileSelectorSort;
 
   files$: Observable<FileSelectorFile[]>;
 
@@ -36,7 +37,7 @@ export class ScFileSelectorComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.files$ = this.store.select(fileSelectorSelectors.childrenFor(this.root));
+    this.files$ = this.store.select(fileSelectorSelectors.childrenFor(this.root, this.sort || DEFAULT_FILESELECTORFILE_SORT));
     this.fileService
       .files(this.root)
       .subscribe(files => {
