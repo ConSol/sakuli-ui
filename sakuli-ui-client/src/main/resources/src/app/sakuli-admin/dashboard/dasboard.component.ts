@@ -4,6 +4,8 @@ import {SakuliTestSuite} from "../../sweetest-components/services/access/model/s
 import {DateUtil} from "../../sweetest-components/utils";
 import {resultStateMap} from "../test/report/result-state-map.const";
 import * as moment from "moment";
+import {NavigateToResultReport} from "../test/report/sa-report.actions";
+import {Store} from "@ngrx/store";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,7 +40,9 @@ import * as moment from "moment";
                 </testsuite-stats-component>
                 <sc-result-table
                   *ngIf="isTableView(testSuite)"
-                  [results]="getResultsForSuite(testSuite)">
+                  [results]="getResultsForSuite(testSuite)"
+                  (selectResult)="navigateToResult($event)"
+                >
                 </sc-result-table>
               </div>
               <div
@@ -66,6 +70,10 @@ export class DashboardComponent {
 
   tableViewMap = new Map<string, boolean>();
 
+  constructor(
+    readonly store: Store<any>
+  ) {}
+
   first<T>(array: T[], defaultValue?: T): T {
     return array[0] || defaultValue;
   }
@@ -91,6 +99,10 @@ export class DashboardComponent {
 
   badgeClass(state: string) {
     return `badge-${resultStateMap[state]}`;
+  }
+
+  navigateToResult(result: TestSuiteResult) {
+    this.store.dispatch(new NavigateToResultReport(result))
   }
 }
 
