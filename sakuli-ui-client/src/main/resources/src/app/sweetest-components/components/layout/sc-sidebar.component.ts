@@ -43,10 +43,11 @@ import {log} from "../../../core/redux.util";
       <ng-container *ngFor="let testSuite of testSuites$ | async">
         <sc-link [fixedIconWidth]="true"
                  icon="fa-cubes"
+                 [hideIcon]="isMinimize"
                  (click)="testSuiteItemClick(testSuite)"
                  [ngClass]="{'active': isActive(['/testsuite', testSuite.root])}"
         >
-          <span class="hidden-md-down link-text">
+          <span *ngIf="!isMinimize" class="hidden-md-down link-text">
             {{testSuite.id}}
           </span>
           <span class="actions mr-lg-0">
@@ -68,29 +69,39 @@ import {log} from "../../../core/redux.util";
           <sc-link *ngFor="let testCase of testSuite.testCases"
                    [fixedIconWidth]="true"
                    icon="fa-code"
+                   [ngbTooltip]="'Edit ' + testCase.name"
+                   placement="right"
+                   container="body"
                    (click)="testSourceItemClick(testSuite, testCase)"
                    [ngClass]="{'active': isActive(['/testsuite', testSuite.root, 'sources', [testCase.name, testCase.mainFile].join('/')])}"
           >
-            <span class="hidden-xs-down link-text">{{testCase.name}}</span>
+            <span *ngIf="!isMinimize" class="hidden-xs-down link-text">{{testCase.name}}</span>
           </sc-link>
           <sc-link [fixedIconWidth]="true"
                    (click)="testFilesItemClick(testSuite)"
                    [ngClass]="{'active': isActive(['/testsuite', testSuite.root, 'assets'])}"
                    icon="fa-files-o"
+                   [ngbTooltip]="'Files for ' + testSuite.id"
+                   placement="right"
+                   container="body"
           >
-            <span class="hidden-xs-down link-text">Files</span>
+            <span *ngIf="!isMinimize" class="hidden-xs-down link-text">Files</span>
           </sc-link>
           <sc-link [fixedIconWidth]="true"
                    *ngFor="let pinned of getPinnedFiles$(testSuite.root) | async"
                    (click)="openFile(pinned.file)"
                    icon="fa-file-o"
+                   [ngbTooltip]="'Edit ' + pinned.file.name"
+                   placement="right"
+                   container="body"
                    class="d-flex justify-content-between"
           >
-            <span class="hidden-xs-down link-text">{{pinned.file.name}}</span>
+            <span *ngIf="!isMinimize" class="hidden-xs-down link-text">{{pinned.file.name}}</span>
             <button type="button"
                     class="close"
                     (click)="unPin($event, pinned.file, testSuite)"
                     data-dismiss="alert"
+                    *ngIf="!isMinimize"
                     aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -99,38 +110,59 @@ import {log} from "../../../core/redux.util";
                    (click)="configurationClick(testSuite)"
                    [ngClass]="{'active': isActive(['/testsuite', testSuite.root, 'configuration'])}"
                    icon="fa-wrench"
+                   [ngbTooltip]="'Configure ' + testSuite.id"
+                   placement="right"
+                   container="body"
           >
-            <span class="hidden-xs-down link-text">Configuration</span>
+            <span *ngIf="!isMinimize" class="hidden-xs-down link-text">Configuration</span>
           </sc-link>
         </ul>
       </ng-container>
       <sc-link [fixedIconWidth]="true"
                icon="fa-files-o"
-               *ngIf="workspace$ | async"
+               *ngIf="(workspace$ | async)"
+               [ngbTooltip]="'Workspace files'"
+               placement="right"
+               container="body"
                (click)="navigateToWorkspaceAssets()"
       >
-        Files
+        <span *ngIf="!isMinimize">Files</span>
       </sc-link>
       <sc-link [fixedIconWidth]="true"
                *ngFor="let pinned of getPinnedFiles$(workspace$ | async) | async"
                (click)="openFile(pinned.file)"
                icon="fa-file-o"
+               [ngbTooltip]="'Edit ' + pinned.file.name"
+               placement="right"
+               container="body"
                class="d-flex justify-content-between"
       >
-        <span class="hidden-xs-down link-text">{{pinned.file.name}}</span>
+        <span *ngIf="!isMinimize" class="hidden-xs-down link-text">{{pinned.file.name}}</span>
         <button type="button"
                 class="close"
                 (click)="unPin($event, pinned.file)"
                 data-dismiss="alert"
+                *ngIf="!isMinimize"
                 aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span *ngIf="!isMinimize" aria-hidden="true">&times;</span>
         </button>
       </sc-link>
     </ul>
+    <div class="mini-button p-3">
+      <button class="btn btn-outline-primary" (click)="toggleSelf()">
+        <sc-icon icon="fa-chevron-left" [rotate]="isMinimize ? 180 : 0"></sc-icon>
+      </button>
+    </div>
   `,
   styles: [`
     sc-link.main {
       width: 100%;
+    }
+    
+    .mini-button {
+      position: absolute;
+      bottom: 0;
+      right: 0;
     }
 
     :host {
@@ -139,6 +171,7 @@ import {log} from "../../../core/redux.util";
       padding: 0;
       overflow-y: auto;
       max-height: calc(100vh - 62px);
+      
     }
 
     :host /deep/ sc-link, .sc-link {
@@ -196,10 +229,11 @@ export class ScSidebarComponent {
   workspace$ = this.store.select(workspaceSelectors.workspace);
 
   testSuites$ = this.store.select(testSuiteSelectors.selectAll);
+  private isMinimize: boolean = false;
 
   @HostBinding('class')
   get hostClass() {
-    return 'col-1 col-sm-3 flex';
+    return ['flex', ...(this.isMinimize ? ['col-1'] : ['col-3']) ].join(' ');
   }
 
   constructor(
@@ -207,6 +241,10 @@ export class ScSidebarComponent {
     readonly router: Router,
     readonly modal: ScModalService
   ) {}
+
+  toggleSelf() {
+    this.isMinimize = !this.isMinimize;
+  }
 
   getPinnedFiles$(context:string) {
     return this.store.select(pinnedByContext(context));

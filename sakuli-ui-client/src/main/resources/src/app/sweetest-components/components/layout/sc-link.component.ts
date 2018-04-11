@@ -3,10 +3,10 @@ import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 
 @Component({
     selector: 'sc-link',
-    template: `
+    template: `      
       <li class="nav-item" [ngClass]="{active: active}">
         <a class="nav-link d-flex flex-row" (click)="onClick($event)">
-          <sc-icon [icon]="icon"  [fixedWidth]="fixedIconWidth" class="d-flex w-100 flex-row justify-content-around" >
+          <sc-icon [hideIcon]="hideIcon" [icon]="icon" [fixedWidth]="fixedIconWidth" class="d-flex w-100 flex-row justify-content-around" >
             <ng-content></ng-content>
           </sc-icon>
         </a>
@@ -47,6 +47,7 @@ export class ScLinkComponent implements OnInit{
     @Input() href: string;
     @Input() active: boolean;
     @Input() class: string;
+    @Input() hideIcon: boolean = false;
 
     @Output() click = new EventEmitter<ScLinkComponent>();
 

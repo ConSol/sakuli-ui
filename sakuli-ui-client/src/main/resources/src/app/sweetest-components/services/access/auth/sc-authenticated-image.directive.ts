@@ -55,7 +55,6 @@ export class ScAuthenticatedImageDirective {
       .mergeMap(b => this.toDataUrl(b))
       .subscribe(src => {
         if(isImgTag(this.native)) {
-          console.log(this.native, 'is img');
           this.native.src = src;
         }
       })

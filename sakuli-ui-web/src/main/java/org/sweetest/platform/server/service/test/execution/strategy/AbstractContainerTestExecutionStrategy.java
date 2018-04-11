@@ -69,6 +69,7 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
             ports.bind(vncWebPort, bindPort(availableVncWebPort));
 
             executeContainerStrategy();
+
         } catch (Exception e) {
             //TODO show TestExecutionErrorEvent on UI
             next(new TestExecutionErrorEvent(e.getMessage(), executionId, e));
