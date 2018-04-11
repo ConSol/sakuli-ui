@@ -1,6 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {TestCaseStepResult} from "../../../sweetest-components/services/access/model/test-result.interface";
-import {rmHeadSlashAndEncode} from "../../../sweetest-components/services/access/file.service";
 import {resultStateMap} from "./result-state-map.const";
 
 @Component({
@@ -8,7 +7,8 @@ import {resultStateMap} from "./result-state-map.const";
   template: `
     <ng-container>
       <li class="list-group-item pointer-cursor d-flex flex-row" (click)="toggleCollapse()">
-        <sc-icon [icon]="step?.testActions?.length || step?.exception ? 'fa-caret-right' : ''" [fixedWidth]="true" [rotate]="collapsed ? 90 : 0"></sc-icon>
+        <sc-icon [icon]="step?.testActions?.length || step?.exception ? 'fa-caret-right' : ''" [fixedWidth]="true"
+                 [rotate]="collapsed ? 90 : 0"></sc-icon>
         <ng-container *ngIf="step.exception">
           <sc-icon iconClass="text-danger" icon="fa-exclamation-triangle"></sc-icon>
         </ng-container>
@@ -27,35 +27,14 @@ import {resultStateMap} from "./result-state-map.const";
           <div class="exception-title text-danger pl-1">{{step.exception.detailMessage}}</div>
         </ng-container>
       </li>
-      <li class="list-group-item m-0 p-0 border-0 d-flex flex-row bg-light" style="height: 3px; background-color: silver">
+      <li class="list-group-item m-0 p-0 border-0 d-flex flex-row bg-light"
+          style="height: 3px; background-color: silver">
         <div [ngStyle]="{'flex-grow': durationOffsetPercent}"></div>
         <div [ngStyle]="{'flex-grow': durationPercent}" class="bg-success"></div>
       </li>
       <sc-collapse [show]="collapsed">
-        <ng-container *ngIf="step.exception; else actions">
-          <li class="list-group-item d-flex flex-column">
-            <strong>{{step.exception.detailMessage}}</strong>
-            <thumbnail-component
-              [src]="'api/files?path=' + testSuitePath + '/_logs/_json/' + rmHeadSlashAndEncode(step.exception.screenshot)"
-              width="250px"
-            ></thumbnail-component>
-            <div>
-              <button class="btn btn-link" (click)="showStacktrace = !showStacktrace">Show Stacktrace</button>
-              <button class="btn btn-link"
-                      *ngIf="showStacktrace"
-                      (click)="toClipBoard(stackTraceArea)">Copy stack trace to clipboard
-              </button>
-            </div> 
-            <textarea #stackTraceArea 
-                      [disabled]="true" 
-                      rows="20"
-                      [hidden]="!showStacktrace"
-            >{{step.exception.stackTrace}}</textarea>
-          </li>
-        </ng-container>
-        <ng-template #actions>
-          <sa-action *ngFor="let action of step.testActions" [action]="action"></sa-action>
-        </ng-template>
+        <sa-report-exception [exception]="step.exception" [testSuitePath]="testSuitePath"></sa-report-exception>
+        <sa-action *ngFor="let action of step.testActions" [action]="action"></sa-action>
       </sc-collapse>
     </ng-container>
   `,
@@ -73,14 +52,14 @@ import {resultStateMap} from "./result-state-map.const";
       padding: 5px;
       width: auto;
     }
-    
+
     .exception-title {
       flex-grow: 1;
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
     }
-    
+
     textarea {
       border: 0;
     }
@@ -89,16 +68,12 @@ import {resultStateMap} from "./result-state-map.const";
 
 export class SaReportStepsComponent implements OnInit {
 
-  rmHeadSlashAndEncode = rmHeadSlashAndEncode;
-
   @Input() step: TestCaseStepResult;
   @Input() testSuitePath: string;
   @Input() durationPercent: number;
   @Input() durationOffsetPercent: number;
 
   collapsed = false;
-
-  showStacktrace = false;
 
   toggleCollapse() {
     this.collapsed = !this.collapsed;
@@ -110,19 +85,9 @@ export class SaReportStepsComponent implements OnInit {
   ngOnInit() {
   }
 
-  toClipBoard(textArea: HTMLTextAreaElement) {
-    const pd = textArea.disabled;
-    textArea.disabled = false;
-    textArea.focus();
-    textArea.setSelectionRange(0, textArea.value.length);
-    const r = document.execCommand('copy');
-    textArea.setSelectionRange(0, 0);
-    textArea.disabled = pd;
-  }
-
   backgroundState(state: string) {
     console.log(state);
 
-    return state === 'OK' ? 'bg-default' :  `bg-${resultStateMap[state]}`;
+    return state === 'OK' ? 'bg-default' : `bg-${resultStateMap[state]}`;
   }
 }

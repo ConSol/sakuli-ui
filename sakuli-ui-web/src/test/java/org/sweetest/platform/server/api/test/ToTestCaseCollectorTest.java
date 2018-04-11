@@ -17,8 +17,8 @@ public class ToTestCaseCollectorTest {
     private String activeTest = "case2/citrus.js http://www.citrusframework.org";
 
     private Stream<String> lines = Stream.of(
-            "This is a general comment, which is not attached to any tc",
-            "",
+            "// This is a general comment, which is not attached to any tc",
+            "// ",
             "// this is a comment",
             "// which explains an inactive test",
             inactiveTest,
@@ -82,7 +82,7 @@ public class ToTestCaseCollectorTest {
         assertEquals("case1", tc1.getName());
         assertEquals("test.js", tc1.getMainFile());
         assertEquals("http://www.sakuli.org", tc1.getStartUrl());
-        assertEquals("this is a comment\nwhich explains an inactive test", tc1.getComment());
+        assertEquals("This is a general comment, which is not attached to any tc\n\nthis is a comment\nwhich explains an inactive test", tc1.getComment());
 
         assertTrue(tc2.isActive());
         assertEquals("case2", tc2.getName());

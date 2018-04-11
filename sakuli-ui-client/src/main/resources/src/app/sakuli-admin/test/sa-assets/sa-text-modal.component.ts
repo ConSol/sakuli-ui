@@ -33,6 +33,11 @@ import {ModalAware} from "../../../sweetest-components/components/presentation/m
       justify-content: center;
       align-content: center;
       text-align: center;
+      display: flex;
+    }
+    
+    inplace-file-editor {
+      flex: 1;
     }
 
     ul.pagination {

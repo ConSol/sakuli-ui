@@ -12,26 +12,7 @@ import {rmHeadSlashAndEncode} from "../../../sweetest-components/services/access
   template: `
     <ul class="list-group list-group-flush">
       <ng-template #exceptionTemplate>
-        <li class="list-group-item d-flex flex-column">
-          <strong>{{testCase.exception.detailMessage}}</strong>
-          <thumbnail-component
-            [src]="'api/files?path=' + testSuitePath + '/_logs/_json/' + rmHeadSlashAndEncode(testCase.exception.screenshot)"
-            width="250px"
-          ></thumbnail-component>
-          <div>
-            <button class="btn btn-link" (click)="showStacktrace = !showStacktrace">Show Stacktrace</button>
-            <!--TODO tnobody missing import, see sa-report-steps.component-->
-            <button class="btn btn-link"
-                    *ngIf="showStacktrace"
-                    (click)="toClipBoard(stackTraceArea)">Copy stack trace to clipboard
-            </button>
-          </div>
-          <textarea #stackTraceArea
-                    [disabled]="true"
-                    rows="20"
-                    [hidden]="!showStacktrace"
-          >{{testCase.exception.stackTrace}}</textarea>
-        </li>
+        <sa-report-exception [exception]="testCase.exception" [testSuitePath]="testSuitePath"></sa-report-exception>
       </ng-template>
       <ng-container *ngIf="!testCase.exception; else exceptionTemplate">
         <sa-report-steps
@@ -61,10 +42,7 @@ import {rmHeadSlashAndEncode} from "../../../sweetest-components/services/access
 })
 export class SaReportTestcaseComponent implements OnInit {
 
-  rmHeadSlashAndEncode = rmHeadSlashAndEncode;
-
   collapsed = false;
-
 
   toggleCollapse() {
     this.collapsed = !this.collapsed;

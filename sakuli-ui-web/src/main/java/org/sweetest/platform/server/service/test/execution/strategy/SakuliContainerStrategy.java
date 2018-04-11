@@ -41,6 +41,9 @@ public class SakuliContainerStrategy extends AbstractContainerTestExecutionStrat
 
     @Override
     protected void executeContainerStrategy() {
+        if(configuration.getContainer() == null) {
+            throw new RuntimeException("Container is not configured");
+        }
         containerImageName = String.format("%s/%s:%s",
                 configuration.getContainer().getNamespace(),
                 configuration.getContainer().getName(),

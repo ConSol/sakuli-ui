@@ -95,7 +95,7 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
      * @return {@link CreateContainerCmd} for execution
      */
     protected CreateContainerCmd createContainerConfig(String containerImageName) {
-        final String testSuitePath = Paths.get(rootDirectory, testSuite.getRoot()).toString();
+        final String testSuitePath = "/" + Paths.get(testSuite.getRoot()).toString();
         final CreateContainerCmd basicContainerCmd = dockerClient
                 .createContainerCmd(containerImageName)
                 .withExposedPorts(vncPort, vncWebPort)
@@ -110,11 +110,15 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
                     //ID of docker-ui-container is set on HOSTNAME
                     .withVolumesFrom(new VolumesFrom(System.getenv("HOSTNAME"), AccessMode.rw));
         } else {
-            final Volume volume = new Volume(testSuitePath);
+            // This will mount a volume which looks like the local project path relative to the rootDirectory
+            // This ensures that the testsuite has full access to all files in the workspace
+            // the path to the root directory is omitted so that an user cannot this unnecessary and maybe insecure information
+            final String workspacePath = ("/" + getWorkspace()).replace("//", "/");
+            final Volume volume = new Volume(workspacePath);
             basicContainerCmd
                     .withUser(dockerUserId)
                     .withVolumes(volume)
-                    .withBinds(new Bind(testSuitePath, volume));
+                    .withBinds(new Bind(Paths.get(rootDirectory, workspacePath).toString(), volume));
         }
         log.info("Container configuration created for test suite '{}'", testSuitePath);
         return basicContainerCmd;

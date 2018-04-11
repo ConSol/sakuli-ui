@@ -89,7 +89,10 @@ export class TestEffects {
             .filter(dpg => !!dpg.info.stream)
             .map(dpg => new DockerPullStream(dpg.id, dpg.info))),
         'test.pull.completed': () => ({processId}) => new DockerPullCompleted(processId),
-        'error': () => gtee$.map((se: any) => new CreateToast(new DangerToast(se.message, se.stacktrace)))
+        'error': () => gtee$.mergeMap((se: any) =>  [
+          new CreateToast(new DangerToast(se.message, se.stacktrace)),
+          new RunTestError()
+        ])
       })[gtee$.key] || noop)();
     })
     .catch(ErrorMessage('Unable to proceed server event'));
@@ -126,7 +129,6 @@ export class TestEffects {
 
   @Effect({dispatch: false}) stopTestExecution$ = this.actions$.ofType(STOP_TEST_EXECUTION)
     .do((ste: StopTestExecution) => {
-      console.log(`Will stop: ${ste.containerId}`);
       this.testService.stop(ste.containerId)
     });
 
