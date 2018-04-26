@@ -101,6 +101,7 @@ exports[`ScLoading Component should fullfill snapshot for spinner and show: true
     >
       
         
+      
       <i
         _ngcontent-c2=""
         class="fa fa-spin fa-spinner"

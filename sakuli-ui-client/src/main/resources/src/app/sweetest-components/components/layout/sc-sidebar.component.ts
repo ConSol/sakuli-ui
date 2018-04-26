@@ -229,7 +229,7 @@ export class ScSidebarComponent {
   workspace$ = this.store.select(workspaceSelectors.workspace);
 
   testSuites$ = this.store.select(testSuiteSelectors.selectAll);
-  private isMinimize: boolean = false;
+  isMinimize: boolean = false;
 
   @HostBinding('class')
   get hostClass() {

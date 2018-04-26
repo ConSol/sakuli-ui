@@ -76,6 +76,7 @@ import {Observable} from "rxjs/Observable";
       flex-grow: 1;
       width: auto;
       padding-top: 56%;
+      min-height: 400px;
       position: relative;
     }
 
@@ -92,9 +93,9 @@ export class SaVncCard implements OnInit {
   @ViewChild('iframe') iframe: ElementRef;
 
   interactiveMode$ = new BehaviorSubject<boolean>(false);
-  private webSrc$: Observable<SafeResourceUrl>;
-  private interactiveToggleText$: Observable<string>;
-  private lockIcon$: Observable<string>;
+  webSrc$: Observable<SafeResourceUrl>;
+  interactiveToggleText$: Observable<string>;
+  lockIcon$: Observable<string>;
 
   fullScreen() {
     const elementRef = this.iframe;
