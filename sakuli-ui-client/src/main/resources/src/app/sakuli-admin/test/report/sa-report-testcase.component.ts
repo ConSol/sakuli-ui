@@ -4,25 +4,20 @@ import {
   TestCaseStepResult
 } from "../../../sweetest-components/services/access/model/test-result.interface";
 import {DateUtil} from "../../../sweetest-components/utils";
-import {rmHeadSlashAndEncode} from "../../../sweetest-components/services/access/file.service";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'sa-report-testcase',
   template: `
     <ul class="list-group list-group-flush">
-      <ng-template #exceptionTemplate>
-        <sa-report-exception [exception]="testCase.exception" [testSuitePath]="testSuitePath"></sa-report-exception>
-      </ng-template>
-      <ng-container *ngIf="!testCase.exception; else exceptionTemplate">
-        <sa-report-steps
-          *ngFor="let step of testCase.steps; let i = index"
-          [testSuitePath]="testSuitePath"
-          [step]="step"
-          [durationPercent]="durations[i] / testCaseDuration"
-          [durationOffsetPercent]="durationOffsets[i] / testCaseDuration"
-        ></sa-report-steps>
-      </ng-container>
+      <sa-report-exception [exception]="testCase.exception" [testSuitePath]="testSuitePath"></sa-report-exception>
+      <sa-report-steps
+        *ngFor="let step of testCase.steps; let i = index"
+        [testSuitePath]="testSuitePath"
+        [step]="step"
+        [durationPercent]="durations[i] / testCaseDuration"
+        [durationOffsetPercent]="durationOffsets[i] / testCaseDuration"
+      ></sa-report-steps>
       <sa-report-steps
         [testSuitePath]="testSuitePath"
         [step]="pseudoStep"
