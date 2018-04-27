@@ -7,9 +7,12 @@ import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.jaxrs.JerseyDockerCmdExecFactory;
 import com.github.dockerjava.netty.NettyDockerCmdExecFactory;
 import org.apache.commons.lang.SystemUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.sweetest.platform.server.web.socketproxy.ProxyWebSocketClientHandler;
 
 import java.net.URI;
 
@@ -18,6 +21,8 @@ import static org.sweetest.platform.server.ApplicationConfig.HOSTNAME;
 
 @Configuration
 public class DockerConfig {
+
+    private final static Logger logger = LoggerFactory.getLogger(ProxyWebSocketClientHandler.class);
 
     @Bean
     public DockerClient dockerClient() {
@@ -36,7 +41,10 @@ public class DockerConfig {
                 .createDefaultConfigBuilder();
 
         if (System.getenv().containsKey(DOCKER_CONTAINER_SAKULI_UI_USER) && System.getenv().containsKey(HOSTNAME)) {
-            configBuilder.withDockerHost(System.getenv().get(HOSTNAME));
+            logger.info("Found DOCKER_CONTAINER_SAKULI_UI_USER ({}) and HOSTNAME ({}) in env.",
+                    System.getenv().get(DOCKER_CONTAINER_SAKULI_UI_USER),
+                    System.getenv().get(HOSTNAME));
+            //configBuilder.withDockerHost(System.getenv().get(HOSTNAME));
         }
 
         return configBuilder.build();

@@ -105,12 +105,14 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
                 .withCmd("run", testSuitePath);
 
         if (System.getenv().containsKey(DOCKER_CONTAINER_SAKULI_UI_USER)) {
+            log.info("Found {} (={}) in env. Preparing Docker-in-Docker");
             //Sakuli UI is running in container itself -> start "docker-in-docker" container
             basicContainerCmd
                     .withUser(System.getenv(DOCKER_CONTAINER_SAKULI_UI_USER))
                     //ID of docker-ui-container is set on HOSTNAME
                     .withVolumesFrom(new VolumesFrom(System.getenv("HOSTNAME"), AccessMode.rw));
         } else {
+            log.info("Preparing local volume");
             // This will mount a volume which looks like the local project path relative to the rootDirectory
             // This ensures that the testsuite has full access to all files in the workspace
             // the path to the root directory is omitted so that an user cannot this unnecessary and maybe insecure information
