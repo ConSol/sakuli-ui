@@ -1,5 +1,7 @@
 package org.sweetest.platform.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.web.servlet.ErrorPage;
 import org.springframework.context.annotation.Bean;
@@ -8,13 +10,18 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.util.UrlPathHelper;
+import org.sweetest.platform.server.web.TestController;
 
+import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Configuration
 public class ApplicationConfig {
+
+    private static final Logger log = LoggerFactory.getLogger(ApplicationConfig.class);
+
 
     public static final String ROOT_DIRECTORY = "sakuli.ui.root.directory";
     public static final String PROJECT_DEFAULT = "sakuli.ui.testSuite.default";
@@ -29,19 +36,10 @@ public class ApplicationConfig {
         String defaultRootDirectory = Optional
                 .ofNullable(System.getenv(ROOT_DIRECTORY_ENV))
                 .orElse(System.getProperty("user.home"));
-        return System.getProperty(ROOT_DIRECTORY, defaultRootDirectory);
-    }
-
-    @Bean(name = "defaultProject")
-    @Deprecated
-    public static String getDefaultProject() {
-        if (System.getProperty(PROJECT_DEFAULT) != null) {
-            return System.getProperty(PROJECT_DEFAULT);
-        }
-        if (System.getenv(PROJECT_DEFAULT_ENV) != null) {
-            return System.getenv(PROJECT_DEFAULT_ENV);
-        }
-        return null;
+        String pathStr = System.getProperty(ROOT_DIRECTORY, defaultRootDirectory);
+        String normalizedAbsoluteRoot = Paths.get(pathStr).normalize().toAbsolutePath().toString();
+        log.info("Set app root to: {}", normalizedAbsoluteRoot);
+        return normalizedAbsoluteRoot;
     }
 
     @Bean

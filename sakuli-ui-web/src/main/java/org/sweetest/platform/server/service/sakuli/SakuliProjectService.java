@@ -32,25 +32,6 @@ public class SakuliProjectService implements ProjectService {
 
     private ProjectModel activeProject;
 
-    private String defaultProject;
-
-    @Autowired
-    public SakuliProjectService(@Qualifier("defaultProject") String defaultProject) {
-        this.defaultProject = defaultProject;
-    }
-
-    @PostConstruct
-    public void postConstruct() {
-        if(defaultProject != null && isValidProjectRoot(defaultProject)) {
-            this.readProject(defaultProject).ifPresent(pm -> {
-                setActiveProject(pm);
-                log.info(String.format("Using Project at '%s'", defaultProject));
-            });
-        } else {
-            log.info(String.format("Cannot find any valid testSuite at '%s'", defaultProject));
-        }
-    }
-
     @Override
     public void setActiveProject(ProjectModel activeProject) {
         this.activeProject = activeProject;
