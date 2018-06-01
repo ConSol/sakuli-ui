@@ -26,6 +26,7 @@ import java.util.UUID;
 
 import static com.github.dockerjava.api.model.Ports.Binding.bindPort;
 import static org.sweetest.platform.server.ApplicationConfig.DOCKER_CONTAINER_SAKULI_UI_USER;
+import static org.sweetest.platform.server.ApplicationConfig.SAKULI_NETWORK_NAME;
 
 public abstract class AbstractContainerTestExecutionStrategy<T> extends AbstractTestExecutionStrategy<T> {
     private static final Logger log = LoggerFactory.getLogger(AbstractContainerTestExecutionStrategy.class);
@@ -97,20 +98,28 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
      */
     protected CreateContainerCmd createContainerConfig(String containerImageName) {
         final String testSuitePath = "/" + Paths.get(testSuite.getRoot()).toString();
+        final Network sakuliNetwork = resolveOrCreateSakuliNetwork();
+        log.info("use docker-in-docker network: name={}, id={}", sakuliNetwork.getName(), sakuliNetwork.getId());
+
         final CreateContainerCmd basicContainerCmd = dockerClient
                 .createContainerCmd(containerImageName)
                 .withExposedPorts(vncPort, vncWebPort)
                 .withPortBindings(ports)
                 .withPublishAllPorts(true)
-                .withCmd("run", testSuitePath);
+                .withNetworkMode(sakuliNetwork.getId());
+
 
         if (System.getenv().containsKey(DOCKER_CONTAINER_SAKULI_UI_USER)) {
-            log.info("Found {} (={}) in env. Preparing Docker-in-Docker");
+            log.info("Found {} in env. Preparing Docker-in-Docker", DOCKER_CONTAINER_SAKULI_UI_USER);
             //Sakuli UI is running in container itself -> start "docker-in-docker" container
+
+            //ID of docker-ui-container is set on HOSTNAME
+            final String uiContainerName = System.getenv("HOSTNAME");
             basicContainerCmd
                     .withUser(System.getenv(DOCKER_CONTAINER_SAKULI_UI_USER))
-                    //ID of docker-ui-container is set on HOSTNAME
-                    .withVolumesFrom(new VolumesFrom(System.getenv("HOSTNAME"), AccessMode.rw));
+                    .withVolumesFrom(new VolumesFrom(uiContainerName, AccessMode.rw))
+                    //use absolut path due to mounting under the same path
+                    .withCmd("run", Paths.get(rootDirectory, testSuitePath).toString());
         } else {
             log.info("Preparing local volume");
             // This will mount a volume which looks like the local project path relative to the rootDirectory
@@ -121,10 +130,29 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
             basicContainerCmd
                     .withUser(dockerUserId)
                     .withVolumes(volume)
-                    .withBinds(new Bind(Paths.get(rootDirectory, workspacePath).toString(), volume));
+                    .withBinds(new Bind(Paths.get(rootDirectory, workspacePath).toString(), volume))
+                    .withCmd("run", testSuitePath);
         }
         log.info("Container configuration created for test suite '{}'", testSuitePath);
         return basicContainerCmd;
+    }
+
+    /**
+     * Creates or Resolve the network for the internal container traffic.
+     *
+     * @return a docker network with the name {@link org.sweetest.platform.server.ApplicationConfig#SAKULI_NETWORK_NAME}
+     */
+    private Network resolveOrCreateSakuliNetwork() {
+        return dockerClient.listNetworksCmd().exec().stream()
+                .filter(d -> d.getName().equalsIgnoreCase(SAKULI_NETWORK_NAME))
+                .findFirst().orElseGet(() -> {
+                    dockerClient.createNetworkCmd()
+                            .withName(SAKULI_NETWORK_NAME)
+                            .withDriver("bridge")
+                            .exec();
+                    log.info("new docker-in-docker network '{}'created!", SAKULI_NETWORK_NAME);
+                    return resolveOrCreateSakuliNetwork();
+                });
     }
 
     protected void startContainer() {
@@ -140,6 +168,14 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
     }
 
     protected void attachToContainer() {
+
+        //TODO TS & TIM use the IP for webvnc
+        final Network.ContainerNetworkConfig runningContainerNetworkConfig = dockerClient.inspectNetworkCmd()
+                .withNetworkId(SAKULI_NETWORK_NAME).exec()
+                .getContainers().get(containerReference.getId());
+        Optional.ofNullable(runningContainerNetworkConfig)
+                .ifPresent(cn -> log.info("CONTAINER IP: {}", cn.getIpv4Address()));
+
         callback = dockerClient
                 .logContainerCmd(containerReference.getId())
                 .withStdOut(true)
