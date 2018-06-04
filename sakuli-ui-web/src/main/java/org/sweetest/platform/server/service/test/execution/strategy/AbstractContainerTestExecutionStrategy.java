@@ -99,7 +99,12 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
     protected CreateContainerCmd createContainerConfig(String containerImageName) {
         final String testSuitePath = "/" + Paths.get(testSuite.getRoot()).toString();
         final Network sakuliNetwork = resolveOrCreateSakuliNetwork();
-        log.info("use docker-in-docker network: name={}, id={}", sakuliNetwork.getName(), sakuliNetwork.getId());
+        //TODO Tim forward gateway to UI and proxy
+        final String gateway = sakuliNetwork.getIpam().getConfig().stream().findFirst()
+                //TODO Tim error handle optional
+                .get()
+                .getGateway();
+        log.info("use docker network: name={}, id={}, gateway={}", sakuliNetwork.getName(), sakuliNetwork.getId(), gateway);
 
         final CreateContainerCmd basicContainerCmd = dockerClient
                 .createContainerCmd(containerImageName)
@@ -150,7 +155,7 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
                             .withName(SAKULI_NETWORK_NAME)
                             .withDriver("bridge")
                             .exec();
-                    log.info("new docker-in-docker network '{}'created!", SAKULI_NETWORK_NAME);
+                    log.info("new docker network '{}'created!", SAKULI_NETWORK_NAME);
                     return resolveOrCreateSakuliNetwork();
                 });
     }
@@ -168,14 +173,6 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
     }
 
     protected void attachToContainer() {
-
-        //TODO TS & TIM use the IP for webvnc
-        final Network.ContainerNetworkConfig runningContainerNetworkConfig = dockerClient.inspectNetworkCmd()
-                .withNetworkId(SAKULI_NETWORK_NAME).exec()
-                .getContainers().get(containerReference.getId());
-        Optional.ofNullable(runningContainerNetworkConfig)
-                .ifPresent(cn -> log.info("CONTAINER IP: {}", cn.getIpv4Address()));
-
         callback = dockerClient
                 .logContainerCmd(containerReference.getId())
                 .withStdOut(true)
