@@ -89,6 +89,7 @@ export class SaVncCard implements OnInit {
 
   @Input() vncPort: number;
   @Input() webPort: number;
+  @Input() gateway: string;
 
   @ViewChild('iframe') iframe: ElementRef;
 
@@ -121,9 +122,10 @@ export class SaVncCard implements OnInit {
   ngOnInit() {
     this.webSrc$ = this.interactiveMode$
       .distinctUntilChanged()
+      .skipWhile(() => this.gateway == null)
       .map(isI => isI ? '' : '1')
       .map(viewOnly => this.sanitizer.bypassSecurityTrustResourceUrl(
-        `api/novnc/${this.webPort}?path=ws/novnc/${this.webPort}&password=sakuli&view_only=${viewOnly}`
+        `api/novnc/${this.gateway}/${this.webPort}?path=ws/novnc/${this.gateway}/${this.webPort}&password=sakuli&view_only=${viewOnly}`
       ))
       .do(log('New no vnc ulr'));
 
@@ -131,7 +133,6 @@ export class SaVncCard implements OnInit {
       ? 'Turn interaction off'
       : 'Turn interaction on'
     );
-
     this.lockIcon$ = this.interactiveMode$.map(isI => isI ? 'fa-unlock-alt' : 'fa-lock');
   }
 

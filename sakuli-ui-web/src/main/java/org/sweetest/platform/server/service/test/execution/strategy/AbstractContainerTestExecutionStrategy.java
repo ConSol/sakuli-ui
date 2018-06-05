@@ -46,6 +46,7 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
     protected ExposedPort vncPort;
     protected ExposedPort vncWebPort;
     protected Ports ports;
+    private Network sakuliNetwork;
 
     public AbstractContainerTestExecutionStrategy() {
         this.subject = new TestExecutionSubject();
@@ -59,6 +60,13 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
     public TestRunInfo execute(Observer<TestExecutionEvent> testExecutionEventObserver) {
         int availableVncPort = SocketUtils.findAvailableTcpPort(5901, 6900);
         int availableVncWebPort = SocketUtils.findAvailableTcpPort(6901);
+        sakuliNetwork = resolveOrCreateSakuliNetwork();
+        final String gateway = sakuliNetwork.getIpam().getConfig().stream().findFirst()
+                .orElseGet(() -> {
+                    next(new TestExecutionErrorEvent("No IPAM entry found in Sakuli Network", executionId, new RuntimeException()));
+                    return new Network.Ipam.Config();
+                })
+                .getGateway();
         try {
             subject.subscribe(testExecutionEventObserver);
             executionId = createExecutionId();
@@ -68,6 +76,7 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
             ports = new Ports();
             ports.bind(vncPort, bindPort(availableVncPort));
             ports.bind(vncWebPort, bindPort(availableVncWebPort));
+            sakuliNetwork = resolveOrCreateSakuliNetwork();
 
             executeContainerStrategy();
 
@@ -76,13 +85,13 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
             next(new TestExecutionErrorEvent(e.getMessage(), executionId, e));
         }
         final TestRunInfo tri = new TestRunInfo(
+                gateway,
                 availableVncPort,
                 availableVncWebPort,
                 executionId
         );
         tri.subscribe(invokeStopObserver(this));
         return tri;
-
     }
 
     /**
@@ -98,11 +107,10 @@ public abstract class AbstractContainerTestExecutionStrategy<T> extends Abstract
      */
     protected CreateContainerCmd createContainerConfig(String containerImageName) {
         final String testSuitePath = "/" + Paths.get(testSuite.getRoot()).toString();
-        final Network sakuliNetwork = resolveOrCreateSakuliNetwork();
+
         //TODO Tim forward gateway to UI and proxy
         final String gateway = sakuliNetwork.getIpam().getConfig().stream().findFirst()
-                //TODO Tim error handle optional
-                .get()
+                .orElseThrow(() -> new RuntimeException("Could not find any Network Ipam entry in SakuliNetwork"))
                 .getGateway();
         log.info("use docker network: name={}, id={}, gateway={}", sakuliNetwork.getName(), sakuliNetwork.getId(), gateway);
 

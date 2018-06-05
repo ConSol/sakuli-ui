@@ -83,7 +83,7 @@ public class SakuliLocalExecutionStrategy extends AbstractTestExecutionStrategy<
             subject.next(new TestExecutionErrorEvent(e.getMessage(), executionId, e));
         }
         //TODO use Int and nulls to prevent showing VNC ports on local execution
-        TestRunInfo tri = new TestRunInfo(5901, 6901, executionId);
+        TestRunInfo tri = new TestRunInfo("localhost", 5901, 6901, executionId);
         tri.subscribe(invokeStopObserver(this));
         return tri;
     }

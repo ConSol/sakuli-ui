@@ -20,7 +20,7 @@ import java.util.Map;
 @EnableWebSocket
 public class WebSocketProxyConfig implements WebSocketConfigurer {
 
-    final public static String URL = "/ws/novnc/{port}";
+    final public static String URL = "/ws/novnc/{gateway}/{port}";
 
     final private Logger logger = LoggerFactory.getLogger(WebSocketProxyConfig.class);
 
