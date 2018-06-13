@@ -27,13 +27,13 @@ public class ProxyWebSocketServerHandler extends BinaryWebSocketHandler {
     private Map<String, WebSocketClient> webSocketClientMap = new HashMap<>();
 
     private String port;
-
-    @Autowired private String resolvedDockerHost;
+    private String gateway;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         Map<String, String> match = uriTemplate.match(session.getUri().getPath());
         port = match.get("port");
+        gateway = match.get("gateway");
         getNextHop(session, port);
         super.afterConnectionEstablished(session);
     }
@@ -52,7 +52,7 @@ public class ProxyWebSocketServerHandler extends BinaryWebSocketHandler {
     }
 
     private NextHop createHop(WebSocketSession webSocketSession, String port) {
-        NextHop nextHop = new NextHop(webSocketSession, URI.create(String.format("ws://%s:%s/websockify", resolvedDockerHost, port)));
+        NextHop nextHop = new NextHop(webSocketSession, URI.create(String.format("ws://%s:%s/websockify", gateway, port)));
         nextHops.put(webSocketSession.getId(), nextHop);
         return nextHop;
     }

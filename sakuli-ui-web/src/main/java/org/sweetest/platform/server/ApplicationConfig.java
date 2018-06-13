@@ -28,6 +28,7 @@ public class ApplicationConfig {
     public static final String ROOT_DIRECTORY_ENV = "SAKULI_UI_ROOT_DIRECTORY";
     public static final String PROJECT_DEFAULT_ENV = "SAKULI_UI_PROJECT_DEFAULT";
     public static final String DOCKER_CONTAINER_SAKULI_UI_USER = "SAKULI_UI_DOCKER_USER_ID";
+    public static final String SAKULI_NETWORK_NAME = "sakuli-net";
     public static final String HOSTNAME = "HOSTNAME";
 
 

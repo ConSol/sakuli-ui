@@ -38,33 +38,33 @@ public class ProxyController {
     @Autowired private String resolvedDockerHost;
     @Autowired private String resolvedDockerSchema;
 
-
-
-    @RequestMapping("{port}")
+    @RequestMapping("/{gateway}/{port}")
     @ResponseBody
     public ResponseEntity<String> doProxyRoot(
             @RequestBody(required = false) String body,
             HttpMethod method,
             HttpServletRequest request,
-            @PathVariable("port") String port
+            @PathVariable("port") String port,
+            @PathVariable("gateway") String gateway
     ) throws URISyntaxException {
-        return doProxy(body, method, request, port);
+        return doProxy(body, method, request, port, gateway);
     }
 
-    @RequestMapping("{port}/**/*")
+    @RequestMapping("/{gateway}/{port}/**/*")
     @ResponseBody
     public ResponseEntity<String> doProxy(
             @RequestBody(required = false) String body,
             HttpMethod method,
             HttpServletRequest request,
-            @PathVariable("port") String port
+            @PathVariable("port") String port,
+            @PathVariable("gateway") String gateway
     ) throws URISyntaxException {
 
-        String baseHref = String.format("%s/%s", REQUEST_MAPPING_PATH, port);
+        String baseHref = String.format("%s/%s/%s", REQUEST_MAPPING_PATH, gateway, port);
         URI uri = new URI(
                 resolvedDockerSchema,
                 null,
-                resolvedDockerHost,
+                gateway,
                 Integer.parseInt(port),
                 request.getRequestURI().replaceFirst(baseHref, ""),
                 request.getQueryString(),
