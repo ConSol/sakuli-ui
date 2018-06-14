@@ -34,6 +34,14 @@ import {Observable} from "rxjs/Observable";
             VNC-Web: {{webPort}}
           </sc-icon>
         </a>
+        |
+        <span
+        >VNC-Port: {{vncPort}}
+        <sc-icon 
+          icon="fa-question-circle" 
+          ngbTooltip="Depending on the context in which Sakuli is running this port may not be accessible from your client.">
+        </sc-icon>
+        </span>
       </div>
       <button class="btn btn-link p-0" (click)="fullScreen()">
         <sc-icon icon="fa-expand"></sc-icon>

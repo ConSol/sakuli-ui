@@ -1,9 +1,5 @@
 "use strict";
 //const $URL = `http://${env.getEnv("SAKULI_TESTS_SERVER_PORT_8080_TCP_ADDR")}:${env.getEnv("SAKULI_TESTS_SERVER_PORT_8080_TCP_PORT")}`;
-var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
-    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
-    return cooked;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -45,7 +41,7 @@ var LoginPage_1 = require("./pages/LoginPage");
 var AppShell_1 = require("./pages/AppShell");
 var FileSelector_1 = require("./pages/FileSelector");
 var page_url_1 = require("./page-url");
-fixture(templateObject_1 || (templateObject_1 = __makeTemplateObject(["Getting Started"], ["Getting Started"]))).page(page_url_1.pageUrl);
+(_a = ["Getting Started"], _a.raw = ["Getting Started"], fixture(_a)).page(page_url_1.pageUrl);
 var loginPage = new LoginPage_1.LoginPage();
 var appShell = new AppShell_1.AppShell();
 var fileSelector = new FileSelector_1.FileSelector();
@@ -65,8 +61,7 @@ test('invalid login', function (t) { return __awaiter(_this, void 0, void 0, fun
 test('valid login', function (t) { return __awaiter(_this, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                return [4 /*yield*/, loginPage.login("admin", "sakuli")];
+            case 0: return [4 /*yield*/, loginPage.login("admin", "sakuli")];
             case 1:
                 _a.sent();
                 return [4 /*yield*/, t.expect(fileSelector.title.textContent).contains('Select')];
@@ -76,4 +71,4 @@ test('valid login', function (t) { return __awaiter(_this, void 0, void 0, funct
         }
     });
 }); });
-var templateObject_1;
+var _a;
