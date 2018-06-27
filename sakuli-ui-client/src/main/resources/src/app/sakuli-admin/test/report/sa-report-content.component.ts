@@ -26,11 +26,13 @@ import {
               <span class="badge badge-warning" *ngIf="testCase.state === 'WARNING'">
                 Warningtime of <strong>{{testCase.warningTime}}</strong> sec exceeded
               </span>
-              
             </small>
-            
           </h4>
         </div>
+        <sa-report-exception 
+          [exception]="testResult.exception"
+          [testSuitePath]="testResult.testSuitePath"
+        ></sa-report-exception>
         <sa-report-testcase
           [testCase]="testCase"
           [testSuitePath]="testResult.testSuitePath"

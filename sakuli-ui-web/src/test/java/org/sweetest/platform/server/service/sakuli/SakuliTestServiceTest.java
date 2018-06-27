@@ -92,7 +92,7 @@ public class SakuliTestServiceTest {
         testCase1.setStartUrl("http://www.sakuli.org");
         testSuite.getTestCases().add(testCase1);
 
-        testCase2.setComment("My comment\non the second tc");
+        testCase2.setComment("My comment\n\non the second tc");
         testCase2.setActive(true);
         testCase2.setName("case2");
         testCase2.setMainFile("test.js");
@@ -107,10 +107,11 @@ public class SakuliTestServiceTest {
 
         String fc = (
                 "// My comment\n" +
-                        "// case1/test.js http://www.sakuli.org\n" +
-                        "// My comment\n" +
-                        "// on the second tc\n" +
-                        "case2/test.js http://www.sakuli.org\n"
+                "// case1/test.js http://www.sakuli.org\n" +
+                "// My comment\n" +
+                "//\n" +
+                "// on the second tc\n" +
+                "case2/test.js http://www.sakuli.org\n"
         );
 
         when(fileSystemService.writeFile(anyString(), any(byte[].class))).thenReturn(true);

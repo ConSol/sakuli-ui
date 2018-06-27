@@ -86,9 +86,9 @@ public class TestController {
         return success ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
 
-    @MessageMapping("/execution/stop/{event}")
+    @MessageMapping("/execution/stop/{executionId}")
     public void stopExecution(
-            @DestinationVariable String id) {
+            @DestinationVariable("executionId") String id) {
         log.info("Will stop this thing: " + id);
         testService.stopTestExecution(id);
     }

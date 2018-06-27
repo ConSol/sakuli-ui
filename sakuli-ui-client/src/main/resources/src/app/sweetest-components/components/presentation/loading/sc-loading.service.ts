@@ -13,6 +13,8 @@ export class ScLoadingService {
 
   registerLoadingActions(id: string, isLoading: string[], finishLoading: string[])
   registerLoadingActions(id: string, isLoading: string, finishLoading: string)
+  registerLoadingActions(id: string, isLoading: string[], finishLoading: string)
+  registerLoadingActions(id: string, isLoading: string, finishLoading: string[])
   registerLoadingActions(id: string, isLoading: string|string[], finishLoading: string|string[]) {
     if(!Array.isArray(isLoading)) { isLoading = [isLoading]}
     if(!Array.isArray(finishLoading)) { finishLoading = [finishLoading]}

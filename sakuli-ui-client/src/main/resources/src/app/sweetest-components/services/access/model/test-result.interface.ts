@@ -12,6 +12,7 @@ export interface BaseResult {
   startDate: string;
   stopDate: string;
   id: string;
+  exception: TestCaseException | null;
 }
 
 export interface TestSuiteResult extends BaseResult {
@@ -30,7 +31,7 @@ export interface TestSuiteResult extends BaseResult {
 export interface TestCaseResult extends BaseResult {
   startUrl: string;
   lastUrl: string;
-  exception: TestCaseException | null;
+
   steps: TestCaseStepResult[];
   testActions: TestActionResult[];
 }
@@ -44,7 +45,6 @@ export interface TestActionResult {
 }
 
 export interface TestCaseStepResult extends BaseResult {
-  exception: TestCaseException;
   testActions: TestActionResult[];
 }
 

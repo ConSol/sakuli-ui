@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
 
+import static java.util.Collections.EMPTY_LIST;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DockerComposeServiceModel {
     public String context;
-    public List<DockerComposeServicePortMappingModel> ports;
+    public List<DockerComposeServicePortMappingModel> ports = EMPTY_LIST;
 
     public String getContext() {
         return context;

@@ -6,7 +6,7 @@ import {FontawesomeIcon} from './fontawesome-icon.utils';
   selector: 'sc-icon',
   template: `
     <div class="w-100 flex-row d-flex flex-nowrap align-content-center align-items-center">
-      <i class="fa" [ngClass]="ngClass" [ngStyle]="{transform:iconTransform}"></i>
+      <i class="fa" *ngIf="!hideIcon" [ngClass]="ngClass" [ngStyle]="{transform:iconTransform}"></i>
       <div class="d-flex w-100 justify-content-between align-items-center">
         <ng-content></ng-content>
       </div>
@@ -43,6 +43,7 @@ export class ScIconComponent implements OnInit {
   @Input() size: number;
   @Input() lg: boolean;
   @Input() iconClass: string = '';
+  @Input() hideIcon: boolean = false;
 
   ngOnInit() {
   }

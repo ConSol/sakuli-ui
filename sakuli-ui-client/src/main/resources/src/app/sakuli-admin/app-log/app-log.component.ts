@@ -30,7 +30,10 @@ import {IToast} from "../../sweetest-components/components/presentation/toast/to
                 *ngIf="!!toast.more">More</a>
             </li>
             <li class="list-group-item" *ngIf="openMap.get(toast)">
-              <pre>{{toast.more | json}}</pre>
+              <ng-template #parsedMore>
+                <pre>{{toast.more}}</pre>
+              </ng-template>
+              <pre *ngIf="isString(toast.more); else parsedMore">{{toast.more}}</pre>
             </li>
           </ng-container>
         </ul>
@@ -38,8 +41,7 @@ import {IToast} from "../../sweetest-components/components/presentation/toast/to
     </sc-content>
   `
 })
-
-export class AppLogComponent implements OnInit {
+export class AppLogComponent {
 
   openMap = new WeakMap<IToast, boolean>();
 
@@ -58,6 +60,7 @@ export class AppLogComponent implements OnInit {
     return this.store.select(toastSelectors.history);
   }
 
-  ngOnInit() {
+  isString(val: any): val is string {
+    return typeof val === 'string';
   }
 }

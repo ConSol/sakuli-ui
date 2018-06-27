@@ -7,6 +7,7 @@ import java.util.List;
 public class TestRunInfo extends TestExecutionSubject {
 
     private String executionId;
+    private String gateway;
 
     private List<TestRunInfoPorts> testRunInfoPortList = new ArrayList<>();
 
@@ -14,9 +15,10 @@ public class TestRunInfo extends TestExecutionSubject {
         this.executionId = executionId;
     }
 
-    public TestRunInfo(int vncPort, int vncWebPort, String executionId) {
+    public TestRunInfo(final String gateway, int vncPort, int vncWebPort, String executionId) {
         this.addTestRunInfoPorts(vncPort, vncWebPort);
         this.executionId = executionId;
+        this.gateway = gateway;
     }
 
     public List<TestRunInfoPorts> getTestRunInfoPortList() {
@@ -41,5 +43,13 @@ public class TestRunInfo extends TestExecutionSubject {
 
     public void setExecutionId(String executionId) {
         this.executionId = executionId;
+    }
+
+    public String getGateway() {
+        return gateway;
+    }
+
+    public void setGateway(String gateway) {
+        this.gateway = gateway;
     }
 }

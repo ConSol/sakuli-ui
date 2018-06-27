@@ -22,7 +22,9 @@ public class ProxyWebSocketClientHandler extends AbstractWebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> webSocketMessage) throws Exception {
-        webSocketServerSession.sendMessage(webSocketMessage);
+        if(webSocketServerSession.isOpen()) {
+            webSocketServerSession.sendMessage(webSocketMessage);
+        }
     }
 
     @Override

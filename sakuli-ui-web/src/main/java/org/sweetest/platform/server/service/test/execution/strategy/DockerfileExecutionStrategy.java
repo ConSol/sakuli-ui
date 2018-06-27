@@ -37,8 +37,7 @@ public class DockerfileExecutionStrategy extends AbstractContainerTestExecutionS
                 testSuite.getRoot(),
                 getConfiguration().getFile());
         if (dockerfile.isPresent()) {
-            //TODO refactor thread execution
-            new Thread(() -> {
+            runDetached(() -> {
                 next(new DockerPullStartedEvent(executionId));
                 try {
                     log.info("Start docker build for file: {}", dockerfile.get().toPath().toString());
@@ -50,7 +49,7 @@ public class DockerfileExecutionStrategy extends AbstractContainerTestExecutionS
                 } catch (Exception e) {
                     next(new TestExecutionErrorEvent(e.getMessage(), executionId, e));
                 }
-            }).start();
+            });
         } else {
             next(new TestExecutionErrorEvent("dockerfile is not present!", executionId, new FileNotFoundException("File not found: " + testSuite.getRoot() + "/" +
                     getConfiguration().getFile())));

@@ -1,6 +1,5 @@
 package org.sweetest.platform.server.web;
 
-import com.github.dockerjava.core.DockerClientConfig;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -36,36 +35,36 @@ public class ProxyController {
     @Autowired
     private TestExecutionInstancesService executionInstancesService;
 
-    @Autowired
-    private DockerClientConfig dockerClientConfig;
+    @Autowired private String resolvedDockerHost;
+    @Autowired private String resolvedDockerSchema;
 
-    @RequestMapping("{port}")
+    @RequestMapping("/{gateway}/{port}")
     @ResponseBody
     public ResponseEntity<String> doProxyRoot(
             @RequestBody(required = false) String body,
             HttpMethod method,
             HttpServletRequest request,
-            @PathVariable("port") String port
+            @PathVariable("port") String port,
+            @PathVariable("gateway") String gateway
     ) throws URISyntaxException {
-        return doProxy(body, method, request, port);
+        return doProxy(body, method, request, port, gateway);
     }
 
-    @RequestMapping("{port}/**/*")
+    @RequestMapping("/{gateway}/{port}/**/*")
     @ResponseBody
     public ResponseEntity<String> doProxy(
             @RequestBody(required = false) String body,
             HttpMethod method,
             HttpServletRequest request,
-            @PathVariable("port") String port
+            @PathVariable("port") String port,
+            @PathVariable("gateway") String gateway
     ) throws URISyntaxException {
 
-        URI dockerHost = dockerClientConfig.getDockerHost();
-
-        String baseHref = String.format("%s/%s", REQUEST_MAPPING_PATH, port);
+        String baseHref = String.format("%s/%s/%s", REQUEST_MAPPING_PATH, gateway, port);
         URI uri = new URI(
-                getScheme(dockerHost),
+                resolvedDockerSchema,
                 null,
-                getHost(dockerHost),
+                gateway,
                 Integer.parseInt(port),
                 request.getRequestURI().replaceFirst(baseHref, ""),
                 request.getQueryString(),
@@ -122,30 +121,5 @@ public class ProxyController {
         return httpHeaders;
     }
 
-    private String getHost(URI dockerHost) {
-        switch (dockerHost.getScheme()) {
-            case "http":
-            case "https":
-            case "tcp":
-                return dockerHost.getHost();
-            case "unix":
-                return "localhost";
-            default:
-                return "localhost";
-        }
-    }
-
-    private String getScheme(URI dockerHost) {
-        switch (dockerHost.getScheme()) {
-            case "http":
-            case "https":
-                return dockerHost.getScheme();
-            case "tcp":
-            case "unix":
-                return "http";
-            default:
-                return "http";
-        }
-    }
 
 }

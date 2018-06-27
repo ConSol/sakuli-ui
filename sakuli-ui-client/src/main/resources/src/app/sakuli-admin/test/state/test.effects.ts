@@ -27,7 +27,9 @@ import {workspaceSelectors} from "../../workspace/state/project.interface";
 import {TestSuiteResult} from "../../../sweetest-components/services/access/model/test-result.interface";
 import {
   RUN_TEST,
+  RUN_TEST_ERROR,
   RunTest,
+  RunTestError,
   SET_TEST_RUN_INFO,
   SetTestRunInfo,
   TEST_EXECUTION_COMPLETED,
@@ -44,12 +46,17 @@ export class TestEffects {
 
   @Effect() runTest$ = this.actions$.ofType(RUN_TEST)
     .withLatestFrom(this.store.select(workspaceSelectors.workspace))
-    .mergeMap(([rt, workspace]: [RunTest, string]) => this.testService.run(rt.testSuite, workspace).map(tri => new SetTestRunInfo(tri, rt.testSuite)));
+    .mergeMap(([rt, workspace]: [RunTest, string]) => this
+      .testService
+      .run(rt.testSuite, workspace)
+      .map(tri => new SetTestRunInfo(tri, rt.testSuite))
+      .catch(ErrorMessage(`Cannot run ${rt.testSuite.id}`, new RunTestError()))
+    );
 
   @Effect() runTestLoading$ = this.loading.registerLoadingActions(
     'runTest',
     RUN_TEST,
-    SET_TEST_RUN_INFO
+    [SET_TEST_RUN_INFO, RUN_TEST_ERROR]
   );
 
   @Effect() vncReady$ = this.actions$.ofType(APPEND_TEST_RUN_INFO_LOG)
@@ -82,7 +89,10 @@ export class TestEffects {
             .filter(dpg => !!dpg.info.stream)
             .map(dpg => new DockerPullStream(dpg.id, dpg.info))),
         'test.pull.completed': () => ({processId}) => new DockerPullCompleted(processId),
-        'error': () => gtee$.map((se: any) => new CreateToast(new DangerToast(se.message, se.stacktrace)))
+        'error': () => gtee$.mergeMap((se: any) =>  [
+          new CreateToast(new DangerToast(se.message, se.stacktrace)),
+          new RunTestError()
+        ])
       })[gtee$.key] || noop)();
     })
     .catch(ErrorMessage('Unable to proceed server event'));
@@ -119,7 +129,6 @@ export class TestEffects {
 
   @Effect({dispatch: false}) stopTestExecution$ = this.actions$.ofType(STOP_TEST_EXECUTION)
     .do((ste: StopTestExecution) => {
-      console.log('Effect captured');
       this.testService.stop(ste.containerId)
     });
 

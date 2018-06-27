@@ -16,10 +16,12 @@ import org.sweetest.platform.server.api.test.TestService;
 import org.sweetest.platform.server.api.test.TestSuite;
 import org.sweetest.platform.server.api.test.execution.strategy.TestExecutionSubject;
 import org.sweetest.platform.server.api.test.execution.strategy.events.TestExecutionCompletedEvent;
+import org.sweetest.platform.server.api.test.execution.strategy.events.TestExecutionStartEvent;
 import org.sweetest.platform.server.api.test.execution.strategy.events.TestExecutionStopEvent;
 import org.sweetest.platform.server.api.test.result.TestSuiteResult;
 import org.sweetest.platform.server.service.test.execution.TestExecutionContext;
 import org.sweetest.platform.server.service.test.execution.TestExecutionInstancesService;
+import org.sweetest.platform.server.service.test.execution.TestExecutionMessageBroker;
 import org.sweetest.platform.server.service.test.execution.TestExecutionStrategyFactory;
 import org.sweetest.platform.server.service.test.execution.config.SakuliRunConfigService;
 
@@ -46,6 +48,9 @@ public class SakuliTestService implements TestService {
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    private TestExecutionMessageBroker testExecutionMessageBroker;
 
     @Autowired
     private TestExecutionStrategyFactory testExecutionStrategyFactory;
@@ -146,11 +151,11 @@ public class SakuliTestService implements TestService {
                         if(e instanceof TestExecutionCompletedEvent) {
                             executionInstancesService.remove(e.getProcessId());
                         }
+                        if(e instanceof TestExecutionStartEvent) {
+                            log.info("Start Event");
+                        }
 
-                        simpMessagingTemplate.convertAndSend(
-                                "/topic/test-run-info/" + e.getProcessId(),
-                                e
-                        );
+                        testExecutionMessageBroker.send(e.getProcessId(),e);
                     });
                     executionInstancesService.put(testRunInfo.getExecutionId(), testRunInfo);
                     //testExecutionStrategyMap.put(testRunInfo.getExecutionId(), testRunInfo);

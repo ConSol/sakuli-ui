@@ -31,8 +31,8 @@ export interface UploadEvent {
       <header>
         <form class="form margin-y d-flex flex-row ">
           <div class="input-group shade">
-            <div class="input-group-addon point-cursor">
-              <sc-icon icon="fa-folder"></sc-icon>
+            <div class="input-group-prepend point-cursor">
+              <span class="input-group-text"><sc-icon icon="fa-folder"></sc-icon></span>
             </div>
             <div class="form-control d-flex flex-row justify-content-start">
               <a (click)="$event.preventDefault(); navBarItemClick(testSuitePath);" href="#">
@@ -47,8 +47,8 @@ export interface UploadEvent {
                 </a>
               </ng-container>
             </div>
-            <label class="input-group-addon" [for]="fileUploadId">
-              <sc-icon icon="fa-upload"></sc-icon>
+            <label class="input-group-append" [for]="fileUploadId">
+              <span class="input-group-text"><sc-icon icon="fa-upload"></sc-icon></span>
             </label>
           </div>
           <input

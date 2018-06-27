@@ -43,8 +43,7 @@ var loginPage = new LoginPage_1.LoginPage();
 var defaultUser = testcafe_1.Role(page_url_1.pageUrl, function (t) { return __awaiter(_this, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                return [4 /*yield*/, loginPage.login('admin', 'sakuli')];
+            case 0: return [4 /*yield*/, loginPage.login('admin', 'sakuli')];
             case 1:
                 _a.sent();
                 return [2 /*return*/];

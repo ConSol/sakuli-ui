@@ -9,9 +9,13 @@ public class TestExecutionErrorEvent extends TestExecutionEvent {
     private Exception exception;
 
     public TestExecutionErrorEvent(String message, String pid, Exception e) {
-        super(TestExecutionErrorEvent.TYPE_ERROR, message, pid);
+        super(
+                TestExecutionErrorEvent.TYPE_ERROR,
+                (message == null || message.isEmpty()) ? (e.getMessage() == null ? e.toString() : e.getMessage()) : message,
+                pid);
         exception = e;
     }
+
 
     public String getStacktrace() {
         return Stream.of(exception.getStackTrace()).map(se -> se.toString()).collect(Collectors.joining("˙n"));

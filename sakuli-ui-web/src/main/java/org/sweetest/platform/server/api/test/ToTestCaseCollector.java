@@ -47,14 +47,13 @@ public class ToTestCaseCollector implements Collector<String, List<SakuliTestCas
                 list.add(currentCase);
                 currentCase = new SakuliTestCase();
             } else if (line.trim().startsWith("//")) {
-                currentCase.setComment(new StringBuilder(currentCase.getComment())
-                        .append("\n")
-                        .append(line.replace("//", "").trim())
-                        .toString()
-                        .trim()
+                final String comment = currentCase.getComment();
+                currentCase.setComment( comment +
+                        (comment.isEmpty() ? "" : "\n") +
+                        line.replace("//", "").trim()
                 );
             } else if(line.trim().isEmpty()) {
-                currentCase.setComment("");
+                //currentCase.setComment("");
             }
         };
     }

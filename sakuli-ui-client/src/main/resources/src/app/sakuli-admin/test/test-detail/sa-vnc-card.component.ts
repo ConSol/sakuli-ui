@@ -1,8 +1,10 @@
 import {ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input, OnInit, ViewChild} from "@angular/core";
 import {Store} from "@ngrx/store";
 import {AppState} from "../../appstate.interface";
-import {DomSanitizer} from "@angular/platform-browser";
+import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {log} from "../../../core/redux.util";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,25 +29,26 @@ import {BehaviorSubject} from "rxjs/BehaviorSubject";
         </sc-icon>
       </label>
       <div style="flex-grow: 1">
-        <!--
-        <a [href]="vncSrc" target="_blank" class="mr-1">
-          <sc-icon icon="fa-external-link">
-            VNC-Port: {{vncPort}}
-          </sc-icon>
-        </a>
-        -->
-        <a [href]="webSrc" target="_blank">
+        <a [href]="webSrc$ | async" target="_blank">
           <sc-icon icon="fa-external-link">
             VNC-Web: {{webPort}}
           </sc-icon>
         </a>
+        |
+        <span
+        >VNC-Port: {{vncPort}}
+        <sc-icon 
+          icon="fa-question-circle" 
+          ngbTooltip="Depending on the context in which Sakuli is running this port may not be accessible from your client.">
+        </sc-icon>
+        </span>
       </div>
       <button class="btn btn-link p-0" (click)="fullScreen()">
         <sc-icon icon="fa-expand"></sc-icon>
       </button>
     </div>
     <div class="card-content">
-      <iframe allowfullscreen #iframe [src]="webSrc" target="_parent">
+      <iframe allowfullscreen #iframe [src]="webSrc$ | async" target="_parent">
         No iframe support...
       </iframe>
     </div>
@@ -57,9 +60,14 @@ import {BehaviorSubject} from "rxjs/BehaviorSubject";
     }
 
     iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      border: 0;
       width: 100%;
       height: 100%;
-      border: 0;
       overflow: auto;
       transform-origin: 0 0;
     }
@@ -75,7 +83,9 @@ import {BehaviorSubject} from "rxjs/BehaviorSubject";
       flex-direction: row;
       flex-grow: 1;
       width: auto;
-      height: 400px;
+      padding-top: 56%;
+      min-height: 400px;
+      position: relative;
     }
 
     .btn-fs:hover /deep/ .fa {
@@ -87,11 +97,14 @@ export class SaVncCard implements OnInit {
 
   @Input() vncPort: number;
   @Input() webPort: number;
+  @Input() gateway: string;
 
   @ViewChild('iframe') iframe: ElementRef;
 
   interactiveMode$ = new BehaviorSubject<boolean>(false);
-  private viewOnly: 'true' | 'false';
+  webSrc$: Observable<SafeResourceUrl>;
+  interactiveToggleText$: Observable<string>;
+  lockIcon$: Observable<string>;
 
   fullScreen() {
     const elementRef = this.iframe;
@@ -115,35 +128,26 @@ export class SaVncCard implements OnInit {
   }
 
   ngOnInit() {
-    this.interactiveMode$.subscribe(im => this.viewOnly = im ? 'false' : 'true');
-  }
+    this.webSrc$ = this.interactiveMode$
+      .distinctUntilChanged()
+      .skipWhile(() => this.gateway == null)
+      .map(isI => isI ? '' : '1')
+      .map(viewOnly => this.sanitizer.bypassSecurityTrustResourceUrl(
+        `api/novnc/${this.gateway}/${this.webPort}?path=ws/novnc/${this.gateway}/${this.webPort}&password=sakuli&view_only=${viewOnly}`
+      ))
+      .do(log('New no vnc ulr'));
 
-  get interactiveToggleText$() {
-    return this.interactiveMode$.map(i => i
+    this.interactiveToggleText$ = this.interactiveMode$.map(i => i
       ? 'Turn interaction off'
       : 'Turn interaction on'
-    )
+    );
+    this.lockIcon$ = this.interactiveMode$.map(isI => isI ? 'fa-unlock-alt' : 'fa-lock');
   }
+
 
   toggleInteractiveMode(isInteractive: boolean) {
     this.interactiveMode$.next(isInteractive);
 
-  }
-
-  get lockIcon$() {
-    return this.interactiveMode$.map(isI => isI ? 'fa-unlock-alt' : 'fa-lock')
-  }
-
-  get webSrc() {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(
-      `api/novnc/${this.webPort}?path=ws/novnc/${this.webPort}&password=sakuli&view_only=${this.viewOnly}`
-    )
-  }
-
-  get vncSrc() {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(
-      `vnc://sakuli@localhost:${this.vncPort}`
-    )
   }
 
 }

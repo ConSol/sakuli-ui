@@ -12,6 +12,7 @@ import {SaReportStepsComponent} from "./sa-report-steps.component";
 import {SaReportTestcaseComponent} from "./sa-report-testcase.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {SaReportOverviewComponent} from "./sa-report-overview.component";
+import {SaReportExceptionComponent} from "./sa-report-exception.component";
 
 const declareAndExport = [
   SaReportComponent,
@@ -21,7 +22,8 @@ const declareAndExport = [
   SaReportStepsTimingComponent,
   SaReportStepsComponent,
   SaReportTestcaseComponent,
-  SaReportOverviewComponent
+  SaReportOverviewComponent,
+  SaReportExceptionComponent
 ];
 
 @NgModule({

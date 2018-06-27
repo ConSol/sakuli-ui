@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.INTERFACES)
@@ -69,23 +68,8 @@ public class DockerComposeExecutionStrategy extends AbstractTestExecutionStrateg
             commands.add("up");
             commands.add("--force-recreate");
 
-            List<TestRunInfoPorts> ports =
-                    dockerComposeModelOptional
-                            .get()
-                            .getServices().entrySet().stream()
-                            .map(e -> {
-                                TestRunInfoPorts trip = new TestRunInfoPorts();
-                                e.getValue().getPorts().stream().filter(p -> p.getTarget() == 5901).findFirst().ifPresent(p -> {
-                                    trip.setVnc(p.getPublished());
-                                });
-                                e.getValue().getPorts().stream().filter(p -> p.getTarget() == 6901).findFirst().ifPresent(p -> {
-                                    trip.setWeb(p.getPublished());
-                                });
-                                return trip;
-                            })
-                            .collect(Collectors.toList());
+            List<TestRunInfoPorts> ports = DockerComposeParser.readPortsFromModel(dockerComposeModelOptional.get());
             tri.setTestRunInfoPortList(ports);
-
             log.info(getConfiguration().getFile());
 
             ProcessBuilder processBuilder = new ProcessBuilder();

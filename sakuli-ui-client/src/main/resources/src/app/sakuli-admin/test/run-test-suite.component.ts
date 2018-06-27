@@ -139,6 +139,7 @@ import {TemplatePortal} from "@angular/cdk/portal";
       <div class="col-12 mb-2" *ngIf="vncReady$ | async">
         <ng-container *ngFor="let ports of (testSuiteExecutionInfo$ | async)?.testRunInfoPortList">
           <sa-vnc-card
+            [gateway]="(testSuiteExecutionInfo$ | async)?.gateway"
             [vncPort]="ports.vnc"
             [webPort]="ports.web"
           ></sa-vnc-card>
